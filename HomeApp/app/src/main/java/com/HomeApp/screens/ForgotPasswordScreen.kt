@@ -5,9 +5,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 
 @Composable
-fun LoginScreen(
+fun ForgotPasswordScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     OnSelfClick: () -> Unit = {}
 ) {
+
 }
