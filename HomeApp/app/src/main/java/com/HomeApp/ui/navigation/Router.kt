@@ -24,6 +24,11 @@ object Home : NavPath {
     override val icon: ImageVector = Icons.Rounded.Home
 }
 
+object Devices : NavPath {
+    override val icon = Icons.Rounded.Lightbulb
+    override val route = "devices"
+}
+
 object Settings : NavPath {
     override val icon = Icons.Rounded.Settings
     override val route = "settings"
