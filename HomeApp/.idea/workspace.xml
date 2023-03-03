@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2711094e-7cc7-4025-823a-58a6c28ed9ab" name="Changes" comment="Added a TextInput composable.&#10;This composable will be used on most if not all screens whenever the user is not logged in.">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/HomeApp/ui/composables/TextInput.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/HomeApp.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/HomeApp.app.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="2711094e-7cc7-4025-823a-58a6c28ed9ab" name="Changes" comment="Added a TextInput composable.&#10;This composable will be used on most if not all screens whenever the user is not logged in." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -50,6 +44,11 @@
     "last_opened_file_path": "C:/Users/emilh/AndroidStudioProjects/mobile/HomeApp/app/src/main/java/com/HomeApp/ui/composables"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\emilh\AndroidStudioProjects\mobile\HomeApp\app\src\main\java\com\HomeApp\ui\composables" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App">
       <module name="HomeApp.app.main" />
@@ -119,6 +118,13 @@
       <option name="presentableId" value="Default" />
       <updated>1676930646859</updated>
     </task>
+    <task id="LOCAL−00001" summary="Added a TextInput composable.&#10;This composable will be used on most if not all screens whenever the user is not logged in.">
+      <created>1677836026527</created>
+      <option name="number" value="LOCAL−00001" />
+      <option name="presentableId" value="LOCAL−00001" />
+      <updated>1677836026527</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
