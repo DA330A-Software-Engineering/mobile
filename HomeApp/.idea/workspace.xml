@@ -4,13 +4,13 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2711094e-7cc7-4025-823a-58a6c28ed9ab" name="Changes" comment="" />
+    <list default="true" id="2711094e-7cc7-4025-823a-58a6c28ed9ab" name="Changes" comment="Added a BottomDivider composable.&#10;This composable will be used on the log in and sign up screen. Might add it to the other screens when the user is not signed in, such as forgot password." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\Abdul Rahman\.android\avd\Pixel_6_Pro_API_33.avd]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\emilh\.android\avd\Pixel_3a_API_33_x86_64.avd]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -36,13 +36,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="cidr.known.project.marker" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "cidr.known.project.marker": "true",
+    "last_opened_file_path": "C:/Users/emilh/AndroidStudioProjects/mobile/HomeApp/app/src/main/java/com/HomeApp/ui/composables"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\emilh\AndroidStudioProjects\mobile\HomeApp\app\src\main\java\com\HomeApp\ui\composables" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App">
@@ -94,7 +99,6 @@
         <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Java/Kotlin Method Sample (legacy)" />
         <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
         <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
-        <option name="PROFILING_MODE" value="NOT_SET" />
       </Profilers>
       <option name="DEEP_LINK" value="" />
       <option name="ACTIVITY_CLASS" value="" />
@@ -114,6 +118,19 @@
       <option name="presentableId" value="Default" />
       <updated>1676930646859</updated>
     </task>
+    <task id="LOCAL−00001" summary="Added a TextInput composable.&#10;This composable will be used on most if not all screens whenever the user is not logged in.">
+      <created>1677836026527</created>
+      <option name="number" value="LOCAL−00001" />
+      <option name="presentableId" value="LOCAL−00001" />
+      <updated>1677836026527</updated>
+    </task>
+    <task id="LOCAL−00002" summary="Added a BottomDivider composable.&#10;This composable will be used on the log in and sign up screen. Might add it to the other screens when the user is not signed in, such as forgot password.">
+      <created>1677836670141</created>
+      <option name="number" value="LOCAL−00002" />
+      <option name="presentableId" value="LOCAL−00002" />
+      <updated>1677836670141</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -126,5 +143,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Added a TextInput composable.&#10;This composable will be used on most if not all screens whenever the user is not logged in." />
+    <MESSAGE value="Added a BottomDivider composable.&#10;This composable will be used on the log in and sign up screen. Might add it to the other screens when the user is not signed in, such as forgot password." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added a BottomDivider composable.&#10;This composable will be used on the log in and sign up screen. Might add it to the other screens when the user is not signed in, such as forgot password." />
   </component>
 </project>
