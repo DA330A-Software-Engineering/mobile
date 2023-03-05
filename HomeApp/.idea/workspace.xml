@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2711094e-7cc7-4025-823a-58a6c28ed9ab" name="Changes" comment="Added a BottomDivider composable.&#10;This composable will be used on the log in and sign up screen. Might add it to the other screens when the user is not signed in, such as forgot password." />
+    <list default="true" id="2711094e-7cc7-4025-823a-58a6c28ed9ab" name="Changes" comment="Layout done.&#10;Layout follows the looks of the sign up screen. Bottom divider takes you to the sign up screen, in case you don't have an account, the sign in button takes you to the home page, and the &quot;Forgot your password?&quot; TextButton takes you to the forgot-password-screen.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -36,14 +38,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "cidr.known.project.marker": "true",
-    "last_opened_file_path": "C:/Users/emilh/AndroidStudioProjects/mobile/HomeApp/app/src/main/java/com/HomeApp/ui/composables"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/emilh/AndroidStudioProjects/mobile/HomeApp/app/src/main/java/com/HomeApp/ui/composables&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\emilh\AndroidStudioProjects\mobile\HomeApp\app\src\main\java\com\HomeApp\ui\composables" />
@@ -130,7 +132,25 @@
       <option name="presentableId" value="LOCAL−00002" />
       <updated>1677836670141</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL−00003" summary="Added a route for CreateAccountScreen.&#10;Added a route in NavHost, Router, and a template in CreateAccountScreen. This will enable the user to navigate to the sign up screen from the login screen.">
+      <created>1677836943302</created>
+      <option name="number" value="LOCAL−00003" />
+      <option name="presentableId" value="LOCAL−00003" />
+      <updated>1677836943302</updated>
+    </task>
+    <task id="LOCAL−00004" summary="Layout done.&#10;The layout is pretty much done. If you press the sign in button, you'd navigate to &quot;home&quot; and there is a way to get back to the login page. There's no logic and still room for improvement when it comes to design. Still haven't tampered with the colors or anything like that.">
+      <created>1677837377592</created>
+      <option name="number" value="LOCAL−00004" />
+      <option name="presentableId" value="LOCAL−00004" />
+      <updated>1677837377592</updated>
+    </task>
+    <task id="LOCAL−00005" summary="Layout done.&#10;Layout follows the looks of the sign up screen. Bottom divider takes you to the sign up screen, in case you don't have an account, the sign in button takes you to the home page, and the &quot;Forgot your password?&quot; TextButton takes you to the forgot-password-screen.">
+      <created>1678053964787</created>
+      <option name="number" value="LOCAL−00005" />
+      <option name="presentableId" value="LOCAL−00005" />
+      <updated>1678053964787</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -147,6 +167,9 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added a TextInput composable.&#10;This composable will be used on most if not all screens whenever the user is not logged in." />
     <MESSAGE value="Added a BottomDivider composable.&#10;This composable will be used on the log in and sign up screen. Might add it to the other screens when the user is not signed in, such as forgot password." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added a BottomDivider composable.&#10;This composable will be used on the log in and sign up screen. Might add it to the other screens when the user is not signed in, such as forgot password." />
+    <MESSAGE value="Added a route for CreateAccountScreen.&#10;Added a route in NavHost, Router, and a template in CreateAccountScreen. This will enable the user to navigate to the sign up screen from the login screen." />
+    <MESSAGE value="Layout done.&#10;The layout is pretty much done. If you press the sign in button, you'd navigate to &quot;home&quot; and there is a way to get back to the login page. There's no logic and still room for improvement when it comes to design. Still haven't tampered with the colors or anything like that." />
+    <MESSAGE value="Layout done.&#10;Layout follows the looks of the sign up screen. Bottom divider takes you to the sign up screen, in case you don't have an account, the sign in button takes you to the home page, and the &quot;Forgot your password?&quot; TextButton takes you to the forgot-password-screen." />
+    <option name="LAST_COMMIT_MESSAGE" value="Layout done.&#10;Layout follows the looks of the sign up screen. Bottom divider takes you to the sign up screen, in case you don't have an account, the sign in button takes you to the home page, and the &quot;Forgot your password?&quot; TextButton takes you to the forgot-password-screen." />
   </component>
 </project>
