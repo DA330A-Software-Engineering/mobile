@@ -127,6 +127,20 @@ fun AnimatedAppNavHost(
                 OnSelfClick = { navController.navigateSingleTopTo(ConfirmToken.route) }
             )
         }
+
+        // Devices
+        composable(
+            route = Devices.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            DevicesScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(Devices.route) }
+            )
+        }
     }
 }
 

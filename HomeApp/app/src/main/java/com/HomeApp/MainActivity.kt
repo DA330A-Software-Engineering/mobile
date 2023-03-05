@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.HomeApp.drawers.SideDrawer
 import com.HomeApp.ui.navigation.AnimatedAppNavHost
+import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.theme.HomeAppTheme
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -82,21 +83,22 @@ fun runApp() {
                     ) {
                         AnimatedAppNavHost(
                             navController = navController,
-                            startDestination = Home.route
+                            startDestination = Devices.route
                         )
                     }
                 }
             },
             drawerShape = RoundedCornerShape(topEnd = 10.dp, bottomEnd = 10.dp),
-            drawerContent = {
+            drawerContent = {/**
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr)
                 {
+
                     val sideDrawer: SideDrawer = SideDrawer(
                         drawerState = state.drawerState,
                         navController = navController
                     )
                     sideDrawer.drawScaffold()
-                }
+                }*/
             },
             drawerGesturesEnabled = state.drawerState.isOpen,
         )
