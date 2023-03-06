@@ -53,3 +53,8 @@ object ConfirmToken : NavPath {
     override val icon = Icons.Rounded.DomainDisabled
     override val route = "confirm-token"
 }
+
+object CreateAccount : NavPath {
+    override val icon = Icons.Rounded.Person
+    override val route = "create-account"
+}
