@@ -21,28 +21,30 @@ import com.HomeApp.R
 import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Home
 import com.HomeApp.util.microphoneIcon
-import com.HomeApp.util.showAppFooterMenu
 
 @Composable
-fun AppBottomBar(navController: NavController) {
+fun AppBottomBar(navController: NavController, modifier: Modifier = Modifier) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+        val bgCol = colorResource(id = R.color.GhostWhite)
         val screenWidth = LocalConfiguration.current.screenWidthDp
         Column(
             modifier = Modifier
-                .background(colorResource(id = R.color.GhostWhite))
-                .fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .background(bgCol)
+                .fillMaxWidth()
+                .height(168.dp)
+                .zIndex(1f), horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
+            Spacer(Modifier.weight(1f))
             IconButton(
                 modifier = Modifier
                     .offset(y = 40.dp)
                     .background(
-                        colorResource(id = R.color.GhostWhite),
+                        bgCol,
                         shape = RoundedCornerShape(80.dp)
                     )
                     .zIndex(2f),
                 onClick = { /*TODO*/ },
-                enabled = showAppFooterMenu
             ) {
                 Icon(
                     imageVector = microphoneIcon,
@@ -56,7 +58,7 @@ fun AppBottomBar(navController: NavController) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(if (showAppFooterMenu) 55.dp else 0.dp)
+                    .height(56.dp)
                     .background(colorResource(id = R.color.LightSteelBlue))
                     .padding(top = 5.dp)
                     .zIndex(1f)
