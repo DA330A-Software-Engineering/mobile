@@ -8,9 +8,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.TitleBar
 import com.HomeApp.ui.navigation.NavPath
+
 
 @Composable
 fun DevicesScreen(
@@ -20,7 +22,7 @@ fun DevicesScreen(
 ) {
     Scaffold(
         topBar = {
-            TitleBar(screenTitle = "Devices", previousScreen = navController.currentBackStackEntry?.destination?.route?)
+            TitleBar(screenTitle = "Devices", navController = navController)
         },
         content = {
             Column(modifier = Modifier.padding(it)) {

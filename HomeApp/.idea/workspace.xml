@@ -9,7 +9,12 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2711094e-7cc7-4025-823a-58a6c28ed9ab" name="Changes" comment="Added a BottomDivider composable.&#10;This composable will be used on the log in and sign up screen. Might add it to the other screens when the user is not signed in, such as forgot password.">
+    <list default="true" id="2711094e-7cc7-4025-823a-58a6c28ed9ab" name="Changes" comment="Layout done.&#10;Layout follows the looks of the sign up screen. Bottom divider takes you to the sign up screen, in case you don't have an account, the sign in button takes you to the home page, and the &quot;Forgot your password?&quot; TextButton takes you to the forgot-password-screen.">
+      <change beforePath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/app/HomeApp.app.main.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/HomeApp/screens/DevicesScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/HomeApp/screens/DevicesScreen.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/HomeApp/ui/composables/TitleBar.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/HomeApp/ui/composables/TitleBar.kt" afterDir="false" />
@@ -51,7 +56,7 @@
     <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="cidr.known.project.marker" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../KLT/KLT_Frontend/KLT" />
   </component>
   <component name="RunManager" selected="Android App.app">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
