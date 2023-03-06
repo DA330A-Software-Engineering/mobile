@@ -88,7 +88,8 @@ fun runApp() {
                     ) {
                         AnimatedAppNavHost(
                             navController = navController,
-                            startDestination = Devices.route
+                            startDestination = Devices.route,
+                            state = state
                         )
                     }
                 }

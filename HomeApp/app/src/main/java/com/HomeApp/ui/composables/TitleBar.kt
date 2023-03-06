@@ -35,6 +35,7 @@ fun TitleBar(
     var leftSelected by remember { mutableStateOf(true) }
 
     Column(modifier = Modifier) {
+        Spacer(modifier = Modifier.height(30.dp))
         Row(
             modifier = Modifier
                 .height(60.dp)
@@ -61,7 +62,7 @@ fun TitleBar(
         }
         Spacer(modifier = Modifier
             .fillMaxWidth()
-            .height(20.dp))
+            .height(25.dp))
         Row(modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)) {
@@ -91,5 +92,8 @@ fun TitleBar(
                 }
             }
         }
+        Spacer(modifier = Modifier
+            .fillMaxWidth()
+            .height(10.dp))
     }
 }
