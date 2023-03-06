@@ -12,8 +12,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -22,9 +22,11 @@ import com.HomeApp.ui.navigation.AnimatedAppNavHost
 import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.theme.HomeAppTheme
+import com.HomeApp.util.enableTopDrawer
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -32,7 +34,7 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                    color = colorResource(id = R.color.GhostWhite)
                 ) {
                     runApp()
                 }
@@ -45,30 +47,35 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun runApp() {
     val navController = rememberAnimatedNavController()
-    val state = rememberScaffoldState(rememberDrawerState(initialValue = DrawerValue.Closed))
+    val state = rememberScaffoldState(
+        rememberDrawerState(initialValue = DrawerValue.Closed)
+    )
+
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
             scaffoldState = state,
             topBar = {
-                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(30.dp)
-                            .background(Color.LightGray)
-                    ) {
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                if (enableTopDrawer) {
+                    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(30.dp)
+                                .background(Color.LightGray)
                         ) {
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(
-                                text = "Top bar content",
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
+                            Column(
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Spacer(modifier = Modifier.weight(1f))
+                                Text(
+                                    text = "Top bar content",
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
                         }
                     }
                 }
@@ -78,8 +85,6 @@ fun runApp() {
                     Box(
                         modifier = Modifier
                             .padding(it) // only applied when there is a bottomBar added.
-                            // set height of padding equal to 1/x of device screen current height
-                            .padding(top = (LocalConfiguration.current.screenHeightDp / 50).dp)
                     ) {
                         AnimatedAppNavHost(
                             navController = navController,
@@ -100,7 +105,7 @@ fun runApp() {
                     sideDrawer.drawScaffold()
                 }*/
             },
-            drawerGesturesEnabled = state.drawerState.isOpen,
+            drawerGesturesEnabled = state.drawerState.isOpen
         )
     }
 }
