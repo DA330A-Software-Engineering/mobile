@@ -128,7 +128,21 @@ fun AnimatedAppNavHost(
             )
         }
 
-        // Devices
+        // CREATE ACCOUNT
+        composable(
+            route = CreateAccount.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            CreateAccountScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(CreateAccount.route) }
+            )
+        }
+
+        // DEVICES
         composable(
             route = Devices.route,
             enterTransition = { fadeIn(tween(defaultTween)) },
@@ -136,7 +150,7 @@ fun AnimatedAppNavHost(
             exitTransition = { fadeOut(tween(defaultTween)) },
             popExitTransition = { fadeOut(tween(defaultTween)) }
         ) {
-            DevicesScreen(
+            CreateAccountScreen(
                 navController = navController,
                 OnSelfClick = { navController.navigateSingleTopTo(Devices.route) }
             )
