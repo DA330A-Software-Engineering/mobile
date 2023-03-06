@@ -65,13 +65,12 @@ fun TitleBar(
         Row(modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)) {
-            Button(onClick = { /*TODO*/ }, modifier = Modifier
+            Button(onClick = { leftSelected = true }, modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f),
                 colors = ButtonDefaults.buttonColors(backgroundColor = if (leftSelected) Color(selectedColor) else Color(notSelectedColor)
                 ),
                 shape = RoundedCornerShape(0.dp)
-
             ) {
                 Column(modifier = Modifier
                     .fillMaxSize()) {
@@ -79,7 +78,7 @@ fun TitleBar(
                     Text(text = "12", textAlign = TextAlign.Center, color = Color.DarkGray, modifier = Modifier.fillMaxWidth())
                 }
             }
-            Button(onClick = { /*TODO*/ }, modifier = Modifier
+            Button(onClick = { leftSelected = false }, modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f),
                 colors = ButtonDefaults.buttonColors(if (leftSelected) Color(notSelectedColor) else Color(selectedColor)),
@@ -92,9 +91,5 @@ fun TitleBar(
                 }
             }
         }
-
     }
-
-
-
 }
