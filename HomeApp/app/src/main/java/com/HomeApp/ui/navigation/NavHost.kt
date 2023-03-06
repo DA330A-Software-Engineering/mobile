@@ -150,7 +150,7 @@ fun AnimatedAppNavHost(
             exitTransition = { fadeOut(tween(defaultTween)) },
             popExitTransition = { fadeOut(tween(defaultTween)) }
         ) {
-            CreateAccountScreen(
+            DevicesScreen(
                 navController = navController,
                 OnSelfClick = { navController.navigateSingleTopTo(Devices.route) }
             )

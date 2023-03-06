@@ -9,16 +9,8 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2711094e-7cc7-4025-823a-58a6c28ed9ab" name="Changes" comment="Added a BottomDivider composable.&#10;This composable will be used on the log in and sign up screen. Might add it to the other screens when the user is not signed in, such as forgot password.">
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/HomeApp/ui/composables/BottomDivider.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/HomeApp/ui/composables/TextInput.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/app/HomeApp.app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/app/HomeApp.app.iml" afterDir="false" />
+    <list default="true" id="2711094e-7cc7-4025-823a-58a6c28ed9ab" name="Changes" comment="Layout done.&#10;Layout follows the looks of the sign up screen. Bottom divider takes you to the sign up screen, in case you don't have an account, the sign in button takes you to the home page, and the &quot;Forgot your password?&quot; TextButton takes you to the forgot-password-screen.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/HomeApp/screens/CreateAccountScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/HomeApp/screens/CreateAccountScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/HomeApp/ui/navigation/NavHost.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/HomeApp/ui/navigation/NavHost.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/HomeApp/ui/navigation/Router.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/HomeApp/ui/navigation/Router.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,6 +42,11 @@
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
+    <property name="cidr.known.project.marker" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
