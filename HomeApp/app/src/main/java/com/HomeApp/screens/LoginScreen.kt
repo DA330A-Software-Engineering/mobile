@@ -22,6 +22,8 @@ import com.HomeApp.ui.composables.BottomDivider
 import com.HomeApp.ui.composables.Divider
 import com.HomeApp.ui.composables.InputType
 import com.HomeApp.ui.composables.TextInput
+import com.HomeApp.ui.navigation.ForgotPassword
+import com.HomeApp.ui.navigation.Home
 
 @Composable
 fun LoginScreen(
@@ -51,7 +53,7 @@ fun LoginScreen(
             focusRequester = passwordFocusRequester
         )
         Button(
-            onClick = { navController.navigate("Home") },
+            onClick = { navController.navigate(Home.route) },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("SIGN IN", Modifier.padding(vertical = 8.dp))
@@ -61,7 +63,7 @@ fun LoginScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End
         ) {
-            TextButton(onClick = { navController.navigate("forgot-password") }) {
+            TextButton(onClick = { navController.navigate(ForgotPassword.route) }) {
                 Text("Forgot your password?")
             }
         }

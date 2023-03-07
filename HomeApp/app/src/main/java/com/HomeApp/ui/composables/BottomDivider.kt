@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.HomeApp.ui.navigation.CreateAccount
+import com.HomeApp.ui.navigation.Login
 
 @Composable
 fun BottomDivider(
@@ -44,14 +46,14 @@ sealed class Divider(
     object SignUp : Divider(
         text = "Don't have an account?",
         textButton = "Sign up",
-        onClick = "create-account",
+        onClick = CreateAccount.route,
         padding = 124
     )
 
     object SignIn : Divider(
         text = "Already have an account?",
         textButton = "Sign in",
-        onClick = "login",
+        onClick = Login.route,
         padding = 188
     )
 }
