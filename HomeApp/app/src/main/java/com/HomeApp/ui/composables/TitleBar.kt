@@ -12,11 +12,13 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.HomeApp.R
 import kotlin.math.round
 
 
@@ -29,8 +31,8 @@ fun TitleBar(
     navController: NavController
 
 ) {
-    val selectedColor = 0xFFAECCE4
-    val notSelectedColor = 0xFFC5C5C5
+    val selectedColor = colorResource(id = R.color.LightSteelBlue)
+    val notSelectedColor = colorResource(id = R.color.FadedLightGrey)
 
     var leftSelected by remember { mutableStateOf(true) }
 
@@ -69,8 +71,7 @@ fun TitleBar(
             Button(onClick = { leftSelected = true }, modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f),
-                colors = ButtonDefaults.buttonColors(backgroundColor = if (leftSelected) Color(selectedColor) else Color(notSelectedColor)
-                ),
+                colors = ButtonDefaults.buttonColors(backgroundColor = if (leftSelected) selectedColor else notSelectedColor),
                 shape = RoundedCornerShape(0.dp)
             ) {
                 Column(modifier = Modifier
@@ -82,7 +83,7 @@ fun TitleBar(
             Button(onClick = { leftSelected = false }, modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f),
-                colors = ButtonDefaults.buttonColors(if (leftSelected) Color(notSelectedColor) else Color(selectedColor)),
+                colors = ButtonDefaults.buttonColors(if (leftSelected) notSelectedColor else selectedColor),
                 shape = RoundedCornerShape(0.dp)
             ) {
                 Column(modifier = Modifier
