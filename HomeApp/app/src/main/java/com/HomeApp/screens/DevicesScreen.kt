@@ -12,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -58,15 +59,36 @@ fun DevicesScreen(
     val device2 = DevicesDummy()
     device2.id = "12"
     device2.type = "curtain"
-    device2.name = "bed Room "
+    device2.name = "bed Room Light"
     device2.state = JSONObject("{'open': 'false'}")
-    val device3 = DevicesDummy()
-    device3.id = "13"
-    device3.type = "door"
-    device3.name = "balcony "
-    device3.state = JSONObject("{'open': 'true'}")
+    val device4 = DevicesDummy()
+    device4.id = "13"
+    device4.type = "door"
+    device4.name = "Balcony Door"
+    device4.state = JSONObject("{'open': 'true'}")
+    val device5 = DevicesDummy()
+    device5.id = "13"
+    device5.type = "door"
+    device5.name = "Front Door"
+    device5.state = JSONObject("{'open': 'false'}")
+    val device6 = DevicesDummy()
+    device6.id = "13"
+    device6.type = "light"
+    device6.name = "Bedroom light 2"
+    device6.state = JSONObject("{'on': 'true'}")
+    val device8 = DevicesDummy()
+    device8.id = "13"
+    device8.type = "light"
+    device8.name = "Balcony light"
+    device8.state = JSONObject("{'on': 'true'}")
+    val device7 = DevicesDummy()
+    device7.id = "13"
+    device7.type = "door"
+    device7.name = "Back Door"
+    device7.state = JSONObject("{'open': 'false'}")
 
-    val devicesList = listOf(device1, device2, device3)
+    val devicesList = listOf(device1, device2, device4, device5,device6,device7,device8)
+    val listHeight = LocalConfiguration.current.screenHeightDp
 
 
     Scaffold(
@@ -75,12 +97,13 @@ fun DevicesScreen(
             TitleBar(screenTitle = "Devices", navController = navController)
         },
         content = {
+            Log.d(TAG, listHeight.toString())
             Column(modifier = Modifier
                 .padding(it)
-                .height(200.dp)) {
+                .fillMaxHeight()) {
                 TitledDivider(navController = navController, title = "Filters")
                 FilteredList(filterScreen="devices")
-                LazyColumn(modifier = Modifier) {
+                LazyColumn(modifier = Modifier.height(listHeight.dp).padding(vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     items(items = devicesList, key = { item -> item.name }) { item ->
                         DeviceCard(navController = navController, deviceItem = item)
                     }
