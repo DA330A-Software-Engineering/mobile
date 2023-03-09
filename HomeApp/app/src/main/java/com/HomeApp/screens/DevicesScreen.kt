@@ -79,13 +79,13 @@ fun DevicesScreen(
                 TitledDivider(navController = navController, title = "Filters")
                 FilteredList(filterScreen="devices")
 
-                /*LazyColumn(content = {
+                LazyColumn(content = {
                     devicesList.forEach({
                         item {
 
                         }
                     })
-                })*/
+                })
 
             }
         },
