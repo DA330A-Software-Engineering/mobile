@@ -75,7 +75,7 @@ fun DevicesScreen(
     device6.id = "13"
     device6.type = "light"
     device6.name = "Bedroom light 2"
-    device6.state = JSONObject("{'on': 'true'}")
+    device6.state = JSONObject("{'on': 'false'}")
     val device8 = DevicesDummy()
     device8.id = "13"
     device8.type = "light"
@@ -106,7 +106,8 @@ fun DevicesScreen(
                 LazyColumn(
                     modifier = Modifier
                         .height(listHeight.dp)
-                        .padding(vertical = 10.dp),
+                        .padding(vertical = 10.dp)
+                        .padding(horizontal = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     items(items = devicesList, key = { item -> item.name }) { item ->
                         DeviceCard(navController = navController, deviceItem = item)

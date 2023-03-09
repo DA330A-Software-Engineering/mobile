@@ -69,13 +69,12 @@ fun DeviceCard(
                 fontSize = 25.sp,
                 modifier = Modifier
                     .fillMaxHeight()
-                    .width(230.dp)
+                    .width(220.dp)
                     .wrapContentHeight(align = Alignment.CenterVertically),
                 style = TextStyle(textDecoration = TextDecoration.Underline)
             )
-            Spacer(modifier = Modifier.width(10.dp))
             Text(text = deviceState,
-                fontSize = 22.sp,
+                fontSize = 18.sp,
                 modifier = Modifier
                     .fillMaxHeight()
                     .fillMaxWidth()
