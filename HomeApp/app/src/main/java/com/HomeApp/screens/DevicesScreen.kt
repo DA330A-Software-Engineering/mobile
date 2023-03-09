@@ -2,10 +2,9 @@ package com.HomeApp.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,6 +17,15 @@ import com.HomeApp.ui.composables.TitleBar
 import com.HomeApp.ui.composables.TitledDivider
 import com.HomeApp.ui.navigation.NavPath
 import com.HomeApp.util.DevicesFilters
+import java.util.Objects
+
+sealed interface DEVICES{
+    var id: String
+    var type: String
+    var state: Objects
+}
+
+
 
 
 @Composable
@@ -27,7 +35,7 @@ fun DevicesScreen(
     state: ScaffoldState,
     OnSelfClick: () -> Unit = {}
 ) {
-    var filtersSelected by remember { mutableStateOf("") }
+    //var filtersSelected by remember { mutab }
 
     Scaffold(
         topBar = {
@@ -35,15 +43,11 @@ fun DevicesScreen(
             TitleBar(screenTitle = "Devices", navController = navController)
         },
         content = {
-            Column(modifier = Modifier.padding(it)) {
+            Column(modifier = Modifier
+                .padding(it)
+                .height(200.dp)) {
                 TitledDivider(navController = navController, title = "Filters")
-                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)) {
-                    DevicesFilters.values().forEach {
-                        Button(onClick = { /*TODO*/ }) {
-
-                        }
-                    }
-                }
+                FilteredList(filterScreen="devices")
 
             }
         },
