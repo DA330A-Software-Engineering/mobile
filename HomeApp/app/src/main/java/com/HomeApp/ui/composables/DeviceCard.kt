@@ -1,6 +1,7 @@
 package com.HomeApp.ui.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
@@ -53,15 +55,16 @@ fun DeviceCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp),
+        contentPadding = PaddingValues(0.dp),
         colors = ButtonDefaults.buttonColors(backgroundColor =colorResource(id = R.color.LightSteelBlue)),
         shape = RoundedCornerShape(10)
     ) {
-        Row() {
-
-            Icon(imageVector = cardIcon, contentDescription =deviceItem.type, modifier= Modifier
-                .size(70.dp)
-                .padding(top = 10.dp))
-            Spacer(modifier = Modifier.width(5.dp))
+        Row(modifier = Modifier.fillMaxWidth()){
+            Spacer(modifier = Modifier.width(3.dp))
+            Icon(imageVector = cardIcon,
+                contentDescription =deviceItem.type,
+                modifier= Modifier.size(70.dp).padding(top=7.dp))
+            Spacer(modifier = Modifier.width(7.dp))
             Text(text = deviceItem.name,
                 fontSize = 25.sp,
                 modifier = Modifier
