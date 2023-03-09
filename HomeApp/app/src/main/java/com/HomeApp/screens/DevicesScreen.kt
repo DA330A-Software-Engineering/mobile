@@ -1,8 +1,11 @@
 package com.HomeApp.screens
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -13,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.HomeApp.ui.composables.DeviceCard
 import com.HomeApp.ui.composables.FilteredList
 import com.HomeApp.ui.composables.TitleBar
 import com.HomeApp.ui.composables.TitledDivider
@@ -50,21 +54,19 @@ fun DevicesScreen(
     device1.id = "11"
     device1.type = "light"
     device1.name = "Living Room Light"
-    device1.state = JSONObject("{'name': 'hi'}")
+    device1.state = JSONObject("{'on': 'true'}")
     val device2 = DevicesDummy()
-    device1.id = "11"
-    device1.type = "light"
-    device1.name = "Living Room Light"
-    device1.state = JSONObject("{'name': 'hi'}")
+    device2.id = "12"
+    device2.type = "curtain"
+    device2.name = "bed Room "
+    device2.state = JSONObject("{'open': 'false'}")
     val device3 = DevicesDummy()
-    device1.id = "11"
-    device1.type = "light"
-    device1.name = "Living Room Light"
-    device1.state = JSONObject("{'name': 'hi'}")
+    device3.id = "13"
+    device3.type = "door"
+    device3.name = "balcony "
+    device3.state = JSONObject("{'open': 'true'}")
 
-    val devicesList = remember {
-        mutableListOf(device1, device2, device3)
-    }
+    val devicesList = listOf(device1, device2, device3)
 
 
     Scaffold(
@@ -78,15 +80,11 @@ fun DevicesScreen(
                 .height(200.dp)) {
                 TitledDivider(navController = navController, title = "Filters")
                 FilteredList(filterScreen="devices")
-
-                LazyColumn(content = {
-                    devicesList.forEach({
-                        item {
-
-                        }
-                    })
-                })
-
+                LazyColumn(modifier = Modifier) {
+                    items(items = devicesList, key = { item -> item.name }) { item ->
+                        DeviceCard(navController = navController, deviceItem = item)
+                    }
+                }
             }
         },
         bottomBar = {
