@@ -103,7 +103,11 @@ fun DevicesScreen(
                 .fillMaxHeight()) {
                 TitledDivider(navController = navController, title = "Filters")
                 FilteredList(filterScreen="devices")
-                LazyColumn(modifier = Modifier.height(listHeight.dp).padding(vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                LazyColumn(
+                    modifier = Modifier
+                        .height(listHeight.dp)
+                        .padding(vertical = 10.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     items(items = devicesList, key = { item -> item.name }) { item ->
                         DeviceCard(navController = navController, deviceItem = item)
                     }

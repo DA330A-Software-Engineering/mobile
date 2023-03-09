@@ -1,11 +1,10 @@
 package com.HomeApp.ui.composables
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -14,10 +13,16 @@ import androidx.compose.material.icons.filled.Curtains
 import androidx.compose.material.icons.filled.DoorFront
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.R
 import com.HomeApp.screens.DevicesDummy
@@ -44,17 +49,36 @@ fun DeviceCard(
         else -> {"No State"}
     }
 
-    Row(
+    Button(onClick = { /*TODO*/ },
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
-            .background(colorResource(id = R.color.LightSteelBlue),
-                shape = RoundedCornerShape(10)),
+            .height(80.dp),
+        colors = ButtonDefaults.buttonColors(backgroundColor =colorResource(id = R.color.LightSteelBlue)),
+        shape = RoundedCornerShape(10)
     ) {
+        Row() {
 
-        Icon(imageVector = cardIcon, contentDescription ="")
-        Text(text = deviceItem.name)
-        Text(text = deviceState)
+            Icon(imageVector = cardIcon, contentDescription =deviceItem.type, modifier= Modifier
+                .size(70.dp)
+                .padding(top = 10.dp))
+            Spacer(modifier = Modifier.width(5.dp))
+            Text(text = deviceItem.name,
+                fontSize = 25.sp,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(230.dp)
+                    .wrapContentHeight(align = Alignment.CenterVertically),
+                style = TextStyle(textDecoration = TextDecoration.Underline)
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(text = deviceState,
+                fontSize = 22.sp,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth()
+                    .wrapContentHeight(align = Alignment.CenterVertically),
+                textAlign = TextAlign.Left,
+                fontWeight = FontWeight.Bold)
+        }
     }
-
 }
