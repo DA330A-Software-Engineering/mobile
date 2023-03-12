@@ -61,7 +61,25 @@ object ApiConnector {
 
         onRespond(callAPI(request))
     }
-    
+
+    /** Api call to change password */
+    fun requestChangePassword(
+        email: String,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val urlPath = "/api/users/reset_request"
+
+        val formBody: RequestBody = FormBody.Builder()
+            .add("email", email)
+            .build()
+
+        val request: Request = Request.Builder()
+            .url(DB_ADDR + urlPath)
+            .post(formBody)
+            .build()
+        onRespond(callAPI(request))
+    }
+
     private fun callAPI(request: Request): ApiResult {
         return try {
             Log.d("callAPI", request.url.toString())
