@@ -39,6 +39,28 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
+    /** Api Call for creating an account */
+    fun createAccount(
+        name: String,
+        email: String,
+        password: String,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val urlPath = "/api/users/signin"
+
+        val formBody: RequestBody = FormBody.Builder()
+            .add("name", name)
+            .add("email", email)
+            .add("password", password)
+            .build()
+
+        val request: Request = Request.Builder()
+            .url(DB_ADDR + urlPath)
+            .post(formBody)
+            .build()
+
+        onRespond(callAPI(request))
+    }
     
     private fun callAPI(request: Request): ApiResult {
         return try {
