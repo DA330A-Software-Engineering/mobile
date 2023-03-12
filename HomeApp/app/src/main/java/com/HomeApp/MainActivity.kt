@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
@@ -23,6 +24,7 @@ import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.theme.HomeAppTheme
 import com.HomeApp.util.enableTopDrawer
+import com.HomeApp.util.testDb
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 
 class MainActivity : ComponentActivity() {
@@ -36,7 +38,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = colorResource(id = R.color.GhostWhite)
                 ) {
-                    runApp()
+                    RunApp()
                 }
             }
         }
@@ -45,13 +47,13 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun runApp() {
+fun RunApp() {
     val navController = rememberAnimatedNavController()
     val state = rememberScaffoldState(
         rememberDrawerState(initialValue = DrawerValue.Closed)
     )
-
-
+    val context = LocalContext.current
+    testDb(context)  // tests db connection
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
             scaffoldState = state,
@@ -88,14 +90,14 @@ fun runApp() {
                     ) {
                         AnimatedAppNavHost(
                             navController = navController,
-                            startDestination = Devices.route,
+                            startDestination = Home.route,
                             state = state
                         )
                     }
                 }
             },
             drawerShape = RoundedCornerShape(topEnd = 10.dp, bottomEnd = 10.dp),
-            drawerContent = {/**
+            drawerContent = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr)
                 {
 
@@ -104,7 +106,7 @@ fun runApp() {
                         navController = navController
                     )
                     sideDrawer.drawScaffold()
-                }*/
+                }
             },
             drawerGesturesEnabled = state.drawerState.isOpen
         )

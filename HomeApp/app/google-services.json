@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "217660507084",
+    "firebase_url": "https://software-eng-db-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "software-eng-db",
+    "storage_bucket": "software-eng-db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:217660507084:android:5ed9153722a55610c31369",
+        "android_client_info": {
+          "package_name": "com.HomeApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "217660507084-i96ef14l47uc8sctef9lc7108cnb81gl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFacOlPBMrUl17MGU3XJ07XnT3ZhdEvxQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "217660507084-i96ef14l47uc8sctef9lc7108cnb81gl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
