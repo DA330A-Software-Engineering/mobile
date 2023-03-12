@@ -62,7 +62,7 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
-    /** Api call to change password */
+    /** Api call to request token for change password */
     fun requestChangePassword(
         email: String,
         onRespond: (result: ApiResult) -> Unit
@@ -76,6 +76,25 @@ object ApiConnector {
         val request: Request = Request.Builder()
             .url(DB_ADDR + urlPath)
             .post(formBody)
+            .build()
+        onRespond(callAPI(request))
+    }
+
+    /** Api call to change password */
+    fun changePassword(
+        token: String,
+        password: String,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val urlPath = "/api/users/reset"
+        val formBody: RequestBody = FormBody.Builder()
+            .add("password", password)
+            .build()
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .put(formBody)
             .build()
         onRespond(callAPI(request))
     }
