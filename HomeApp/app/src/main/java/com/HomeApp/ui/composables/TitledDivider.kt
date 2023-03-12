@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 @Composable
@@ -35,7 +36,7 @@ fun TitledDivider(
             .then(modifier),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(title)
+        Text(title, fontSize = 20.sp)
         Divider(
             Modifier
                 .weight(14f) // needs to be dynamic
