@@ -36,3 +36,6 @@ enum class DevicesFilters(val filterName: String, val filterIcon: ImageVector, v
     CURTAINS(filterName = "Curtains", filterIcon = Icons.Filled.Curtains, filterValue = "curtains"),
     DOORS(filterName = "Doors", filterIcon = Icons.Outlined.DoorFront, filterValue = "doors")
 }
+
+val AUTH_TOKEN_NAME = "jwt"
+val DB_ADDR = "http://localhost:3000/"
