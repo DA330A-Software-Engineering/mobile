@@ -50,7 +50,7 @@ fun DeviceCard(
     val deviceState: String = when(deviceItem.type) {
 
         "toggle" -> if (deviceItem.state["on"] == "true") "On" else "Off"
-        "door" -> if (deviceItem.state["open"] == "true") "Open" else "Closed"
+        "door" -> if (deviceItem.state["open"] == true) "Open" else "Closed"
         "curtain" -> if (deviceItem.state["open"] == "true") "Open" else "Open"
         else -> {"No State"}
     }

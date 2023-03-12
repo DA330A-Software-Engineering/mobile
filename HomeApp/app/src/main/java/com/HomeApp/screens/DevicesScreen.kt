@@ -30,15 +30,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.Objects
-/**
-sealed interface DEVICES{
-    var id: String
-    var type: String
-    var state: Map<String, Any>
-    var name: String
-    var description: String
-    var available : Boolean
-}*/
 
 data class Devices (
     var id: String = "",
@@ -49,23 +40,6 @@ data class Devices (
     var available: Boolean = true
 )
 
-/**
-fun callDb() {
-    val db = Firebase.firestore
-
-    db.collection("devices")
-        .get()
-        .addOnSuccessListener { result ->
-            for (document in result) {
-                Log.d(TAG, "Look here ${document.id} => ${document.data}")
-            }
-        }
-
-        .addOnFailureListener { exception ->
-            Log.w(TAG, "Error getting Documents.", exception)
-        }
-}
-*/
 
 @Composable
 fun DevicesScreen(
@@ -86,18 +60,18 @@ fun DevicesScreen(
 
 
     LaunchedEffect(documents) {
-        db.collection("devices").addSnapshotListener { data, error ->
-            if (error != null){
-                return@addSnapshotListener
+        coroutine.launch(Dispatchers.IO) {
+            db.collection("devices").addSnapshotListener { data, error ->
+                if (error != null){
+                    return@addSnapshotListener
+                }
+                if (data != null) {
+                    documents.clear()
+                    documents.addAll(data.toObjects(Devices::class.java))
+                }
+                Log.d(TAG, "Look here $documents")
             }
-            if (data != null) {
-                documents.clear()
-                documents.addAll(data.toObjects(Devices::class.java))
-            }
-            Log.d(TAG, "Look here $documents")
-
         }
-
     }
 
 
@@ -113,8 +87,6 @@ fun DevicesScreen(
                 .fillMaxHeight()) {
                 TitledDivider(navController = navController, title = "Filters")
                 FilteredList(filterScreen="devices")
-
-
 
                 LazyColumn(
                     modifier = Modifier
