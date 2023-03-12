@@ -37,7 +37,7 @@ data class Devices (
     var type: String = "",
     var name: String = "",
     var description: String = "",
-    var state: Map<String, Any> = emptyMap(),
+    var state: Map<String, Any> = emptyMap(), // This should be <String, Boolean> once database structure is updated
     var available: Boolean = true
 )
 
