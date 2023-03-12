@@ -26,6 +26,7 @@ import com.HomeApp.ui.theme.HomeAppTheme
 import com.HomeApp.util.enableTopDrawer
 import com.HomeApp.util.testDb
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
 
@@ -48,12 +49,14 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun RunApp() {
+    val context = LocalContext.current
+    FirebaseApp.initializeApp(context)
     val navController = rememberAnimatedNavController()
     val state = rememberScaffoldState(
         rememberDrawerState(initialValue = DrawerValue.Closed)
     )
-    val context = LocalContext.current
-    testDb(context)  // tests db connection
+
+    //testDb(context)  // tests db connection
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
             scaffoldState = state,

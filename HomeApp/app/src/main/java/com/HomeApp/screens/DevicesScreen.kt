@@ -26,24 +26,30 @@ import com.HomeApp.ui.navigation.NavPath
 import com.HomeApp.util.DevicesFilters
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.Objects
-
+/**
 sealed interface DEVICES{
     var id: String
     var type: String
-    var state: JSONObject
+    var state: Map<String, Any>
     var name: String
-}
+    var description: String
+    var available : Boolean
+}*/
 
-class DevicesDummy: DEVICES{
-    override var id: String = ""
-    override var type: String= ""
-    override var name: String = ""
-    override var state: JSONObject = JSONObject()
-}
+data class Devices (
+    var id: String = "",
+    var type: String = "",
+    var name: String = "",
+    var description: String = "",
+    var state: Map<String, Any> = emptyMap(),
+    var available: Boolean = true
+)
 
-
+/**
 fun callDb() {
     val db = Firebase.firestore
 
@@ -51,14 +57,15 @@ fun callDb() {
         .get()
         .addOnSuccessListener { result ->
             for (document in result) {
-                Log.d(ContentValues.TAG, "Look here ${document.id} => ${document.data}")
+                Log.d(TAG, "Look here ${document.id} => ${document.data}")
             }
         }
 
         .addOnFailureListener { exception ->
-            Log.w(ContentValues.TAG, "Error getting Documents.", exception)
+            Log.w(TAG, "Error getting Documents.", exception)
         }
 }
+*/
 
 @Composable
 fun DevicesScreen(
@@ -68,45 +75,30 @@ fun DevicesScreen(
     OnSelfClick: () -> Unit = {}
 ) {
     //var filtersSelected by remember { mutab }
+    val coroutine = rememberCoroutineScope()
 
-    val device1 = DevicesDummy()
-    device1.id = "11"
-    device1.type = "light"
-    device1.name = "Living Room Light"
-    device1.state = JSONObject("{'on': 'true'}")
-    val device2 = DevicesDummy()
-    device2.id = "12"
-    device2.type = "curtain"
-    device2.name = "bed Room Light"
-    device2.state = JSONObject("{'open': 'false'}")
-    val device4 = DevicesDummy()
-    device4.id = "13"
-    device4.type = "door"
-    device4.name = "Balcony Door"
-    device4.state = JSONObject("{'open': 'true'}")
-    val device5 = DevicesDummy()
-    device5.id = "13"
-    device5.type = "door"
-    device5.name = "Front Door"
-    device5.state = JSONObject("{'open': 'false'}")
-    val device6 = DevicesDummy()
-    device6.id = "13"
-    device6.type = "light"
-    device6.name = "Bedroom light 2"
-    device6.state = JSONObject("{'on': 'false'}")
-    val device8 = DevicesDummy()
-    device8.id = "13"
-    device8.type = "light"
-    device8.name = "Balcony light"
-    device8.state = JSONObject("{'on': 'true'}")
-    val device7 = DevicesDummy()
-    device7.id = "13"
-    device7.type = "door"
-    device7.name = "Back Door"
-    device7.state = JSONObject("{'open': 'false'}")
-
-    val devicesList = listOf(device1, device2, device4, device5,device6,device7,device8)
     val listHeight = LocalConfiguration.current.screenHeightDp
+
+    val db = Firebase.firestore
+    val documents = remember { mutableListOf<Devices>() }
+
+    val loadingDevice = Devices()
+
+
+    LaunchedEffect(documents) {
+        db.collection("devices").addSnapshotListener { data, error ->
+            if (error != null){
+                return@addSnapshotListener
+            }
+            if (data != null) {
+                documents.clear()
+                documents.addAll(data.toObjects(Devices::class.java))
+            }
+            Log.d(TAG, "Look here $documents")
+
+        }
+
+    }
 
 
     Scaffold(
@@ -121,13 +113,16 @@ fun DevicesScreen(
                 .fillMaxHeight()) {
                 TitledDivider(navController = navController, title = "Filters")
                 FilteredList(filterScreen="devices")
+
+
+
                 LazyColumn(
                     modifier = Modifier
                         .height(listHeight.dp)
                         .padding(vertical = 10.dp)
                         .padding(horizontal = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    items(items = devicesList, key = { item -> item.name }) { item ->
+                    items(items = documents, key = { item -> item.name }) { item ->
                         DeviceCard(navController = navController, deviceItem = item)
                     }
                 }
