@@ -1,5 +1,6 @@
 package com.HomeApp.screens
 
+import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.compose.foundation.background
@@ -23,6 +24,8 @@ import com.HomeApp.ui.composables.TitleBar
 import com.HomeApp.ui.composables.TitledDivider
 import com.HomeApp.ui.navigation.NavPath
 import com.HomeApp.util.DevicesFilters
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import org.json.JSONObject
 import java.util.Objects
 
@@ -41,6 +44,21 @@ class DevicesDummy: DEVICES{
 }
 
 
+fun callDb() {
+    val db = Firebase.firestore
+
+    db.collection("devices")
+        .get()
+        .addOnSuccessListener { result ->
+            for (document in result) {
+                Log.d(ContentValues.TAG, "Look here ${document.id} => ${document.data}")
+            }
+        }
+
+        .addOnFailureListener { exception ->
+            Log.w(ContentValues.TAG, "Error getting Documents.", exception)
+        }
+}
 
 @Composable
 fun DevicesScreen(

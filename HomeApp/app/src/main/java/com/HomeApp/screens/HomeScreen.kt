@@ -1,5 +1,7 @@
 package com.HomeApp.screens
 
+import android.content.ContentValues
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,6 +37,8 @@ import com.HomeApp.ui.composables.TitledDivider
 import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Settings
 import com.HomeApp.ui.theme.montserrat
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 
@@ -160,6 +164,7 @@ fun ClickableCard(
     }
 }
 
+
 @Composable
 private fun MenuIcons(
     navController: NavController,
@@ -179,7 +184,7 @@ private fun MenuIcons(
     ) {
         // Routines
         IconButton(
-            onClick = { /*TODO*/ }, modifier = Modifier
+            onClick = { }, modifier = Modifier
                 .scale(1.5f)
                 .background(Color.Gray, CircleShape)
         ) {
