@@ -99,6 +99,25 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
+    /** Api call to delete an user */
+    fun deleteUser(
+        token: String,
+        email: String,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val urlPath = "/api/user/remove"
+        val formBody: RequestBody = FormBody.Builder()
+            .add("email", email)
+            .build()
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .delete(formBody)
+            .build()
+        onRespond(callAPI(request))
+    }
+
     private fun callAPI(request: Request): ApiResult {
         return try {
             Log.d("callAPI", request.url.toString())
