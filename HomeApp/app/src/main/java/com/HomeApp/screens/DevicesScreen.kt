@@ -24,6 +24,7 @@ import com.HomeApp.ui.composables.TitleBar
 import com.HomeApp.ui.composables.TitledDivider
 import com.HomeApp.ui.navigation.NavPath
 import com.HomeApp.util.DevicesFilters
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +41,22 @@ data class Devices (
     var available: Boolean = true
 )
 
+fun <T> rememberFirestoreCollection(collectionPath: String, clazz: Class<T>): State<List<T>> {
+    val collectionRef = FirebaseFirestore.getInstance().collection(collectionPath)
+    val documents = mutableStateOf(emptyList<T>())
+
+    collectionRef.addSnapshotListener { snapshot, error ->
+        if (error != null) {
+            // Handle the error
+            return@addSnapshotListener
+        }
+        if (snapshot != null) {
+            documents.value = snapshot.toObjects(clazz)
+        }
+        //Log.d(TAG, "Look here $documents")
+    }
+    return documents
+}
 
 @Composable
 fun DevicesScreen(
@@ -50,30 +67,9 @@ fun DevicesScreen(
 ) {
     //var filtersSelected by remember { mutab }
     val coroutine = rememberCoroutineScope()
-
     val listHeight = LocalConfiguration.current.screenHeightDp
-
     val db = Firebase.firestore
-    val documents = remember { mutableListOf<Devices>() }
-
-    val loadingDevice = Devices()
-
-
-    LaunchedEffect(documents) {
-        coroutine.launch(Dispatchers.IO) {
-            db.collection("devices").addSnapshotListener { data, error ->
-                if (error != null){
-                    return@addSnapshotListener
-                }
-                if (data != null) {
-                    documents.clear()
-                    documents.addAll(data.toObjects(Devices::class.java))
-                }
-                Log.d(TAG, "Look here $documents")
-            }
-        }
-    }
-
+    val documents by rememberFirestoreCollection("devices", Devices::class.java)
 
     Scaffold(
         topBar = {
