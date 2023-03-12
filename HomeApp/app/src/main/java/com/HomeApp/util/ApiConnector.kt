@@ -80,6 +80,25 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
+//    /** Retrieves the information about the users **/
+//    fun getUsersData(token: String, onRespond: (result: ApiResult) -> Unit) {
+//        val urlPath = "/api/users"
+//        val request: Request = Request.Builder()
+//            .header(AUTH_TOKEN_NAME, token)
+//            .url(firebaseConfig["databaseURL"] + urlPath)
+//            .build()
+//        onRespond(callAPI(request))
+//    }
+
+    fun getAllUserData(token: String, onRespond: (result: ApiResult) -> Unit) {
+        val urlPath = "/api/users"
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .build()
+        onRespond(callAPI(request))
+    }
+
     private fun callAPI(request: Request): ApiResult {
         return try {
             Log.d("callAPI", request.url.toString())
