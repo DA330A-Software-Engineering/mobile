@@ -1,8 +1,8 @@
 package com.HomeApp.ui.composables
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -22,7 +22,7 @@ import androidx.navigation.NavController
 import com.HomeApp.R
 import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Home
-import com.HomeApp.util.microphoneIcon
+import com.HomeApp.ui.navigation.navigateSingleTopTo
 
 @Composable
 fun AppFooter(
@@ -33,62 +33,36 @@ fun AppFooter(
         val rowBgCol = colorResource(id = R.color.LightSteelBlue)
         val screenWidth = LocalConfiguration.current.screenWidthDp
         val screenHeight = LocalConfiguration.current.screenHeightDp
-        Box(Modifier.offset(y = (56).dp)) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .height(112.dp)
-                    .background(Color.Yellow)
-                    .then(modifier)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(rowBgCol)
-                        .height(56.dp)
-                ) {
-                    // HOME
-                    ButtonIcon(
-                        navController,
-                        Home.icon,
-                        destination = Home.route,
-                        description = "Home icon",
-                        modifier = Modifier.width((screenWidth / 2).dp),
-                        iconCol = bgCol
-                    )
 
-                    // DEVICES
-                    ButtonIcon(
-                        navController,
-                        Devices.icon,
-                        destination = Devices.route,
-                        description = "Devices icon",
-                        modifier = Modifier.width((screenWidth / 2).dp),
-                        iconCol = bgCol
-                    )
-                }
-                // MIC
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    ButtonIcon(
-                        navController,
-                        microphoneIcon,
-                        "Settings icon",
-                        iconScale = 1.45f,
-                        modifier = Modifier
-                            .offset(y = -(60).dp)
-                            .padding(15.dp)
-                            .zIndex(2f)
-                            .background(bgCol, CircleShape),
-                        iconCol = micColor
-                    )
-                }
-            }
+        BottomAppBar(
+            cutoutShape = CircleShape, modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+        ) {
+            val screenWidth = LocalConfiguration.current.screenWidthDp
+            // HOME
+            ButtonIcon(
+                navController,
+                Home.icon,
+                destination = Home.route,
+                description = "Home icon",
+                modifier = Modifier.width((screenWidth / 2).dp),
+                iconCol = bgCol
+            )
+
+            // DEVICES
+            ButtonIcon(
+                navController,
+                Devices.icon,
+                destination = Devices.route,
+                description = "Devices icon",
+                modifier = Modifier.width((screenWidth / 2).dp),
+                iconCol = bgCol
+            )
         }
     }
 }
+
 
 @Composable
 private fun ButtonIcon(
@@ -109,7 +83,7 @@ private fun ButtonIcon(
                 .scale(1.4f)
                 .zIndex(1f)
                 .then(modifier),
-            onClick = { if (cond) navController.navigate(destination!!) },
+            onClick = { if (cond) navController.navigateSingleTopTo(destination!!) },
         ) {
             Icon(
                 tint = iconCol,
