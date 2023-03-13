@@ -2,44 +2,38 @@ package com.HomeApp.screens
 
 import android.content.ContentValues.TAG
 import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.HomeApp.ui.composables.DeviceCard
-import com.HomeApp.ui.composables.FilteredList
-import com.HomeApp.ui.composables.TitleBar
-import com.HomeApp.ui.composables.TitledDivider
-import com.HomeApp.ui.navigation.NavPath
-import com.HomeApp.util.DevicesFilters
+import com.HomeApp.ui.composables.*
+import com.HomeApp.ui.theme.GhostWhite
+import com.HomeApp.util.microphoneIcon
 import org.json.JSONObject
-import java.util.Objects
 
-sealed interface DEVICES{
+sealed interface DEVICES {
     var id: String
     var type: String
     var state: JSONObject
     var name: String
 }
 
-class DevicesDummy: DEVICES{
+class DevicesDummy : DEVICES {
     override var id: String = ""
-    override var type: String= ""
+    override var type: String = ""
     override var name: String = ""
     override var state: JSONObject = JSONObject()
 }
-
 
 
 @Composable
@@ -87,36 +81,57 @@ fun DevicesScreen(
     device7.name = "Back Door"
     device7.state = JSONObject("{'open': 'false'}")
 
-    val devicesList = listOf(device1, device2, device4, device5,device6,device7,device8)
+    val devicesList = listOf(device1, device2, device4, device5, device6, device7, device8)
     val listHeight = LocalConfiguration.current.screenHeightDp
 
 
     Scaffold(
         topBar = {
-
             TitleBar(screenTitle = "Devices", navController = navController)
         },
         content = {
             Log.d(TAG, listHeight.toString())
-            Column(modifier = Modifier
-                .padding(it)
-                .fillMaxHeight()) {
-                TitledDivider(navController = navController, title = "Filters")
-                FilteredList(filterScreen="devices")
-                LazyColumn(
-                    modifier = Modifier
-                        .height(listHeight.dp)
-                        .padding(vertical = 10.dp)
-                        .padding(horizontal = 20.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    items(items = devicesList, key = { item -> item.name }) { item ->
-                        DeviceCard(navController = navController, deviceItem = item)
+            LazyColumn(
+                modifier = Modifier
+                    .padding(it)
+                    .fillMaxHeight()
+            ) {
+                item { TitledDivider(navController = navController, title = "Filters") }
+                item { FilteredList(filterScreen = "devices") }
+                item {
+                    LazyColumn(
+                        modifier = Modifier
+                            .height(listHeight.dp)
+                            .padding(vertical = 10.dp)
+                            .padding(horizontal = 20.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        items(items = devicesList, key = { item -> item.name }) { item ->
+                            DeviceCard(navController = navController, deviceItem = item)
+                        }
                     }
                 }
             }
         },
         bottomBar = {
-
-        }
+            AppFooter(
+                navController = navController,
+                bgCol = MaterialTheme.colors.background,
+                micColor = if (MaterialTheme.colors.isLight) Color.Black else Color.White
+            )
+        }, floatingActionButton = {
+            FloatingActionButton(
+                onClick = { /*TODO*/ },
+                backgroundColor = GhostWhite,
+                modifier = Modifier.scale(1f)
+            ) {
+                Icon(
+                    tint = Color.Black,
+                    imageVector = microphoneIcon,
+                    contentDescription = "Mic",
+                    modifier = Modifier.scale(1.4f)
+                )
+            }
+        }, isFloatingActionButtonDocked = true, floatingActionButtonPosition = FabPosition.Center
     )
 }
