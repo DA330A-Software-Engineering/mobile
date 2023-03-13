@@ -13,6 +13,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="422a6026-d8c5-47e5-bdb4-f758f6f298e9" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/HomeApp/util/ApiConnector.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/HomeApp/util/ApiConnector.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

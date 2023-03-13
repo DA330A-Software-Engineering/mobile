@@ -149,6 +149,30 @@ object ApiConnector {
             ApiResult("{msg: \"Connection timeout\"}")
         }
     }
+
+    /** Api call for device actions */
+    fun action(
+        token: String,
+        id: String,
+        state: String,
+        type: String,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val urlPath = "/api/devices/actions"
+        val formBody: RequestBody = FormBody.Builder()
+            .add("id", id)
+            .add("state", state)
+            .add("type", type)
+            .build()
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .put(formBody)
+            .build()
+
+        onRespond(ApiConnector.callAPI(request))
+    }
 }
 
 
