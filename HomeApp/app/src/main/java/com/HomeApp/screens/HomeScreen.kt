@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AccessTime
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,7 +33,8 @@ import coil.compose.rememberAsyncImagePainter
 import com.HomeApp.R
 import com.HomeApp.ui.composables.AppFooter
 import com.HomeApp.ui.composables.TitledDivider
-import com.HomeApp.ui.navigation.Devices
+import com.HomeApp.ui.navigation.Groups
+import com.HomeApp.ui.navigation.Routines
 import com.HomeApp.ui.navigation.Settings
 import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.ui.theme.montserrat
@@ -61,9 +61,7 @@ fun HomeScreen(
                     .padding(vertical = 0.dp),
             ) {
                 item {
-                    Groups(
-                        navController, modifier = Modifier.scale(1f)
-                    )
+                    MakeGroups(navController)
                 }
                 item { Spacer(modifier = Modifier.height(spacerHeight)) }
                 item { MenuIcons(navController, state = state) }
@@ -97,7 +95,7 @@ fun HomeScreen(
 }
 
 @Composable
-private fun Groups(
+private fun MakeGroups(
     navController: NavController,
     modifier: Modifier = Modifier,
     scale: Float = 1f
@@ -123,8 +121,8 @@ private fun Groups(
                             .fillMaxWidth()
                             .padding(5.dp)
                     )
-                    ClickableCard(
-                        onClick = { navController.navigate(Devices.route) },
+                    ClickableCard( // id should be passed along, as well.
+                        onClick = { navController.navigate(Groups.route) },
                         url = item as String,
                         index = index,
                         scale = scale,
@@ -154,7 +152,12 @@ private fun getDummyItems(): List<Any> {
 
 @Composable
 fun ClickableCard(
-    onClick: () -> Unit, url: String, scale: Float, index: Int, textCol: Color = Color.White
+    onClick: () -> Unit,
+    url: String,
+    scale: Float,
+    index: Int,
+    textCol: Color = Color.White,
+    groupId: String = ""
 ) {
     Card(
         modifier = Modifier
@@ -197,12 +200,12 @@ private fun MenuIcons(
         Spacer(modifier = Modifier.weight(1f))
         // Routines
         IconButton(
-            onClick = { /*TODO*/ }, modifier = Modifier
+            onClick = { navController.navigate(Routines.route) }, modifier = Modifier
                 .scale(1.5f)
                 .background(Color.Gray, CircleShape)
         ) {
             Icon(
-                imageVector = Icons.Rounded.AccessTime, contentDescription = "Routines Button",
+                imageVector = Routines.icon, contentDescription = "Routines Button",
                 modifier = Modifier.scale(1.67f),
                 tint = Color.White
             )
