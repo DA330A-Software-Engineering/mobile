@@ -1,4 +1,5 @@
 package com.HomeApp.util
+
 import android.util.Log
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
@@ -137,22 +138,9 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
-    private fun callAPI(request: Request): ApiResult {
-        return try {
-            Log.d("callAPI", request.url.toString())
-            val apiResult = client.newCall(request).execute()
-            Log.d("callAPI", apiResult.message)
-            val jsonData = apiResult.body?.string() ?: "{}"
-            ApiResult(jsonData, apiResult.code)
-        } catch (e: java.lang.Exception) {
-            Log.d("callAPI", "Crash")
-            ApiResult("{msg: \"Connection timeout\"}")
-        }
-    }
-
     /** Api call for device actions */
     fun action(
-        token: String,
+//        token: String,
         id: String,
         state: String,
         type: String,
@@ -166,13 +154,27 @@ object ApiConnector {
             .build()
 
         val request: Request = Request.Builder()
-            .header(AUTH_TOKEN_NAME, token)
+//            .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
             .put(formBody)
             .build()
 
         onRespond(ApiConnector.callAPI(request))
     }
+
+    private fun callAPI(request: Request): ApiResult {
+        return try {
+            Log.d("callAPI", request.url.toString())
+            val apiResult = client.newCall(request).execute()
+            Log.d("callAPI", apiResult.message)
+            val jsonData = apiResult.body?.string() ?: "{}"
+            ApiResult(jsonData, apiResult.code)
+        } catch (e: java.lang.Exception) {
+            Log.d("callAPI", "Crash")
+            ApiResult("{msg: \"Connection timeout\"}")
+        }
+    }
+
 }
 
 
@@ -194,9 +196,11 @@ data class ApiResult(
             }
         }
     }
+
     fun data(): JSONObject {
         return JSONObject(data)
     }
+
     fun dataArray(): JSONArray {
         return JSONArray(data)
     }
