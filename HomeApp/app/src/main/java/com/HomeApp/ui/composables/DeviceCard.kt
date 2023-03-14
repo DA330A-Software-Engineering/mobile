@@ -1,6 +1,8 @@
 package com.HomeApp.ui.composables
 
+import android.content.ContentValues.TAG
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,6 +37,8 @@ import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -56,9 +60,9 @@ fun DeviceCard(
     }
 
     val deviceState: String = when (deviceItem.get("type")) {
-        "toggle" -> if (state["on"] == "true") "On" else "Off"
+        "toggle" -> if (state["on"] == true) "On" else "Off"
         "door" -> if (state["open"] == true) "Open" else "Closed"
-        "curtain" -> if (state["open"] == "true") "Open" else "Open"
+        "curtain" -> if (state["open"] == "true") "Open" else "Closed"
         else -> {
             "No State"
         }
@@ -115,6 +119,8 @@ fun DeviceCard(
 
 private fun changeState(id: String, state: Map<*, *>, type:String, coroutine:CoroutineScope){
 
+    val newState = Json.encodeToString(state)
+    Log.d(TAG, "$newState")
     val changeDeviceState: (ApiResult) -> Unit = {
         val data: JSONObject = it.data()
         val msg: String = data.get("msg") as String
@@ -132,7 +138,7 @@ private fun changeState(id: String, state: Map<*, *>, type:String, coroutine:Cor
     coroutine.launch(Dispatchers.IO) {
         ApiConnector.action(
             id = id,
-            state = state,
+            state = JSONObject(newState),
             type = type,
             onRespond = changeDeviceState
         )

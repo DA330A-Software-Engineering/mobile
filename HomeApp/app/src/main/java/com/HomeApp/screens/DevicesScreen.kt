@@ -53,7 +53,7 @@ fun <T> rememberFirestoreCollection(collectionPath: String, clazz: Class<T>): Sn
             }
 
             Log.d(TAG, "Look here ${snapshot.documents}")
-            //Log.d(TAG, "Look here ${documents}")
+            Log.d(TAG, "Look here 2 ${documents}")
         }
 
     }

@@ -142,11 +142,11 @@ object ApiConnector {
     fun action(
 //        token: String,
         id: String,
-        state: Map<*, *>,
+        state: JSONObject,
         type: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val urlPath = "/api/devices/actions"
+        val urlPath = "/devices/actions"
         val formBody: RequestBody = FormBody.Builder()
             .add("id", id)
             .add("state", state.toString())
