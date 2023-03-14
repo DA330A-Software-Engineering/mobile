@@ -1,5 +1,7 @@
 package com.HomeApp.ui.composables
 
+import android.os.Looper
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -12,6 +14,7 @@ import androidx.compose.material.icons.filled.Curtains
 import androidx.compose.material.icons.filled.DoorFront
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -25,7 +28,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.R
 import com.HomeApp.screens.Devices
+import com.HomeApp.util.ApiConnector
+import com.HomeApp.util.ApiResult
+import com.HomeApp.util.HttpStatus
 import com.google.firebase.firestore.DocumentSnapshot
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.json.JSONArray
+import org.json.JSONObject
 
 @Composable
 fun DeviceCard(
@@ -35,6 +46,7 @@ fun DeviceCard(
 ) {
     val item = deviceItem
     val state = deviceItem.get("state") as Map<*, *>
+    val coroutine = rememberCoroutineScope()
 
     val cardIcon: ImageVector = when (deviceItem.get("type")) {
         "light" -> Icons.Filled.Lightbulb
@@ -53,7 +65,7 @@ fun DeviceCard(
     }
 
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { changeState(id = deviceItem.id, state= deviceItem.get("state") as Map<*, *>, type = deviceItem.get("type") as String, coroutine= coroutine)},
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp),
@@ -99,3 +111,32 @@ fun DeviceCard(
         }
     }
 }
+
+
+private fun changeState(id: String, state: Map<*, *>, type:String, coroutine:CoroutineScope){
+
+    val onFetchTasks: (ApiResult) -> Unit = {
+        val data: JSONObject = it.data()
+        val msg: String = data.get("msg") as String
+        when (it.status()) {
+            HttpStatus.SUCCESS -> {
+            }
+            HttpStatus.UNAUTHORIZED -> {
+
+            }
+            HttpStatus.FAILED -> {
+
+            }
+        }
+    }
+    coroutine.launch(Dispatchers.IO) {
+        ApiConnector.action(
+            id = id,
+            state = state,
+            type = type,
+            onRespond = onFetchTasks
+
+        )
+    }
+}
+
