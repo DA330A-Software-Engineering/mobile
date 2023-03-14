@@ -142,14 +142,14 @@ object ApiConnector {
     fun action(
 //        token: String,
         id: String,
-        state: JSONObject,
+        state: String,
         type: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
         val urlPath = "/devices/actions"
         val formBody: RequestBody = FormBody.Builder()
             .add("id", id)
-            .add("state", state.toString())
+            .add("state", state)
             .add("type", type)
             .build()
 
@@ -159,18 +159,20 @@ object ApiConnector {
             .put(formBody)
             .build()
 
-        onRespond(ApiConnector.callAPI(request))
+        onRespond(callAPI(request))
     }
 
     private fun callAPI(request: Request): ApiResult {
         return try {
             Log.d("callAPI", request.url.toString())
+            val call = client.newCall(request)
+            Log.d("callAPI", call.request().toString())
             val apiResult = client.newCall(request).execute()
             Log.d("callAPI", apiResult.message)
             val jsonData = apiResult.body?.string() ?: "{}"
             ApiResult(jsonData, apiResult.code)
         } catch (e: java.lang.Exception) {
-            Log.d("callAPI", "Crash")
+            Log.d("callAPI", e.toString())
             ApiResult("{msg: \"Connection timeout\"}")
         }
     }

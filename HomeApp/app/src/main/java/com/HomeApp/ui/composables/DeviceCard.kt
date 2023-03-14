@@ -49,7 +49,7 @@ fun DeviceCard(
     deviceItem: DocumentSnapshot
 ) {
     val item = deviceItem
-    val state = deviceItem.get("state") as Map<*, *>
+    val state = deviceItem.get("state") as Map<String, Boolean>
     val coroutine = rememberCoroutineScope()
 
     val cardIcon: ImageVector = when (deviceItem.get("type")) {
@@ -62,14 +62,14 @@ fun DeviceCard(
     val deviceState: String = when (deviceItem.get("type")) {
         "toggle" -> if (state["on"] == true) "On" else "Off"
         "door" -> if (state["open"] == true) "Open" else "Closed"
-        "curtain" -> if (state["open"] == "true") "Open" else "Closed"
+        "curtain" -> if (state["open"] == true) "Open" else "Closed"
         else -> {
             "No State"
         }
     }
 
     Button(
-        onClick = { changeState(id = deviceItem.id, state= deviceItem.get("state") as Map<*, *>, type = deviceItem.get("type") as String, coroutine= coroutine)},
+        onClick = { changeState(id = deviceItem.id, state= deviceItem.get("state") as Map<String, Boolean>, type = deviceItem.get("type") as String, coroutine= coroutine)},
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp),
@@ -117,13 +117,13 @@ fun DeviceCard(
 }
 
 
-private fun changeState(id: String, state: Map<*, *>, type:String, coroutine:CoroutineScope){
+private fun changeState(id: String, state: Map<String, Boolean>, type:String, coroutine:CoroutineScope){
 
     val newState = Json.encodeToString(state)
-    Log.d(TAG, "$newState")
+    //Log.d(TAG, "$newState")
     val changeDeviceState: (ApiResult) -> Unit = {
         val data: JSONObject = it.data()
-        val msg: String = data.get("msg") as String
+//        val msg: String = data.get("msg") as String
         when (it.status()) {
             HttpStatus.SUCCESS -> {
             }
@@ -138,7 +138,7 @@ private fun changeState(id: String, state: Map<*, *>, type:String, coroutine:Cor
     coroutine.launch(Dispatchers.IO) {
         ApiConnector.action(
             id = id,
-            state = JSONObject(newState),
+            state =newState,
             type = type,
             onRespond = changeDeviceState
         )
