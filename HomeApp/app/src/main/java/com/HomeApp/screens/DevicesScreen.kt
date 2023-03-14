@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -19,6 +21,7 @@ import androidx.navigation.NavController
 import com.HomeApp.ui.composables.*
 import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.util.microphoneIcon
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -33,9 +36,10 @@ data class Devices(
     var available: Boolean = true
 )
 
-fun <T> rememberFirestoreCollection(collectionPath: String, clazz: Class<T>): State<List<T>> {
+fun <T> rememberFirestoreCollection(collectionPath: String, clazz: Class<T>): SnapshotStateList<DocumentSnapshot> {
     val collectionRef = FirebaseFirestore.getInstance().collection(collectionPath)
-    val documents = mutableStateOf(emptyList<T>())
+    val documents = mutableStateListOf<DocumentSnapshot>()  //mutableStateOf(MutableList<T>())
+    var counter = 0
 
     collectionRef.addSnapshotListener { snapshot, error ->
         if (error != null) {
@@ -43,12 +47,19 @@ fun <T> rememberFirestoreCollection(collectionPath: String, clazz: Class<T>): St
             return@addSnapshotListener
         }
         if (snapshot != null) {
-            documents.value = snapshot.toObjects(clazz)
+            documents.clear()
+            snapshot.documents.forEach { item->
+                documents.add(item)
+            }
+
+            Log.d(TAG, "Look here ${snapshot.documents}")
+            //Log.d(TAG, "Look here ${documents}")
         }
-        //Log.d(TAG, "Look here $documents")
+
     }
     return documents
 }
+
 
 @Composable
 fun DevicesScreen(
@@ -60,7 +71,7 @@ fun DevicesScreen(
     val coroutine = rememberCoroutineScope()
     val listHeight = LocalConfiguration.current.screenHeightDp
     val db = Firebase.firestore
-    val documents by rememberFirestoreCollection("devices", Devices::class.java)
+    val documents = rememberFirestoreCollection("devices", Devices::class.java)
 
     Scaffold(
         topBar = {
@@ -83,7 +94,7 @@ fun DevicesScreen(
                             .padding(horizontal = 20.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        items(items = documents, key = { item -> item.name }) { item ->
+                        items(items = documents, key = { item -> item.id }) { item ->
                             DeviceCard(navController = navController, deviceItem = item)
                         }
                     }
