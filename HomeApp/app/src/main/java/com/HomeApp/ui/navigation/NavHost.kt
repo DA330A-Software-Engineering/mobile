@@ -76,6 +76,34 @@ fun AnimatedAppNavHost(
             )
         }
 
+        // GROUPS
+        composable(
+            route = Groups.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            GroupsScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(ConfirmToken.route) },
+            )
+        }
+
+        // ROUTINES
+        composable(
+            route = Routines.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            RoutinesScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(ConfirmToken.route) },
+            )
+        }
+
         // SETTINGS
         composable(
             route = Settings.route,
