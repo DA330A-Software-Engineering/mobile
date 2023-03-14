@@ -115,7 +115,7 @@ fun DeviceCard(
 
 private fun changeState(id: String, state: Map<*, *>, type:String, coroutine:CoroutineScope){
 
-    val onFetchTasks: (ApiResult) -> Unit = {
+    val changeDeviceState: (ApiResult) -> Unit = {
         val data: JSONObject = it.data()
         val msg: String = data.get("msg") as String
         when (it.status()) {
@@ -134,8 +134,7 @@ private fun changeState(id: String, state: Map<*, *>, type:String, coroutine:Cor
             id = id,
             state = state,
             type = type,
-            onRespond = onFetchTasks
-
+            onRespond = changeDeviceState
         )
     }
 }
