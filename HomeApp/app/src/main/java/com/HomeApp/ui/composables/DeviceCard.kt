@@ -24,14 +24,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.R
-import com.HomeApp.screens.DevicesDummy
+import com.HomeApp.screens.Devices
 
 @Composable
 fun DeviceCard(
     navController: NavController,
     modifier: Modifier = Modifier,
-    deviceItem: DevicesDummy
+    deviceItem: Devices
 ) {
+    val item = deviceItem
 
     val cardIcon: ImageVector = when (deviceItem.type) {
         "light" -> Icons.Filled.Lightbulb
@@ -41,9 +42,9 @@ fun DeviceCard(
     }
 
     val deviceState: String = when (deviceItem.type) {
-        "light" -> if (deviceItem.state.getString("on") == "true") "On" else "Off"
-        "door" -> if (deviceItem.state.getString("open") == "true") "Open" else "Closed"
-        "curtain" -> if (deviceItem.state.getString("open") == "true") "Open" else "Open"
+        "toggle" -> if (deviceItem.state["on"] == "true") "On" else "Off"
+        "door" -> if (deviceItem.state["open"] == true) "Open" else "Closed"
+        "curtain" -> if (deviceItem.state["open"] == "true") "Open" else "Open"
         else -> {
             "No State"
         }

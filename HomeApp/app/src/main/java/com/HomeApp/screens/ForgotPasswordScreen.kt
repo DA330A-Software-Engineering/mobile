@@ -19,6 +19,7 @@ import com.HomeApp.ui.composables.BottomDivider
 import com.HomeApp.ui.composables.InputType
 import com.HomeApp.ui.composables.TextInput
 import com.HomeApp.ui.composables.Divider.SignIn
+import com.HomeApp.ui.navigation.ConfirmToken
 
 @Composable
 fun ForgotPasswordScreen(
@@ -39,7 +40,7 @@ fun ForgotPasswordScreen(
             inputType = InputType.ForgottenEmail,
             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
         )
-        Button(onClick = { navController.navigate("reset-password") }, modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = { navController.navigate(ConfirmToken.route) }, modifier = Modifier.fillMaxWidth()) {
             Text("SUBMIT", Modifier.padding(vertical = 8.dp))
         }
         BottomDivider(divider = SignIn, navController = navController)

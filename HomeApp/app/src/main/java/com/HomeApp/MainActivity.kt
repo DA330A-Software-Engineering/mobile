@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
@@ -23,6 +24,7 @@ import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.theme.HomeAppTheme
 import com.HomeApp.util.enableTopDrawer
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
 
@@ -45,6 +47,8 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun RunApp() {
+    val context = LocalContext.current
+    FirebaseApp.initializeApp(context)
     val navController = rememberAnimatedNavController()
     val state = rememberScaffoldState(
         rememberDrawerState(initialValue = DrawerValue.Closed)

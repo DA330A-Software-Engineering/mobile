@@ -20,6 +20,7 @@ import com.HomeApp.ui.composables.BottomDivider
 import com.HomeApp.ui.composables.Divider.SignIn
 import com.HomeApp.ui.composables.InputType
 import com.HomeApp.ui.composables.TextInput
+import com.HomeApp.ui.navigation.Home
 
 @Composable
 fun CreateAccountScreen(
@@ -54,7 +55,7 @@ fun CreateAccountScreen(
             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
             focusRequester = confirmPasswordFocusRequester
         )
-        Button(onClick = { navController.navigate("home") }, modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = { navController.navigate(Home.route) }, modifier = Modifier.fillMaxWidth()) {
             Text("SIGN UP", Modifier.padding(vertical = 8.dp))
         }
         BottomDivider(divider = SignIn, navController = navController)
