@@ -20,11 +20,9 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.HomeApp.drawers.SideDrawer
 import com.HomeApp.ui.navigation.AnimatedAppNavHost
-import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.theme.HomeAppTheme
 import com.HomeApp.util.enableTopDrawer
-import com.HomeApp.util.testDb
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.firebase.FirebaseApp
 
@@ -55,8 +53,6 @@ fun RunApp() {
     val state = rememberScaffoldState(
         rememberDrawerState(initialValue = DrawerValue.Closed)
     )
-
-    //testDb(context)  // tests db connection
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
             scaffoldState = state,

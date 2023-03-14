@@ -29,6 +29,16 @@ object Devices : NavPath {
     override val route = "devices"
 }
 
+object Routines : NavPath {
+    override val icon = Icons.Rounded.AccessTime
+    override val route = "routines"
+}
+
+object Groups : NavPath {
+    override val icon: ImageVector? = null
+    override val route = "groups"
+}
+
 object Settings : NavPath {
     override val icon = Icons.Rounded.Settings
     override val route = "settings"

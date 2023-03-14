@@ -1,14 +1,13 @@
 package com.HomeApp.drawers
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -44,6 +43,14 @@ class SideDrawer(
     @SuppressLint("ComposableNaming")
     @Composable
     fun drawScaffold() {
+        val coroutine = rememberCoroutineScope()
+
+        BackHandler(enabled = true) {
+            coroutine.launch {
+                drawerState.close()
+            }
+        }
+
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
@@ -76,7 +83,7 @@ class SideDrawer(
             Image(
                 painter = rememberAsyncImagePainter("https://images.desenio.com/zoom/10801_2.jpg"),
                 contentDescription = "Head image",
-                contentScale = ContentScale.FillBounds,
+                contentScale = ContentScale.FillWidth,
                 modifier = Modifier
                     .fillMaxWidth(1f)
                     .fillMaxHeight(0.3f)
@@ -89,26 +96,13 @@ class SideDrawer(
                 Spacer(modifier = Modifier.width(12.dp)) // cover scrim area
                 Row(
                     modifier = Modifier
-                        .padding(horizontal = 28.dp)
                         .padding(top = 20.dp)
-                        .height(35.dp)
                 ) {
                     TitledDivider(
                         navController = navController, title = "Settings", modifier =
-                        Modifier.scale(1.3f)
+                        Modifier.scale(1f), fontSize = 25
                     )
                     Spacer(modifier = Modifier.weight(1f))
-                    IconButton(
-                        onClick = { coroutine.launch { drawerState.close() } },
-                        modifier = Modifier.padding(top = 10.dp)
-                    ) {
-                        Icon(
-                            Icons.Rounded.ArrowForward,
-                            contentDescription = "Close",
-                            tint = primaryCol,
-                            modifier = modifier.then(Modifier.alpha(primaryAlpha))
-                        )
-                    }
                 }
             }
         }
@@ -131,9 +125,10 @@ class SideDrawer(
                     Modifier
                         .fillMaxWidth()
                         .height(56.dp)
+                        .padding(horizontal = 15.dp)
                 ) {
                     Button(
-                        onClick = {}, elevation = null,
+                        onClick = { navController.navigate(it.route) }, elevation = null,
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.Transparent
                         ),

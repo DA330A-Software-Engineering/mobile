@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.HomeApp.screens.*
@@ -72,6 +73,34 @@ fun AnimatedAppNavHost(
                 navController = navController,
                 OnSelfClick = { navController.navigateSingleTopTo(ConfirmToken.route) },
                 state = state
+            )
+        }
+
+        // GROUPS
+        composable(
+            route = Groups.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            GroupsScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(ConfirmToken.route) },
+            )
+        }
+
+        // ROUTINES
+        composable(
+            route = Routines.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            RoutinesScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(ConfirmToken.route) },
             )
         }
 
@@ -164,6 +193,19 @@ fun AnimatedAppNavHost(
 
 
 fun NavHostController.navigateSingleTopTo(route: String) = this.navigate(route) {
+    // Pop up to the start destination of the graph to
+    // avoid building up a large stack of destinations
+    // on the back stack as users select items
+    popUpTo(
+        this@navigateSingleTopTo.graph.findStartDestination().id
+    ) {
+        saveState = true
+    }
+    launchSingleTop = true
+    restoreState = true
+}
+
+fun NavController.navigateSingleTopTo(route: String) = this.navigate(route) {
     // Pop up to the start destination of the graph to
     // avoid building up a large stack of destinations
     // on the back stack as users select items

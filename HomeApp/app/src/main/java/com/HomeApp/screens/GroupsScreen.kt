@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 
 @Composable
-fun RoutinesScreen(
+fun GroupsScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     OnSelfClick: () -> Unit = {}

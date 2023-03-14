@@ -2,7 +2,6 @@ package com.HomeApp.ui.composables
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -25,18 +24,18 @@ fun TitledDivider(
     title: String,
     description: String = "Titled Divider",
     modifier: Modifier = Modifier,
-    showIcon: Boolean = false
+    showIcon: Boolean = false,
+    fontSize: Int = 20
 ) {
     Row(
         Modifier
             .fillMaxWidth()
-            .height(35.dp)
             .padding(horizontal = 10.dp)
             .padding(5.dp)
             .then(modifier),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(title, fontSize = 20.sp)
+        Text(title, fontSize = fontSize.sp)
         Divider(
             Modifier
                 .weight(14f) // needs to be dynamic

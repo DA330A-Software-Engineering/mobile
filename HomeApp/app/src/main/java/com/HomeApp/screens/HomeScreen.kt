@@ -1,18 +1,16 @@
 package com.HomeApp.screens
 
-import android.content.ContentValues
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AccessTime
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -20,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.SpanStyle
@@ -34,11 +33,12 @@ import coil.compose.rememberAsyncImagePainter
 import com.HomeApp.R
 import com.HomeApp.ui.composables.AppFooter
 import com.HomeApp.ui.composables.TitledDivider
-import com.HomeApp.ui.navigation.Devices
+import com.HomeApp.ui.navigation.Groups
+import com.HomeApp.ui.navigation.Routines
 import com.HomeApp.ui.navigation.Settings
+import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.ui.theme.montserrat
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.HomeApp.util.microphoneIcon
 import kotlinx.coroutines.launch
 
 
@@ -49,49 +49,59 @@ fun HomeScreen(
     OnSelfClick: () -> Unit = {},
     state: ScaffoldState
 ) {
-    val bgCol = if (MaterialTheme.colors.isLight) colorResource(
-        id = R.color.GhostWhite
-    ) else Color(0xFF313338)
     val spacerHeight: Dp = 112.dp
     Scaffold(
         content = {
-            Column(
+            LazyColumn(
                 Modifier
                     .fillMaxSize()
-                    .background(bgCol)
+                    .background(MaterialTheme.colors.background)
                     .padding(it)
-                    .padding(horizontal = 5.dp),
+                    .padding(horizontal = 5.dp)
+                    .padding(vertical = 0.dp),
             ) {
-                Groups(
-                    navController, modifier = Modifier
-                        .scale(1.2f)
-                        .padding(horizontal = 28.dp)
-                )
-                Spacer(modifier = Modifier.height(spacerHeight))
-                MenuIcons(navController, state = state)
-                Spacer(modifier = Modifier.height(spacerHeight))
-                TitledDivider(navController, "Activities", "Activities Divider")
-                Activities(navController)
+                item {
+                    MakeGroups(navController)
+                }
+                item { Spacer(modifier = Modifier.height(spacerHeight)) }
+                item { MenuIcons(navController, state = state) }
+                item { Spacer(modifier = Modifier.height(spacerHeight)) }
+                item { TitledDivider(navController, "Activities", "Activities Divider") }
+                item { Activities(navController) }
+                item { Spacer(modifier = Modifier.height(56.dp)) }
             }
         },
         bottomBar = {
             AppFooter(
                 navController = navController,
-                bgCol = bgCol,
+                bgCol = MaterialTheme.colors.background,
                 micColor = if (MaterialTheme.colors.isLight) Color.Black else Color.White
             )
-        })
+        }, floatingActionButton = {
+            FloatingActionButton(
+                onClick = { /*TODO*/ },
+                backgroundColor = GhostWhite,
+                modifier = Modifier.scale(1f)
+            ) {
+                Icon(
+                    tint = Color.Black,
+                    imageVector = microphoneIcon,
+                    contentDescription = "Mic",
+                    modifier = Modifier.scale(1.4f)
+                )
+            }
+        }, isFloatingActionButtonDocked = true, floatingActionButtonPosition = FabPosition.Center
+    )
 }
 
 @Composable
-private fun Groups(
+private fun MakeGroups(
     navController: NavController,
     modifier: Modifier = Modifier,
     scale: Float = 1f
 ) {
     Spacer(modifier = Modifier.height(28.dp))
     TitledDivider(navController, "Groups", "Groups Divider", showIcon = true)
-    Spacer(modifier = Modifier.height(28.dp))
     Column(
         modifier = modifier
     ) {
@@ -111,8 +121,8 @@ private fun Groups(
                             .fillMaxWidth()
                             .padding(5.dp)
                     )
-                    ClickableCard(
-                        onClick = { navController.navigate(Devices.route) },
+                    ClickableCard( // id should be passed along, as well.
+                        onClick = { navController.navigate(Groups.route) },
                         url = item as String,
                         index = index,
                         scale = scale,
@@ -142,7 +152,12 @@ private fun getDummyItems(): List<Any> {
 
 @Composable
 fun ClickableCard(
-    onClick: () -> Unit, url: String, scale: Float, index: Int, textCol: Color = Color.White
+    onClick: () -> Unit,
+    url: String,
+    scale: Float,
+    index: Int,
+    textCol: Color = Color.White,
+    groupId: String = ""
 ) {
     Card(
         modifier = Modifier
@@ -159,7 +174,8 @@ fun ClickableCard(
             painter = rememberAsyncImagePainter(url), contentDescription = null,
             modifier = Modifier
                 .size(112.dp, 112.dp)
-                .scale(1.4f)
+                .scale(1f),
+            contentScale = ContentScale.FillBounds
         )
     }
 }
@@ -182,18 +198,20 @@ private fun MenuIcons(
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier.padding(horizontal = 56.dp)
     ) {
+        Spacer(modifier = Modifier.weight(1f))
         // Routines
         IconButton(
-            onClick = { }, modifier = Modifier
+            onClick = { navController.navigate(Routines.route) }, modifier = Modifier
                 .scale(1.5f)
                 .background(Color.Gray, CircleShape)
         ) {
             Icon(
-                imageVector = Icons.Rounded.AccessTime, contentDescription = "Routines Button",
+                imageVector = Routines.icon, contentDescription = "Routines Button",
                 modifier = Modifier.scale(1.67f),
                 tint = Color.White
             )
         }
+
         Spacer(modifier = Modifier.weight(1f))
 
         // Settings
@@ -214,7 +232,7 @@ private fun MenuIcons(
                 tint = Color.White
             )
         }
-
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
