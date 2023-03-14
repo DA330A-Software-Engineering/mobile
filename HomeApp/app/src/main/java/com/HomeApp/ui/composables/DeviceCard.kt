@@ -25,26 +25,28 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.R
 import com.HomeApp.screens.Devices
+import com.google.firebase.firestore.DocumentSnapshot
 
 @Composable
 fun DeviceCard(
     navController: NavController,
     modifier: Modifier = Modifier,
-    deviceItem: Devices
+    deviceItem: DocumentSnapshot
 ) {
     val item = deviceItem
+    val state = deviceItem.get("state") as Map<*, *>
 
-    val cardIcon: ImageVector = when (deviceItem.type) {
+    val cardIcon: ImageVector = when (deviceItem.get("type")) {
         "light" -> Icons.Filled.Lightbulb
         "door" -> Icons.Filled.DoorFront
         "curtain" -> Icons.Filled.Curtains
         else -> Icons.Filled.BrokenImage
     }
 
-    val deviceState: String = when (deviceItem.type) {
-        "toggle" -> if (deviceItem.state["on"] == "true") "On" else "Off"
-        "door" -> if (deviceItem.state["open"] == true) "Open" else "Closed"
-        "curtain" -> if (deviceItem.state["open"] == "true") "Open" else "Open"
+    val deviceState: String = when (deviceItem.get("type")) {
+        "toggle" -> if (state["on"] == "true") "On" else "Off"
+        "door" -> if (state["open"] == true) "Open" else "Closed"
+        "curtain" -> if (state["open"] == "true") "Open" else "Open"
         else -> {
             "No State"
         }
@@ -68,14 +70,14 @@ fun DeviceCard(
             Row {
                 Icon(
                     imageVector = cardIcon,
-                    contentDescription = deviceItem.type,
+                    contentDescription = deviceItem.get("type") as String?,
                     modifier = Modifier
                         .size(70.dp)
                         .padding(top = 7.dp)
                 )
                 Spacer(modifier = Modifier.width(7.dp))
                 Text(
-                    text = deviceItem.name,
+                    text = deviceItem.get("name") as String,
                     fontSize = 25.sp,
                     modifier = Modifier
                         .fillMaxHeight()
