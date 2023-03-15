@@ -1,5 +1,6 @@
 package com.HomeApp.util
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
@@ -152,7 +153,7 @@ object ApiConnector {
             .add("state", state)
             .add("type", type)
             .build()
-
+        Log.d(TAG, " LOOK HERE! ${formBody}")
         val request: Request = Request.Builder()
 //            .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
@@ -187,7 +188,7 @@ data class ApiResult(
 ) {
     fun status(): HttpStatus {
         return when (code) {
-            200 -> {
+            in 100..299 -> {
                 HttpStatus.SUCCESS
             }
             in 400..500 -> {

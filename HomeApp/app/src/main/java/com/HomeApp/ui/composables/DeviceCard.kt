@@ -118,9 +118,17 @@ fun DeviceCard(
 
 
 private fun changeState(id: String, state: Map<String, Boolean>, type:String, coroutine:CoroutineScope){
+    var updateState = mutableMapOf("" to true)
+    if (type == "toggle"){
+        updateState = mutableMapOf("on" to !state["on"]!!)
+    }
+    else if (type == "door"){
+        updateState = mutableMapOf("locked" to state["locked"] as Boolean, "open" to !state["open"]!!)
+        state["open"] to !state["open"]!!
+    }
 
-    val newState = Json.encodeToString(state)
-    //Log.d(TAG, "$newState")
+    val newState = Json.encodeToString(updateState)
+    Log.d(TAG, "new state $newState")
     val changeDeviceState: (ApiResult) -> Unit = {
         val data: JSONObject = it.data()
 //        val msg: String = data.get("msg") as String

@@ -52,8 +52,8 @@ fun <T> rememberFirestoreCollection(collectionPath: String, clazz: Class<T>): Sn
                 documents.add(item)
             }
 
-            Log.d(TAG, "Look here ${snapshot.documents}")
-            Log.d(TAG, "Look here 2 ${documents}")
+            //Log.d(TAG, "Look here ${snapshot.documents}")
+            //Log.d(TAG, "Look here 2 ${documents}")
         }
 
     }
