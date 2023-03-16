@@ -2,12 +2,17 @@ package com.HomeApp.util
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import okhttp3.FormBody
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
+import com.google.gson.Gson
 
 /** The Api Connector has all the functions for talking to the API,
  *  each function will return an onRespond Callback that has an parameter of
@@ -23,19 +28,21 @@ object ApiConnector {
      * in the result there is an token that can be saved for authenticated calls * */
     fun login(
         email: String,
-        Password: String,
+        password: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
+        val formObj = JSONObject()
+        formObj.put("email", email)
+        formObj.put("password", password)
+        val requestForm = formObj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
         val urlPath = "/api/users/login"
-
-        val formBody: RequestBody = FormBody.Builder()
-            .add("email", email)
-            .add("password", Password)
-            .build()
 
         val request: Request = Request.Builder()
             .url(DB_ADDR + urlPath)
-            .post(formBody)
+            .header("Content-Type", "application/json")
+            .post(requestBody)
             .build()
 
         onRespond(callAPI(request))
@@ -48,17 +55,18 @@ object ApiConnector {
         password: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
+        val formObj = JSONObject()
+        formObj.put("name", name)
+        formObj.put("email", email)
+        formObj.put("password", password)
+        val requestForm = formObj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
         val urlPath = "/api/users/signin"
-
-        val formBody: RequestBody = FormBody.Builder()
-            .add("name", name)
-            .add("email", email)
-            .add("password", password)
-            .build()
 
         val request: Request = Request.Builder()
             .url(DB_ADDR + urlPath)
-            .post(formBody)
+            .post(requestBody)
             .build()
 
         onRespond(callAPI(request))
@@ -69,15 +77,16 @@ object ApiConnector {
         email: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
+        val formObj = JSONObject()
+        formObj.put("email", email)
+        val requestForm = formObj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
         val urlPath = "/api/users/reset_request"
-
-        val formBody: RequestBody = FormBody.Builder()
-            .add("email", email)
-            .build()
 
         val request: Request = Request.Builder()
             .url(DB_ADDR + urlPath)
-            .post(formBody)
+            .post(requestBody)
             .build()
         onRespond(callAPI(request))
     }
@@ -88,15 +97,18 @@ object ApiConnector {
         password: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
+
+        val formObj = JSONObject()
+        formObj.put("password", password)
+        val requestForm = formObj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
         val urlPath = "/api/users/reset"
-        val formBody: RequestBody = FormBody.Builder()
-            .add("password", password)
-            .build()
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
-            .put(formBody)
+            .put(requestBody)
             .build()
         onRespond(callAPI(request))
     }
@@ -126,15 +138,18 @@ object ApiConnector {
         email: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
+        val formObj = JSONObject()
+        formObj.put("email", email)
+        val requestForm = formObj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
         val urlPath = "/api/user/remove"
-        val formBody: RequestBody = FormBody.Builder()
-            .add("email", email)
-            .build()
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
-            .delete(formBody)
+            .delete(requestBody)
             .build()
         onRespond(callAPI(request))
     }
@@ -143,21 +158,24 @@ object ApiConnector {
     fun action(
 //        token: String,
         id: String,
-        state: String,
+        state: JSONObject,
         type: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
+        val formObj = JSONObject()
+        formObj.put("id", id)
+        formObj.put("state", state)
+        formObj.put("type", type)
         val urlPath = "/devices/actions"
-        val formBody: RequestBody = FormBody.Builder()
-            .add("id", id)
-            .add("state", state)
-            .add("type", type)
-            .build()
-        Log.d(TAG, " LOOK HERE! ${formBody}")
+        val requestForm = formObj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
         val request: Request = Request.Builder()
 //            .header(AUTH_TOKEN_NAME, token)
+            .header("Content-Type", "application/json")
             .url(DB_ADDR + urlPath)
-            .put(formBody)
+            .put(requestBody)
             .build()
 
         onRespond(callAPI(request))

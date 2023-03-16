@@ -32,15 +32,22 @@ import com.HomeApp.R
 import com.HomeApp.screens.Devices
 import com.HomeApp.util.ApiConnector
 import com.HomeApp.util.ApiResult
+import com.HomeApp.util.DB_ADDR
 import com.HomeApp.util.HttpStatus
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.stream.DoubleStream.builder
+import java.util.stream.IntStream.builder
 
 @Composable
 fun DeviceCard(
@@ -53,7 +60,7 @@ fun DeviceCard(
     val coroutine = rememberCoroutineScope()
 
     val cardIcon: ImageVector = when (deviceItem.get("type")) {
-        "light" -> Icons.Filled.Lightbulb
+        "toggle" -> Icons.Filled.Lightbulb
         "door" -> Icons.Filled.DoorFront
         "curtain" -> Icons.Filled.Curtains
         else -> Icons.Filled.BrokenImage
@@ -118,19 +125,25 @@ fun DeviceCard(
 
 
 private fun changeState(id: String, state: Map<String, Boolean>, type:String, coroutine:CoroutineScope){
-    var updateState = mutableMapOf("" to true)
+    val updateState = JSONObject()
     if (type == "toggle"){
-        updateState = mutableMapOf("on" to !state["on"]!!)
+        //updateState = mutableMapOf("on" to !state["on"]!!)
+        updateState.put("on", !state["on"]!!)
     }
     else if (type == "door"){
-        updateState = mutableMapOf("locked" to state["locked"] as Boolean, "open" to !state["open"]!!)
-        state["open"] to !state["open"]!!
+        //updateState = mutableMapOf("locked" to state["locked"] as Boolean, "open" to !state["open"]!!)
+        updateState.put("open", !state["open"]!!)
+        updateState.put("locked", !state["locked"]!!)
     }
+    //Log.d("I am trying", updateState.toString())
+    //val newState = Json.encodeToString(updateState)
+    //val newState = Gson().toJson(updateState)
 
-    val newState = Json.encodeToString(updateState)
-    Log.d(TAG, "new state $newState")
+
+
+    //Log.d(TAG, "new state $newState")
     val changeDeviceState: (ApiResult) -> Unit = {
-        val data: JSONObject = it.data()
+        //val data: JSONObject = it.data()
 //        val msg: String = data.get("msg") as String
         when (it.status()) {
             HttpStatus.SUCCESS -> {
@@ -143,13 +156,42 @@ private fun changeState(id: String, state: Map<String, Boolean>, type:String, co
             }
         }
     }
+
     coroutine.launch(Dispatchers.IO) {
         ApiConnector.action(
             id = id,
-            state =newState,
+            state =updateState,
             type = type,
             onRespond = changeDeviceState
         )
+        /**
+        Log.d("LOOK HERE", id)
+        Log.d("LOOK HERE", newState)
+        Log.d("LOOK HERE", type)
+        val client = OkHttpClient()
+
+        val formBody: RequestBody = FormBody.Builder()
+            .add("id", id)
+            .add("state", newState)
+            .add("type", type)
+            .build()
+
+
+
+        val request: Request = Request.Builder()
+//            .header(AUTH_TOKEN_NAME, token)
+            .header("Content-Type", "application/json")
+            .url("http://10.0.2.2:3000/devices/actions")
+            .put(formBody)
+            .build()
+        val response = client.newCall(request).execute()
+        val responseCode = response.code
+        val responseBody = response.body?.string()
+        Log.d("----------RESPONSE CODE", responseCode.toString())
+        Log.d("----------RESPONSE BODY", responseBody.toString())
+
+        response.close()*/
     }
 }
+
 
