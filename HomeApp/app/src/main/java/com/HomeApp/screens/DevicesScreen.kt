@@ -9,8 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -36,7 +37,10 @@ data class Devices(
     var available: Boolean = true
 )
 
-fun <T> rememberFirestoreCollection(collectionPath: String, clazz: Class<T>): SnapshotStateList<DocumentSnapshot> {
+fun <T> rememberFirestoreCollection(
+    collectionPath: String,
+    clazz: Class<T>
+): SnapshotStateList<DocumentSnapshot> {
     val collectionRef = FirebaseFirestore.getInstance().collection(collectionPath)
     val documents = mutableStateListOf<DocumentSnapshot>()  //mutableStateOf(MutableList<T>())
     var counter = 0
@@ -48,7 +52,7 @@ fun <T> rememberFirestoreCollection(collectionPath: String, clazz: Class<T>): Sn
         }
         if (snapshot != null) {
             documents.clear()
-            snapshot.documents.forEach { item->
+            snapshot.documents.forEach { item ->
                 documents.add(item)
             }
 
@@ -91,6 +95,7 @@ fun DevicesScreen(
                         modifier = Modifier
                             .height(listHeight.dp)
                             .padding(vertical = 10.dp)
+                            .padding(top = 10.dp)
                             .padding(horizontal = 20.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
