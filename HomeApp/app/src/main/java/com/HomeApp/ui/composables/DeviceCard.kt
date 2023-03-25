@@ -133,7 +133,7 @@ private fun changeState(id: String, state: Map<String, Boolean>, type:String, co
     else if (type == "door"){
         //updateState = mutableMapOf("locked" to state["locked"] as Boolean, "open" to !state["open"]!!)
         updateState.put("open", !state["open"]!!)
-        updateState.put("locked", !state["locked"]!!)
+//        updateState.put("locked", !state["locked"]!!)
     }
     //Log.d("I am trying", updateState.toString())
     //val newState = Json.encodeToString(updateState)
