@@ -83,6 +83,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage-ktx'
     //implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'com.google.firebase:firebase-firestore-ktx:24.4.4'
+    implementation 'com.google.code.gson:gson:2.10'
+
 
 
 }

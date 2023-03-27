@@ -18,13 +18,16 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.HomeApp.drawers.SideDrawer
 import com.HomeApp.ui.navigation.AnimatedAppNavHost
 import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.theme.HomeAppTheme
-import com.HomeApp.util.enableTopDrawer
+import com.HomeApp.util.*
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.firebase.FirebaseApp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -50,9 +53,32 @@ fun RunApp() {
     val context = LocalContext.current
     FirebaseApp.initializeApp(context)
     val navController = rememberAnimatedNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
     val state = rememberScaffoldState(
         rememberDrawerState(initialValue = DrawerValue.Closed)
     )
+    val coroutine = rememberCoroutineScope()
+    var isAuth by remember { mutableStateOf(false) }
+    var loading by remember { mutableStateOf(true) }
+
+
+    val onAuth: (ApiResult) -> Unit = {
+        isAuth = (it.status() == HttpStatus.SUCCESS)
+        loading = false
+    }
+    val token  = LocalStorage.getToken(context)
+    LaunchedEffect(navBackStackEntry) {
+        launch {
+            // Call backend to check if we already have an valid token
+            coroutine.launch(Dispatchers.IO) {
+                ApiConnector.getAllUserData(
+                    token = LocalStorage.getToken(context),
+                    onRespond = { onAuth(it) }
+                )
+            }
+        }
+    }
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
             scaffoldState = state,
