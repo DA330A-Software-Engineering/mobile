@@ -79,7 +79,7 @@ fun DevicesScreen(
 
     Scaffold(
         topBar = {
-            TitleBar(screenTitle = "Devices", navController = navController)
+            TitleBar(screenTitle = "Devices", navController = navController, isDevices = true)
         },
         content = {
             LazyColumn(
