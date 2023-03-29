@@ -8,12 +8,11 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BrokenImage
-import androidx.compose.material.icons.filled.Curtains
-import androidx.compose.material.icons.filled.DoorFront
-import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.LockOpen
+import androidx.compose.material.icons.outlined.Loop
+import androidx.compose.material.icons.outlined.SmartScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -47,21 +46,22 @@ fun DeviceCard(
     val cardIcon: ImageVector = when (deviceItem.get("type")) {
         "toggle" -> Icons.Filled.Lightbulb
         "door" -> Icons.Filled.DoorFront
-        "curtain" -> Icons.Filled.Curtains
+        "window" -> Icons.Filled.Window
+        "screen" -> Icons.Outlined.SmartScreen
         else -> Icons.Filled.BrokenImage
     }
 
     val deviceState: String = when (deviceItem.get("type")) {
-        "toggle" -> if (state["on"] == true) "On" else "Off"
-        "door" -> if (state["open"] == true) "Open" else "Closed"
-        "curtain" -> if (state["open"] == true) "Open" else "Closed"
+        "toggle", "fan", "screen" -> if (state["on"] == true) "On" else "Off"
+        "door", "window" -> if (state["open"] == true) "Open" else "Closed"
         else -> {
             "No State"
         }
     }
 
     val actionIcon: ImageVector? = when (deviceItem.get("type")) {
-        "door" -> if (state["locked"] == true) Icons.Outlined.Lock else Icons.Outlined.LockOpen
+        "door", "window" -> if (state["locked"] == true) Icons.Outlined.Lock else Icons.Outlined.LockOpen
+        "fan" -> Icons.Outlined.Loop
         else -> null
 
     }
