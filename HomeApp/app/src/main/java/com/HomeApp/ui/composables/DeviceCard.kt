@@ -9,10 +9,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.LockOpen
-import androidx.compose.material.icons.outlined.Loop
-import androidx.compose.material.icons.outlined.SmartScreen
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -46,8 +43,10 @@ fun DeviceCard(
     val cardIcon: ImageVector = when (deviceItem.get("type")) {
         "toggle" -> Icons.Filled.Lightbulb
         "door" -> Icons.Filled.DoorFront
-        "window" -> Icons.Filled.Window
+        "window" -> Icons.Outlined.Window
         "screen" -> Icons.Outlined.SmartScreen
+        "fan" -> Icons.Outlined.Loop
+        "buzzer" -> Icons.Outlined.SurroundSound
         else -> Icons.Filled.BrokenImage
     }
 
@@ -61,7 +60,7 @@ fun DeviceCard(
 
     val actionIcon: ImageVector? = when (deviceItem.get("type")) {
         "door", "window" -> if (state["locked"] == true) Icons.Outlined.Lock else Icons.Outlined.LockOpen
-        "fan" -> Icons.Outlined.Loop
+        "fan" -> Icons.Outlined.CompareArrows
         else -> null
 
     }
