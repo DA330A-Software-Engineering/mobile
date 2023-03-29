@@ -1,18 +1,12 @@
 package com.HomeApp.util
 
-import android.content.ContentValues.TAG
 import android.util.Log
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
-import com.google.gson.Gson
 
 /** The Api Connector has all the functions for talking to the API,
  *  each function will return an onRespond Callback that has an parameter of
@@ -166,6 +160,7 @@ object ApiConnector {
         formObj.put("id", id)
         formObj.put("state", state)
         formObj.put("type", type)
+        Log.d("ACTION", "$formObj")
         val urlPath = "/devices/actions"
         val requestForm = formObj.toString()
         val mediaType = "application/json".toMediaType()

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,14 +29,13 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import com.HomeApp.drawers.SideDrawer
-import com.HomeApp.screens.Devices
-import com.HomeApp.screens.rememberFirestoreCollection
 import com.HomeApp.ui.navigation.AnimatedAppNavHost
 import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.theme.HomeAppTheme
 import com.HomeApp.util.*
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.firebase.FirebaseApp
+import com.google.firebase.firestore.FirebaseFirestore
 import org.json.JSONObject
 import java.util.*
 
@@ -56,6 +56,7 @@ val onRespond: (ApiResult) -> Unit = {
 }
 
 class MainActivity : ComponentActivity() {
+    var contextContainer: Context? = null
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -63,117 +64,123 @@ class MainActivity : ComponentActivity() {
                     result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
                         ?: return@registerForActivityResult
                 val input = data[0] // grabs String from ArrayList
-                val documents = rememberFirestoreCollection("devices", Devices::class.java)
-                documents.filter {
-                    input.contains(it.get("name") as String)
-                }.forEach {
-                    var primaryAction: Boolean? = null
-                    var secondaryAction: Any? = null
-                    when (it.get("type")) {
-                        "toggle" -> {
-                            primaryAction = when {
-                                input.lowercase().contains("on") -> true
-                                input.lowercase().contains("off") -> false
-                                else -> null
+                val TAG = "ACTION"
+                Log.d(TAG, "MIC: $input")
+                FirebaseFirestore.getInstance().collection("devices").get()
+                    .addOnSuccessListener { it ->
+                        it.documents.forEach {
+                            if (input.lowercase()
+                                    .contains((it.get("name") as String).lowercase())
+                            ) {
+                                var primaryAction: Boolean? = null
+                                var secondaryAction: Any? = null
+                                when (it.get("type")) {
+                                    "toggle" -> {
+                                        primaryAction = when {
+                                            input.lowercase().contains("on") -> true
+                                            input.lowercase().contains("off") -> false
+                                            else -> null
+                                        }
+                                        val jsonObj = JSONObject()
+                                        if (primaryAction != null) {
+                                            jsonObj.put("on", primaryAction)
+                                        }
+                                        if (jsonObj.length() == 1) {
+                                            ApiConnector.action(
+                                                id = it.id,
+                                                state = jsonObj,
+                                                type = it.get("type") as String,
+                                                onRespond = onRespond
+                                            )
+                                        }
+                                    }
+                                    "door", "window" -> {
+                                        primaryAction = when {
+                                            input.lowercase().contains("open") -> true
+                                            input.lowercase().contains("close") -> false
+                                            else -> null
+                                        }
+                                        secondaryAction = when {
+                                            input.lowercase().contains("unlock") -> false
+                                            input.lowercase().contains("lock") -> true
+                                            else -> null
+                                        }
+                                        val jsonObj = JSONObject()
+                                        if (primaryAction != null) {
+                                            jsonObj.put("open", primaryAction)
+                                        }
+                                        if (secondaryAction != null) {
+                                            jsonObj.put("locked", secondaryAction)
+                                        }
+                                        if (jsonObj.length() == 1) {
+                                            ApiConnector.action(
+                                                id = it.id,
+                                                state = jsonObj,
+                                                type = it.get("type") as String,
+                                                onRespond = onRespond
+                                            )
+                                        }
+                                    }
+                                    "fan" -> {
+                                        val isReversed: Boolean =
+                                            (it.get("state") as Map<String, Boolean>)["reverse"] as Boolean
+                                        primaryAction = when {
+                                            input.lowercase().contains("on") -> true
+                                            input.lowercase().contains("off") -> false
+                                            else -> null
+                                        }
+                                        secondaryAction = when {
+                                            input.contains("reverse") -> !isReversed
+                                            else -> null
+                                        }
+                                        val jsonObj = JSONObject()
+                                        if (primaryAction != null) {
+                                            jsonObj.put("on", primaryAction)
+                                        }
+                                        if (secondaryAction != null) {
+                                            jsonObj.put("reverse", secondaryAction)
+                                        }
+                                        if (jsonObj.length() == 1) {
+                                            ApiConnector.action(
+                                                id = it.id,
+                                                state = jsonObj,
+                                                type = it.get("type") as String,
+                                                onRespond = onRespond
+                                            )
+                                        }
+                                    }
+                                    "screen" -> {
+                                        val value = input.substring(
+                                            input.lowercase().indexOf("add") + 3,
+                                            input.lowercase().indexOf("to")
+                                        ).trim()
+                                        primaryAction = when {
+                                            input.lowercase().contains("on") -> true
+                                            input.lowercase().contains("off") -> false
+                                            else -> null
+                                        }
+                                        secondaryAction = when {
+                                            input.lowercase().contains("add") -> value
+                                            else -> null
+                                        }
+                                        val jsonObj = JSONObject()
+                                        if (primaryAction != null) {
+                                            jsonObj.put("on", primaryAction)
+                                        }
+                                        if (secondaryAction != null) {
+                                            jsonObj.put("reverse", secondaryAction)
+                                        }
+                                        ApiConnector.action(
+                                            id = it.id,
+                                            state = jsonObj,
+                                            type = it.get("type") as String,
+                                            onRespond = onRespond
+                                        )
+                                    }
+                                }
                             }
-                            val jsonObj = JSONObject()
-                            if (primaryAction != null) {
-                                jsonObj.put("on", primaryAction)
-                            }
-                            if (jsonObj.length() == 1) {
-                                ApiConnector.action(
-                                    id = it.id,
-                                    state = jsonObj,
-                                    type = it.get("type") as String,
-                                    onRespond = onRespond
-                                )
-                            }
-                        }
-                        "door", "window" -> {
-                            primaryAction = when {
-                                input.lowercase().contains("open") -> true
-                                input.lowercase().contains("close") -> false
-                                else -> null
-                            }
-                            secondaryAction = when {
-                                input.lowercase().contains("unlock") -> false
-                                input.lowercase().contains("lock") -> true
-                                else -> null
-                            }
-                            val jsonObj = JSONObject()
-                            if (primaryAction != null) {
-                                jsonObj.put("open", primaryAction)
-                            }
-                            if (secondaryAction != null) {
-                                jsonObj.put("locked", secondaryAction)
-                            }
-                            if (jsonObj.length() == 1) {
-                                ApiConnector.action(
-                                    id = it.id,
-                                    state = jsonObj,
-                                    type = it.get("type") as String,
-                                    onRespond = onRespond
-                                )
-                            }
-                        }
-                        "fan" -> {
-                            val isReversed: Boolean =
-                                (it.get("state") as Map<String, Boolean>)["reverse"] as Boolean
-                            primaryAction = when {
-                                input.lowercase().contains("on") -> true
-                                input.lowercase().contains("off") -> false
-                                else -> null
-                            }
-                            secondaryAction = when {
-                                input.contains("reverse") -> !isReversed
-                                else -> null
-                            }
-                            val jsonObj = JSONObject()
-                            if (primaryAction != null) {
-                                jsonObj.put("on", primaryAction)
-                            }
-                            if (secondaryAction != null) {
-                                jsonObj.put("reverse", secondaryAction)
-                            }
-                            if (jsonObj.length() == 1) {
-                                ApiConnector.action(
-                                    id = it.id,
-                                    state = jsonObj,
-                                    type = it.get("type") as String,
-                                    onRespond = onRespond
-                                )
-                            }
-                        }
-                        "screen" -> {
-                            val value = input.substring(
-                                input.lowercase().indexOf("add") + 3,
-                                input.lowercase().indexOf("to")
-                            ).trim()
-                            primaryAction = when {
-                                input.lowercase().contains("on") -> true
-                                input.lowercase().contains("off") -> false
-                                else -> null
-                            }
-                            secondaryAction = when {
-                                input.lowercase().contains("add") -> value
-                                else -> null
-                            }
-                            val jsonObj = JSONObject()
-                            if (primaryAction != null) {
-                                jsonObj.put("on", primaryAction)
-                            }
-                            if (secondaryAction != null) {
-                                jsonObj.put("reverse", secondaryAction)
-                            }
-                            ApiConnector.action(
-                                id = it.id,
-                                state = jsonObj,
-                                type = it.get("type") as String,
-                                onRespond = onRespond
-                            )
                         }
                     }
-                }
             }
         }
 
@@ -188,7 +195,7 @@ class MainActivity : ComponentActivity() {
         } else {
             // on below line we are calling a speech recognizer intent
             val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-            var outputTxt by mutableStateOf("")
+
             // on the below line we are specifying language model as language web search
             intent.putExtra(
                 RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH
@@ -202,6 +209,7 @@ class MainActivity : ComponentActivity() {
 
             // at last we are calling start activity
             // for result to start our activity.
+            contextContainer = context
             resultLauncher.launch(intent)
         }
     }
