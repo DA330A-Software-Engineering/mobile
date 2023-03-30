@@ -32,7 +32,7 @@ fun RoutinesScreen(
     val coroutine = rememberCoroutineScope()
     val listHeight = LocalConfiguration.current.screenHeightDp
     val db = Firebase.firestore
-    val documents = rememberFirestoreCollection("routines", Devices::class.java)
+    val documents = rememberFirestoreCollections("routines", Devices::class.java)
 
     Scaffold(
         topBar = {
@@ -49,7 +49,7 @@ fun RoutinesScreen(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 items(items = documents, key = { item -> item.id }) { item ->
-                    RoutineCard(navController = navController, deviceItem = item)
+                    RoutineCard(navController = navController, RoutineItem = item)
 
                 }
             }

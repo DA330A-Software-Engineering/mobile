@@ -1,5 +1,6 @@
 package com.HomeApp.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,7 +14,9 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -39,8 +42,36 @@ import com.HomeApp.ui.navigation.Settings
 import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.ui.theme.montserrat
 import com.HomeApp.util.microphoneIcon
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
+fun <T> rememberFirestoreCollections(
+    collectionPath: String,
+    clazz: Class<T>
+): SnapshotStateList<DocumentSnapshot> {
+    val collectionRef = FirebaseFirestore.getInstance().collection(collectionPath)
+    val documents = mutableStateListOf<DocumentSnapshot>()  //mutableStateOf(MutableList<T>())
+    var counter = 0
+
+    collectionRef.addSnapshotListener { snapshot, error ->
+        if (error != null) {
+            // Handle the error
+            return@addSnapshotListener
+        }
+        if (snapshot != null) {
+            documents.clear()
+            snapshot.documents.forEach { item ->
+                documents.add(item)
+            }
+
+            //Log.d(TAG, "Look here ${snapshot.documents}")
+            //Log.d(TAG, "Look here 2 ${documents}")
+        }
+
+    }
+    return documents
+}
 
 @Composable
 fun HomeScreen(
@@ -49,6 +80,8 @@ fun HomeScreen(
     OnSelfClick: () -> Unit = {},
     state: ScaffoldState
 ) {
+    val documents = rememberFirestoreCollections("devices", Devices::class.java)
+    Log.d("LOGGERS", "${documents.size}")
     val spacerHeight: Dp = 112.dp
     Scaffold(
         content = {

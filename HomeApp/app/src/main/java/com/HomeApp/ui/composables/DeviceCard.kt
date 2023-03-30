@@ -15,6 +15,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -45,7 +46,6 @@ fun DeviceCard(
         "door" -> Icons.Filled.DoorFront
         "window" -> Icons.Outlined.Window
         "screen" -> Icons.Outlined.SmartScreen
-        "fan" -> Icons.Outlined.Loop
         "buzzer" -> Icons.Outlined.SurroundSound
         else -> Icons.Filled.BrokenImage
     }
@@ -73,7 +73,7 @@ fun DeviceCard(
                     state = deviceItem.get("state") as Map<String, Boolean>,
                     type = deviceItem.get("type") as String,
                     coroutine = coroutine,
-                    changedState = "locked"
+                    changedState = if (deviceItem.get("type") == "door" ||  deviceItem.get("type") == "window") "locked" else "reverse"
                 )
             },
             modifier = modifier.then(
@@ -220,16 +220,23 @@ private fun changeState(
     if (type == "toggle") {
         //updateState = mutableMapOf("on" to !state["on"]!!)
         updateState.put("on", !state["on"]!!)
-    } else if (type == "door") {
+    }
+    else if (type == "door" || type == "window") {
         if (changedState == "locked") {
             updateState.put("locked", !state["locked"]!!)
         } else {
             updateState.put("open", !state["open"]!!)
         }
-        //updateState = mutableMapOf("locked" to state["locked"] as Boolean, "open" to !state["open"]!!)
 
-//
+        //updateState = mutableMapOf("locked" to state["locked"] as Boolean, "open" to !state["open"]!!
+    }else if (type == "fan") {
+        if (changedState == "reverse") {
+            updateState.put("reverse", !state["reverse"]!!)
+        } else {
+            updateState.put("on", !state["on"]!!)
+        }
     }
+
     //Log.d("I am trying", updateState.toString())
     //val newState = Json.encodeToString(updateState)
     //val newState = Gson().toJson(updateState)

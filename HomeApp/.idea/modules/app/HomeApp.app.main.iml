@@ -43,6 +43,7 @@
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/68a01d6c8e09eff9138554bb0315b1ba/transformed/navigation-common-2.5.0-rc02-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/2ed0399de8b56ff8d975c90c89497e96/transformed/lifecycle-runtime-ktx-2.5.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/b0756e2e923fa2847555d885fce0aab4/transformed/ui-tooling-1.3.3-api.jar</arg>
+                <arg>$USER_HOME$/.gradle/caches/transforms-3/bfba615d3389c6e798a552e259d43ec6/transformed/lifecycle-viewmodel-compose-2.5.0-rc01-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/bdbdb981817f7f5dbf72f194c7f63d2c/transformed/ui-tooling-preview-1.3.3-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/fb0a465b14378cb932ea7c36888b4a4c/transformed/material-1.3.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/ec8223bb6c629e14c86b60c17ab90b10/transformed/ui-tooling-data-1.3.3-api.jar</arg>
@@ -53,7 +54,6 @@
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/f56d1719f539d35696844d7056b4524a/transformed/material-ripple-1.3.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/8012436a0ccadb24a331cb97155659eb/transformed/foundation-1.3.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/24a160faf7dc36a9f884c01abc1545b3/transformed/animation-1.3.3-api.jar</arg>
-                <arg>$USER_HOME$/.gradle/caches/transforms-3/bfba615d3389c6e798a552e259d43ec6/transformed/lifecycle-viewmodel-compose-2.5.0-rc01-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/b6284f48c60d1eadf20018f02768ed4a/transformed/foundation-layout-1.3.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/57174bcba756d74643dd3c85eedd8624/transformed/ui-1.3.3-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/9f91a7921358ffe0a69b18696b5ada61/transformed/runtime-saveable-1.3.3-api.jar</arg>
@@ -112,6 +112,7 @@
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/fa00e8c23f84373a29545af5a102e856/transformed/asynclayoutinflater-1.0.0-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/f1ff70225b471724d2f7b134d75f9f43/transformed/core-1.8.0-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/d52f2f2b1f0acc13fad44d3390c5445a/transformed/lifecycle-runtime-2.5.1-api.jar</arg>
+                <arg>$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-common-java8/2.5.1/5b8f86fea035328fc9e8c660773037a3401ce25f/lifecycle-common-java8-2.5.1.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/f0581975a237d344d665062aede59d36/transformed/ui-text-1.3.3-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/a6b5ac815e97dd17bfa8504fb0f12ed0/transformed/ui-graphics-1.3.3-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/3d3bf0f932d10ebdffd72cefa1ae2d47/transformed/ui-unit-1.3.3-api.jar</arg>
@@ -125,7 +126,6 @@
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/00104c435b90edeb6592bd76774aed97/transformed/core-runtime-2.1.0-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.arch.core/core-common/2.1.0/b3152fc64428c9354344bd89848ecddc09b6f07e/core-common-2.1.0.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/07e8d6225dcd505ae5c71297a898390d/transformed/lifecycle-livedata-core-2.5.1-api.jar</arg>
-                <arg>$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-common-java8/2.5.1/5b8f86fea035328fc9e8c660773037a3401ce25f/lifecycle-common-java8-2.5.1.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-common/2.5.1/1fdb7349701e9cf2f0a69fc10642b6fef6bb3e12/lifecycle-common-2.5.1.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.concurrent/concurrent-futures/1.1.0/50b7fb98350d5f42a4e49704b03278542293ba48/concurrent-futures-1.1.0.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.collection/collection/1.2.0/34dbc21d203cc4d4d623ac572a21acd4ccd716af/collection-1.2.0.jar</arg>
