@@ -188,6 +188,20 @@ fun AnimatedAppNavHost(
                 OnSelfClick = { navController.navigateSingleTopTo(CreateAccount.route) }
             )
         }
+
+        // CREATE ACCOUNT
+        composable(
+            route = Profile.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            ProfileScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(Profile.route) }
+            )
+        }
     }
 }
 

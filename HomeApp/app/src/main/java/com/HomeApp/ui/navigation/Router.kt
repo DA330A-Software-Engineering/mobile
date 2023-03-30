@@ -1,7 +1,17 @@
 package com.HomeApp.ui.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.AccessTime
+import androidx.compose.material.icons.rounded.DomainDisabled
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Lightbulb
+import androidx.compose.material.icons.rounded.LockReset
+import androidx.compose.material.icons.rounded.Login
+import androidx.compose.material.icons.rounded.People
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.QuestionMark
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.TaskAlt
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
@@ -67,4 +77,9 @@ object ConfirmToken : NavPath {
 object CreateAccount : NavPath {
     override val icon = Icons.Rounded.Person
     override val route = "create-account"
+}
+
+object Profile : NavPath {
+    override val icon = Icons.Rounded.People
+    override val route = "profile"
 }

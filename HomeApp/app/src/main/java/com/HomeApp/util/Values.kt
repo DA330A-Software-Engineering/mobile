@@ -9,6 +9,7 @@ import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.People
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.HomeApp.ui.navigation.Home
+import com.HomeApp.ui.navigation.Profile
 
 val firebaseConfig = mapOf(
     "apiKey" to "AIzaSyBe9OfClxqevJF_7X5v2Rk1lP9EQTWv458",
@@ -24,7 +25,7 @@ val firebaseConfig = mapOf(
 val microphoneIcon: ImageVector = Icons.Rounded.Mic
 
 enum class SideBarOptions(val title: String, val icon: ImageVector?, val route: String) {
-    PROFILE("Profile & Family", Icons.Rounded.People, Home.route),
+    PROFILE("Profile & Family", Icons.Rounded.People, Profile.route),
     NOTIFICATIONS("Notifications", Icons.Rounded.Notifications, Home.route),
     History("History", null, Home.route),
     LOGOUT("Logout", null, Home.route),
