@@ -1,6 +1,7 @@
 package com.HomeApp.screens
 
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -9,13 +10,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.*
@@ -36,7 +39,10 @@ data class Devices(
     var available: Boolean = true
 )
 
-fun <T> rememberFirestoreCollection(collectionPath: String, clazz: Class<T>): SnapshotStateList<DocumentSnapshot> {
+fun <T> rememberFirestoreCollection(
+    collectionPath: String,
+    clazz: Class<T>
+): SnapshotStateList<DocumentSnapshot> {
     val collectionRef = FirebaseFirestore.getInstance().collection(collectionPath)
     val documents = mutableStateListOf<DocumentSnapshot>()  //mutableStateOf(MutableList<T>())
     var counter = 0
@@ -48,12 +54,12 @@ fun <T> rememberFirestoreCollection(collectionPath: String, clazz: Class<T>): Sn
         }
         if (snapshot != null) {
             documents.clear()
-            snapshot.documents.forEach { item->
+            snapshot.documents.forEach { item ->
                 documents.add(item)
             }
 
-            Log.d(TAG, "Look here ${snapshot.documents}")
-            //Log.d(TAG, "Look here ${documents}")
+            //Log.d(TAG, "Look here ${snapshot.documents}")
+            //Log.d(TAG, "Look here 2 ${documents}")
         }
 
     }
@@ -66,13 +72,14 @@ fun DevicesScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     state: ScaffoldState,
-    OnSelfClick: () -> Unit = {}
+    OnSelfClick: () -> Unit = {},
+    getSpeechInput: (Context) -> Unit = {}
 ) {
     val coroutine = rememberCoroutineScope()
     val listHeight = LocalConfiguration.current.screenHeightDp
     val db = Firebase.firestore
     val documents = rememberFirestoreCollection("devices", Devices::class.java)
-
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             TitleBar(screenTitle = "Devices", navController = navController)
@@ -91,6 +98,7 @@ fun DevicesScreen(
                         modifier = Modifier
                             .height(listHeight.dp)
                             .padding(vertical = 10.dp)
+                            .padding(top = 10.dp)
                             .padding(horizontal = 20.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
@@ -109,7 +117,7 @@ fun DevicesScreen(
             )
         }, floatingActionButton = {
             FloatingActionButton(
-                onClick = { /*TODO*/ },
+                onClick = { getSpeechInput(context) },
                 backgroundColor = GhostWhite,
                 modifier = Modifier.scale(1f)
             ) {

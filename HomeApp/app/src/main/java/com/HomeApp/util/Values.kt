@@ -43,4 +43,4 @@ enum class DevicesFilters(
 }
 
 val AUTH_TOKEN_NAME = "jwt"
-val DB_ADDR = "http://localhost:3000/"
+val DB_ADDR = "http://194.47.28.16:3000"
