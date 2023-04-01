@@ -18,6 +18,16 @@ object ApiConnector {
     private var client: OkHttpClient = OkHttpClient()
 
 
+    // get user data using token
+    fun getUserData(token: String, onRespond: (result: ApiResult) -> Unit) {
+        val urlPath = "/users"
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .build()
+        onRespond(callAPI(request))
+    }
+
     /** Api call that requires email and password,
      * in the result there is an token that can be saved for authenticated calls * */
     fun login(
@@ -107,15 +117,15 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
-//    /** Retrieves the information about the users **/
-//    fun getUsersData(token: String, onRespond: (result: ApiResult) -> Unit) {
-//        val urlPath = "/api/users"
-//        val request: Request = Request.Builder()
-//            .header(AUTH_TOKEN_NAME, token)
-//            .url(firebaseConfig["databaseURL"] + urlPath)
-//            .build()
-//        onRespond(callAPI(request))
-//    }
+    /** Retrieves the information about the users **/
+    fun getUsersData(token: String, onRespond: (result: ApiResult) -> Unit) {
+        val urlPath = "/api/user"
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(firebaseConfig["databaseURL"] + urlPath)
+            .build()
+        onRespond(callAPI(request))
+    }
 
     fun getAllUserData(token: String, onRespond: (result: ApiResult) -> Unit) {
         val urlPath = "/api/users"
@@ -166,9 +176,12 @@ object ApiConnector {
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
+        val token =
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndlbHRlci50b21AaG90bWFpbC5jb20iLCJpYXQiOjE2ODAyODE4NjB9.X60oo5qZ0I6ZGjyVheDHpGLFkMErQi9r4GVSJJQ6mMc"
+
         val request: Request = Request.Builder()
 //            .header(AUTH_TOKEN_NAME, token)
-            .header("Content-Type", "application/json")
+            .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
             .put(requestBody)
             .build()

@@ -42,5 +42,5 @@ enum class DevicesFilters(
     DOORS(filterName = "Doors", filterIcon = Icons.Outlined.DoorFront, filterValue = "doors")
 }
 
-val AUTH_TOKEN_NAME = "jwt"
-val DB_ADDR = "http://194.47.28.16:3000"
+val AUTH_TOKEN_NAME = "x-auth-header"
+val DB_ADDR = "http://10.0.2.2:3000"

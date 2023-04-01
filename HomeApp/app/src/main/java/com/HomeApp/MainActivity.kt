@@ -28,19 +28,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.HomeApp.drawers.SideDrawer
 import com.HomeApp.ui.navigation.AnimatedAppNavHost
-import com.HomeApp.ui.navigation.Home
+import com.HomeApp.ui.navigation.Loading
 import com.HomeApp.ui.theme.HomeAppTheme
 import com.HomeApp.util.*
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.*
 
 val onRespond: (ApiResult) -> Unit = {
-//    val data: JSONObject = it.data()
+    val data: JSONObject = it.data()
 //    val msg: String = data.get("msg") as String
     when (it.status()) {
         HttpStatus.SUCCESS -> {
@@ -237,9 +240,32 @@ fun RunApp(getSpeechInput: (Context) -> Unit = {}) {
     val context = LocalContext.current
     FirebaseApp.initializeApp(context)
     val navController = rememberAnimatedNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
     val state = rememberScaffoldState(
         rememberDrawerState(initialValue = DrawerValue.Closed)
     )
+    val coroutine = rememberCoroutineScope()
+    var isAuth by remember { mutableStateOf(false) }
+    var loading by remember { mutableStateOf(true) }
+
+
+    val onAuth: (ApiResult) -> Unit = {
+        isAuth = (it.status() == HttpStatus.SUCCESS)
+        loading = false
+    }
+    val token = LocalStorage.getToken(context)
+    LaunchedEffect(navBackStackEntry) {
+        launch {
+            // Call backend to check if we already have an valid token
+            coroutine.launch(Dispatchers.IO) {
+                ApiConnector.getAllUserData(
+                    token = LocalStorage.getToken(context),
+                    onRespond = { onAuth(it) }
+                )
+            }
+        }
+    }
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
             scaffoldState = state,
@@ -276,7 +302,7 @@ fun RunApp(getSpeechInput: (Context) -> Unit = {}) {
                     ) {
                         AnimatedAppNavHost(
                             navController = navController,
-                            startDestination = Home.route,
+                            startDestination = Loading.route,
                             state = state,
                             getSpeechInput = { getSpeechInput(it) }
                         )
