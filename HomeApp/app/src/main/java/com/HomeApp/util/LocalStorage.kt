@@ -6,9 +6,10 @@ import com.google.gson.annotations.SerializedName
 import java.io.*
 
 /** Data Class that defines the data */
-class LocalStorageData: Serializable {
+class LocalStorageData : Serializable {
     @SerializedName("token")
     var token: String = ""
+
     @SerializedName("tokenEmail")
     var tokenEmail: String = ""
 }
@@ -18,8 +19,8 @@ object LocalStorage {
     private const val FILENAME = "localData.json"
 
     /** Quick function to save a new token */
-    fun saveToken(context: Context, email: String) {
-        localStorageData.token = email
+    fun saveToken(context: Context, token: String) {
+        localStorageData.token = token
         saveData(context)
     }
 
@@ -61,7 +62,7 @@ object LocalStorage {
         try {
             fileOutputStream = context.openFileOutput(FILENAME, Context.MODE_PRIVATE)
             fileOutputStream.write(json.toByteArray())
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
@@ -86,6 +87,8 @@ object LocalStorage {
             }
             jsonString = stringBuilder.toString()
             localStorageData = gson.fromJson(jsonString, LocalStorageData::class.java)
-        } catch (e: Exception){ e.printStackTrace() }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

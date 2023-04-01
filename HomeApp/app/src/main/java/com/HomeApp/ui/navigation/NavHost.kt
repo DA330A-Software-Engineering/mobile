@@ -1,5 +1,6 @@
 package com.HomeApp.ui.navigation
 
+import android.content.Context
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -22,7 +23,8 @@ import com.google.accompanist.navigation.animation.composable
 fun AnimatedAppNavHost(
     modifier: Modifier = Modifier, navController: NavHostController,
     startDestination: String,
-    state: ScaffoldState
+    state: ScaffoldState,
+    getSpeechInput: (Context) -> Unit = {}
 ) {
     // Calls the navigate function to control movement between views/screens in the app
     val defaultTween = 450
@@ -46,6 +48,19 @@ fun AnimatedAppNavHost(
             )
         }
 
+        // LOADING
+        composable(
+            route = Loading.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            LoadingScreen(
+                navController = navController,
+            )
+        }
+
         // HOME
         composable(
             route = Home.route,
@@ -57,7 +72,8 @@ fun AnimatedAppNavHost(
             HomeScreen(
                 navController = navController,
                 OnSelfClick = { navController.navigateSingleTopTo(Login.route) },
-                state = state
+                state = state,
+                getSpeechInput = { getSpeechInput(it) }
             )
         }
 
@@ -72,10 +88,11 @@ fun AnimatedAppNavHost(
             DevicesScreen(
                 navController = navController,
                 OnSelfClick = { navController.navigateSingleTopTo(ConfirmToken.route) },
-                state = state
+                state = state,
+                getSpeechInput = { getSpeechInput(it) }
             )
         }
-
+        111
         // GROUPS
         composable(
             route = Groups.route,
