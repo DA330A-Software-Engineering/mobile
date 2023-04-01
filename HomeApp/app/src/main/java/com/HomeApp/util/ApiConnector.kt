@@ -1,6 +1,7 @@
 package com.HomeApp.util
 
 import android.util.Log
+import com.google.firebase.firestore.model.Values
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -17,6 +18,16 @@ object ApiConnector {
     // Init HTTP Client
     private var client: OkHttpClient = OkHttpClient()
 
+
+    // get user data using token
+    fun getUserData(token: String, onRespond: (result: ApiResult) -> Unit) {
+        val urlPath = "/users"
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .build()
+        onRespond(callAPI(request))
+    }
 
     /** Api call that requires email and password,
      * in the result there is an token that can be saved for authenticated calls * */
