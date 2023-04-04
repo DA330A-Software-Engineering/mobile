@@ -1,12 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.compose.material:material-ripple:1.1.1@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/34ff356414d84b22ccd9a118ba08ca3a/transformed/material-ripple-1.1.1/AndroidManifest.xml" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/34ff356414d84b22ccd9a118ba08ca3a/transformed/material-ripple-1.1.1/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/34ff356414d84b22ccd9a118ba08ca3a/transformed/material-ripple-1.1.1/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/80779e5c0a7fa080c898a9cdfdb07b87/transformed/material-ripple-1.1.1/AndroidManifest.xml" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/80779e5c0a7fa080c898a9cdfdb07b87/transformed/material-ripple-1.1.1/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/80779e5c0a7fa080c898a9cdfdb07b87/transformed/material-ripple-1.1.1/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/6add40080e5199e7750b6455e7ddd550/transformed/material-ripple-1.1.1/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/6add40080e5199e7750b6455e7ddd550/transformed/material-ripple-1.1.1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/6add40080e5199e7750b6455e7ddd550/transformed/material-ripple-1.1.1/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

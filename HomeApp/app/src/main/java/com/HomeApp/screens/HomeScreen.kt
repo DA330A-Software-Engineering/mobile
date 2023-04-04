@@ -1,8 +1,5 @@
 package com.HomeApp.screens
 
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,7 +20,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -46,19 +42,14 @@ import com.HomeApp.util.microphoneIcon
 import kotlinx.coroutines.launch
 
 
-@SuppressLint("ShowToast")
 @Composable
 fun HomeScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     OnSelfClick: () -> Unit = {},
-    state: ScaffoldState,
-    getSpeechInput: (Context) -> Unit = {}
+    state: ScaffoldState
 ) {
-    val context = LocalContext.current
     val spacerHeight: Dp = 112.dp
-    val currActivity = LocalContext.current as Activity // supposedly very unsafe/red flag code
-
     Scaffold(
         content = {
             LazyColumn(
@@ -88,9 +79,7 @@ fun HomeScreen(
             )
         }, floatingActionButton = {
             FloatingActionButton(
-                onClick = {
-                    getSpeechInput(context)
-                },
+                onClick = { /*TODO*/ },
                 backgroundColor = GhostWhite,
                 modifier = Modifier.scale(1f)
             ) {

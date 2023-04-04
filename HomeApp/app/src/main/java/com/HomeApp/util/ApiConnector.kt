@@ -1,10 +1,10 @@
 package com.HomeApp.util
 
 import android.util.Log
-import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.RequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -18,35 +18,23 @@ object ApiConnector {
     private var client: OkHttpClient = OkHttpClient()
 
 
-    // get user data using token
-    fun getUserData(token: String, onRespond: (result: ApiResult) -> Unit) {
-        val urlPath = "/users"
-        val request: Request = Request.Builder()
-            .header(AUTH_TOKEN_NAME, token)
-            .url(DB_ADDR + urlPath)
-            .build()
-        onRespond(callAPI(request))
-    }
-
     /** Api call that requires email and password,
      * in the result there is an token that can be saved for authenticated calls * */
     fun login(
         email: String,
-        password: String,
+        Password: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        formObj.put("email", email)
-        formObj.put("password", password)
-        val requestForm = formObj.toString()
-        val mediaType = "application/json".toMediaType()
-        val requestBody = requestForm.toRequestBody(mediaType)
         val urlPath = "/api/users/login"
+
+        val formBody: RequestBody = FormBody.Builder()
+            .add("email", email)
+            .add("password", Password)
+            .build()
 
         val request: Request = Request.Builder()
             .url(DB_ADDR + urlPath)
-            .header("Content-Type", "application/json")
-            .post(requestBody)
+            .post(formBody)
             .build()
 
         onRespond(callAPI(request))
@@ -59,18 +47,17 @@ object ApiConnector {
         password: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        formObj.put("name", name)
-        formObj.put("email", email)
-        formObj.put("password", password)
-        val requestForm = formObj.toString()
-        val mediaType = "application/json".toMediaType()
-        val requestBody = requestForm.toRequestBody(mediaType)
         val urlPath = "/api/users/signin"
+
+        val formBody: RequestBody = FormBody.Builder()
+            .add("name", name)
+            .add("email", email)
+            .add("password", password)
+            .build()
 
         val request: Request = Request.Builder()
             .url(DB_ADDR + urlPath)
-            .post(requestBody)
+            .post(formBody)
             .build()
 
         onRespond(callAPI(request))
@@ -81,16 +68,15 @@ object ApiConnector {
         email: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        formObj.put("email", email)
-        val requestForm = formObj.toString()
-        val mediaType = "application/json".toMediaType()
-        val requestBody = requestForm.toRequestBody(mediaType)
         val urlPath = "/api/users/reset_request"
+
+        val formBody: RequestBody = FormBody.Builder()
+            .add("email", email)
+            .build()
 
         val request: Request = Request.Builder()
             .url(DB_ADDR + urlPath)
-            .post(requestBody)
+            .post(formBody)
             .build()
         onRespond(callAPI(request))
     }
@@ -101,31 +87,28 @@ object ApiConnector {
         password: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-
-        val formObj = JSONObject()
-        formObj.put("password", password)
-        val requestForm = formObj.toString()
-        val mediaType = "application/json".toMediaType()
-        val requestBody = requestForm.toRequestBody(mediaType)
         val urlPath = "/api/users/reset"
+        val formBody: RequestBody = FormBody.Builder()
+            .add("password", password)
+            .build()
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
-            .put(requestBody)
+            .put(formBody)
             .build()
         onRespond(callAPI(request))
     }
 
-    /** Retrieves the information about the users **/
-    fun getUsersData(token: String, onRespond: (result: ApiResult) -> Unit) {
-        val urlPath = "/api/user"
-        val request: Request = Request.Builder()
-            .header(AUTH_TOKEN_NAME, token)
-            .url(firebaseConfig["databaseURL"] + urlPath)
-            .build()
-        onRespond(callAPI(request))
-    }
+//    /** Retrieves the information about the users **/
+//    fun getUsersData(token: String, onRespond: (result: ApiResult) -> Unit) {
+//        val urlPath = "/api/users"
+//        val request: Request = Request.Builder()
+//            .header(AUTH_TOKEN_NAME, token)
+//            .url(firebaseConfig["databaseURL"] + urlPath)
+//            .build()
+//        onRespond(callAPI(request))
+//    }
 
     fun getAllUserData(token: String, onRespond: (result: ApiResult) -> Unit) {
         val urlPath = "/api/users"
@@ -142,18 +125,15 @@ object ApiConnector {
         email: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        formObj.put("email", email)
-        val requestForm = formObj.toString()
-        val mediaType = "application/json".toMediaType()
-        val requestBody = requestForm.toRequestBody(mediaType)
-
         val urlPath = "/api/user/remove"
+        val formBody: RequestBody = FormBody.Builder()
+            .add("email", email)
+            .build()
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
-            .delete(requestBody)
+            .delete(formBody)
             .build()
         onRespond(callAPI(request))
     }
@@ -162,44 +142,35 @@ object ApiConnector {
     fun action(
 //        token: String,
         id: String,
-        state: JSONObject,
+        state: Map<*, *>,
         type: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        formObj.put("id", id)
-        formObj.put("state", state)
-        formObj.put("type", type)
-        Log.d("ACTION", "$formObj")
-        val urlPath = "/devices/actions"
-        val requestForm = formObj.toString()
-        val mediaType = "application/json".toMediaType()
-        val requestBody = requestForm.toRequestBody(mediaType)
-
-        val token =
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndlbHRlci50b21AaG90bWFpbC5jb20iLCJpYXQiOjE2ODAyODE4NjB9.X60oo5qZ0I6ZGjyVheDHpGLFkMErQi9r4GVSJJQ6mMc"
+        val urlPath = "/api/devices/actions"
+        val formBody: RequestBody = FormBody.Builder()
+            .add("id", id)
+            .add("state", state.toString())
+            .add("type", type)
+            .build()
 
         val request: Request = Request.Builder()
 //            .header(AUTH_TOKEN_NAME, token)
-            .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
-            .put(requestBody)
+            .put(formBody)
             .build()
 
-        onRespond(callAPI(request))
+        onRespond(ApiConnector.callAPI(request))
     }
 
     private fun callAPI(request: Request): ApiResult {
         return try {
             Log.d("callAPI", request.url.toString())
-            val call = client.newCall(request)
-            Log.d("callAPI", call.request().toString())
             val apiResult = client.newCall(request).execute()
             Log.d("callAPI", apiResult.message)
             val jsonData = apiResult.body?.string() ?: "{}"
             ApiResult(jsonData, apiResult.code)
         } catch (e: java.lang.Exception) {
-            Log.d("callAPI", e.toString())
+            Log.d("callAPI", "Crash")
             ApiResult("{msg: \"Connection timeout\"}")
         }
     }
@@ -214,7 +185,7 @@ data class ApiResult(
 ) {
     fun status(): HttpStatus {
         return when (code) {
-            in 100..299 -> {
+            200 -> {
                 HttpStatus.SUCCESS
             }
             in 400..500 -> {

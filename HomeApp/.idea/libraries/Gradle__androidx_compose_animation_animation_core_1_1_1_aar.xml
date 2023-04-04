@@ -1,12 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: androidx.compose.animation:animation-core:1.1.1@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/63a6db361c672b0a2acc0269d1d2dfc7/transformed/animation-core-1.1.1/AndroidManifest.xml" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/63a6db361c672b0a2acc0269d1d2dfc7/transformed/animation-core-1.1.1/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/63a6db361c672b0a2acc0269d1d2dfc7/transformed/animation-core-1.1.1/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/5a514eca4b1e88fbe59076c664e7de78/transformed/animation-core-1.1.1/AndroidManifest.xml" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/5a514eca4b1e88fbe59076c664e7de78/transformed/animation-core-1.1.1/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/5a514eca4b1e88fbe59076c664e7de78/transformed/animation-core-1.1.1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/07658654807047d1925c9ef015348765/transformed/animation-core-1.1.1/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/07658654807047d1925c9ef015348765/transformed/animation-core-1.1.1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/07658654807047d1925c9ef015348765/transformed/animation-core-1.1.1/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
