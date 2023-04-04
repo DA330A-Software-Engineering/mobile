@@ -128,7 +128,13 @@ class SideDrawer(
                         .padding(horizontal = 15.dp)
                 ) {
                     Button(
-                        onClick = { navController.navigate(it.route) }, elevation = null,
+                        onClick = {
+                            navController.navigate(it.route)
+                            coroutine.launch {
+                                drawerState.close()
+                            }
+                        },
+                        elevation = null,
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.Transparent
                         ),
