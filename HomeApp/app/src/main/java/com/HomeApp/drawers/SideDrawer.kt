@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.HomeApp.ui.composables.TitledDivider
 import com.HomeApp.ui.theme.montserrat
+import com.HomeApp.util.LocalStorage
 import com.HomeApp.util.SideBarOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -132,6 +133,9 @@ class SideDrawer(
                             navController.navigate(it.route)
                             coroutine.launch {
                                 drawerState.close()
+                            }
+                            if (it == SideBarOptions.LOGOUT) {
+                                LocalStorage.clearToken(context)
                             }
                         },
                         elevation = null,
