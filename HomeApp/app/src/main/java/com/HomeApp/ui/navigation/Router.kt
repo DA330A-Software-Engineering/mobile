@@ -24,6 +24,12 @@ sealed interface NavPath {
     val route: String
 }
 
+object Loading : NavPath {
+    override val route = "load"
+    override val icon: ImageVector = Icons.Rounded.AccessTime
+}
+
+
 object Login : NavPath {
     override val route = "login"
     override val icon: ImageVector = Icons.Rounded.Login
