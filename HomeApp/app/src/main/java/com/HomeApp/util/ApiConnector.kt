@@ -1,18 +1,12 @@
 package com.HomeApp.util
 
-import android.content.ContentValues.TAG
 import android.util.Log
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
-import com.google.gson.Gson
 
 /** The Api Connector has all the functions for talking to the API,
  *  each function will return an onRespond Callback that has an parameter of
@@ -23,6 +17,16 @@ object ApiConnector {
     // Init HTTP Client
     private var client: OkHttpClient = OkHttpClient()
 
+
+    // get user data using token
+    fun getUserData(token: String, onRespond: (result: ApiResult) -> Unit) {
+        val urlPath = "/users"
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .build()
+        onRespond(callAPI(request))
+    }
 
     /** Api call that requires email and password,
      * in the result there is an token that can be saved for authenticated calls * */
@@ -113,15 +117,15 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
-//    /** Retrieves the information about the users **/
-//    fun getUsersData(token: String, onRespond: (result: ApiResult) -> Unit) {
-//        val urlPath = "/api/users"
-//        val request: Request = Request.Builder()
-//            .header(AUTH_TOKEN_NAME, token)
-//            .url(firebaseConfig["databaseURL"] + urlPath)
-//            .build()
-//        onRespond(callAPI(request))
-//    }
+    /** Retrieves the information about the users **/
+    fun getUsersData(token: String, onRespond: (result: ApiResult) -> Unit) {
+        val urlPath = "/api/user"
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(firebaseConfig["databaseURL"] + urlPath)
+            .build()
+        onRespond(callAPI(request))
+    }
 
     fun getAllUserData(token: String, onRespond: (result: ApiResult) -> Unit) {
         val urlPath = "/api/users"
@@ -166,15 +170,19 @@ object ApiConnector {
         formObj.put("id", id)
         formObj.put("state", state)
         formObj.put("type", type)
+        Log.d("ACTION", "$formObj")
         val urlPath = "/devices/actions"
         val requestForm = formObj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
         Log.d("LOOK HERE", requestForm)
 
+        val token =
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndlbHRlci50b21AaG90bWFpbC5jb20iLCJpYXQiOjE2ODAyODE4NjB9.X60oo5qZ0I6ZGjyVheDHpGLFkMErQi9r4GVSJJQ6mMc"
+
         val request: Request = Request.Builder()
 //            .header(AUTH_TOKEN_NAME, token)
-            .header("Content-Type", "application/json")
+            .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
             .put(requestBody)
             .build()

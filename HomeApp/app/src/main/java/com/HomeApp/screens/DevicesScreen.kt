@@ -1,6 +1,7 @@
 package com.HomeApp.screens
 
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.*
@@ -70,16 +72,14 @@ fun DevicesScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     state: ScaffoldState,
-    OnSelfClick: () -> Unit = {}
+    OnSelfClick: () -> Unit = {},
+    getSpeechInput: (Context) -> Unit = {}
 ) {
     val coroutine = rememberCoroutineScope()
     val listHeight = LocalConfiguration.current.screenHeightDp
     val db = Firebase.firestore
     val documents = rememberFirestoreCollection("devices", Devices::class.java)
-    var value = ""
-
-    TextField(value = value, onValueChange = {value = it})
-
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             TitleBar(screenTitle = "Devices", navController = navController, isDevices = true)
@@ -107,7 +107,7 @@ fun DevicesScreen(
             )
         }, floatingActionButton = {
             FloatingActionButton(
-                onClick = { /*TODO*/ },
+                onClick = { getSpeechInput(context) },
                 backgroundColor = GhostWhite,
                 modifier = Modifier.scale(1f)
             ) {

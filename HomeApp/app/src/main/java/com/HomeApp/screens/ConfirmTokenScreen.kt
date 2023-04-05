@@ -1,14 +1,10 @@
 package com.HomeApp.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -28,7 +24,7 @@ fun ConfirmTokenScreen(
     OnSelfClick: () -> Unit = {}
 ) {
     val focusManager: FocusManager = LocalFocusManager.current
-
+    var emailToken by remember { mutableStateOf("") }
     Column(
         Modifier
             .padding(24.dp)
@@ -39,8 +35,12 @@ fun ConfirmTokenScreen(
         TextInput(
             inputType = InputType.Token,
             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+            updateValue = { emailToken = it }
         )
-        Button(onClick = { navController.navigate(ResetPassword.route) }, modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = { navController.navigate(ResetPassword.route) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("SUBMIT", Modifier.padding(vertical = 8.dp))
         }
         BottomDivider(divider = SignIn, navController = navController)

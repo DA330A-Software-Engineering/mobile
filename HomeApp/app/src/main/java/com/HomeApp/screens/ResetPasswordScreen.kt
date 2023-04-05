@@ -1,25 +1,21 @@
 package com.HomeApp.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import com.HomeApp.ui.composables.InputType
-import com.HomeApp.ui.composables.TextInput
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.BottomDivider
 import com.HomeApp.ui.composables.Divider.SignIn
+import com.HomeApp.ui.composables.InputType
+import com.HomeApp.ui.composables.TextInput
 import com.HomeApp.ui.navigation.Login
 
 @Composable
@@ -38,16 +34,24 @@ fun ResetPasswordScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.Bottom)
     ) {
+        var pw by remember { mutableStateOf("") }
+        var pw2 by remember { mutableStateOf("") }
+
         TextInput(
             inputType = InputType.NewPassword,
-            keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() })
+            keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() }),
+            updateValue = { pw = it }
         )
         TextInput(
             inputType = InputType.ConfirmPassword,
             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-            focusRequester = passwordFocusRequester
+            focusRequester = passwordFocusRequester,
+            updateValue = { pw2 = it }
         )
-        Button(onClick = { navController.navigate(Login.route) }, modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = { navController.navigate(Login.route) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("RESET PASSWORD", Modifier.padding(vertical = 8.dp))
         }
         BottomDivider(divider = SignIn, navController = navController)
