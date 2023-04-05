@@ -76,6 +76,9 @@ fun DevicesScreen(
     val listHeight = LocalConfiguration.current.screenHeightDp
     val db = Firebase.firestore
     val documents = rememberFirestoreCollection("devices", Devices::class.java)
+    var value = ""
+
+    TextField(value = value, onValueChange = {value = it})
 
     Scaffold(
         topBar = {

@@ -80,8 +80,6 @@ fun HomeScreen(
     OnSelfClick: () -> Unit = {},
     state: ScaffoldState
 ) {
-    val documents = rememberFirestoreCollections("devices", Devices::class.java)
-    Log.d("LOGGERS", "${documents.size}")
     val spacerHeight: Dp = 112.dp
     Scaffold(
         content = {
