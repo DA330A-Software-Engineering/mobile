@@ -91,4 +91,10 @@ object LocalStorage {
             e.printStackTrace()
         }
     }
+
+    /** "Clears" the token by updating it to an empty string */
+    fun clearToken(context: Context) {
+        localStorageData.token = ""
+        saveData(context)
+    }
 }

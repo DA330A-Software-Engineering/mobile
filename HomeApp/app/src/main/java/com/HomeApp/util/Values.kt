@@ -4,11 +4,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Curtains
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.outlined.DoorFront
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.People
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.HomeApp.ui.navigation.Home
+import com.HomeApp.ui.navigation.Loading
+import com.HomeApp.ui.navigation.Profile
 
 val firebaseConfig = mapOf(
     "apiKey" to "AIzaSyBe9OfClxqevJF_7X5v2Rk1lP9EQTWv458",
@@ -24,10 +28,10 @@ val firebaseConfig = mapOf(
 val microphoneIcon: ImageVector = Icons.Rounded.Mic
 
 enum class SideBarOptions(val title: String, val icon: ImageVector?, val route: String) {
-    PROFILE("Profile & Family", Icons.Rounded.People, Home.route),
+    PROFILE("Profile & Family", Icons.Rounded.People, Profile.route),
     NOTIFICATIONS("Notifications", Icons.Rounded.Notifications, Home.route),
-    History("History", null, Home.route),
-    LOGOUT("Logout", null, Home.route),
+    History("History", Icons.Rounded.History, Home.route),
+    LOGOUT("Logout", Icons.Rounded.Logout, Loading.route),
 }
 
 val enableTopDrawer: Boolean = false
