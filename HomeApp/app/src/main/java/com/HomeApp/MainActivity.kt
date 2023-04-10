@@ -43,14 +43,15 @@ import org.json.JSONObject
 import java.util.*
 
 val onRespond: (ApiResult) -> Unit = {
-    val data: JSONObject = it.data()
+    Log.d("RESPOND", it.toString())
+//    val data: JSONObject = it.data()
 //    val msg: String = data.get("msg") as String
     when (it.status()) {
         HttpStatus.SUCCESS -> {
 
         }
         HttpStatus.UNAUTHORIZED -> {
-
+            Log.d("RESPOND", it.data().toString())
         }
         HttpStatus.FAILED -> {
 
