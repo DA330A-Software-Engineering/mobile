@@ -1,6 +1,7 @@
 package com.HomeApp.screens
 
 import android.os.Build.VERSION.SDK_INT
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -42,16 +43,19 @@ fun LoadingScreen(
     val context = LocalContext.current
 
     val onAuth: (ApiResult) -> Unit = {
+        Log.d("STATUS TESTING", "${it.status()} -- ${HttpStatus.SUCCESS}")
         isAuth = it.status() == HttpStatus.SUCCESS
         loading = false
-        if (!isAuth) navController.navigate(Login.route)
-        else navController.navigate(Home.route)
+        coroutine.launch(Dispatchers.Main) {
+            if (!isAuth) navController.navigate(Login.route)
+            else navController.navigate(Home.route)
+        }
     }
 
     LaunchedEffect(navBackStackEntry) {
         launch {
             // Call backend to check if we already have an valid token
-            coroutine.launch(Dispatchers.Main) {
+            coroutine.launch(Dispatchers.IO) {
                 ApiConnector.getUserData(
                     token = LocalStorage.getToken(context),
                     onRespond = { onAuth(it) }

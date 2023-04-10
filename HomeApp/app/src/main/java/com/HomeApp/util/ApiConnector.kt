@@ -45,7 +45,6 @@ object ApiConnector {
 
         val request: Request = Request.Builder()
             .url(DB_ADDR + urlPath)
-            .header("Content-Type", "application/json")
             .post(requestBody)
             .build()
 
@@ -161,7 +160,7 @@ object ApiConnector {
 
     /** Api call for device actions */
     fun action(
-//        token: String,
+        token: String,
         id: String,
         state: JSONObject,
         type: String,
@@ -176,9 +175,6 @@ object ApiConnector {
         val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
-
-        val token =
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndlbHRlci50b21AaG90bWFpbC5jb20iLCJpYXQiOjE2ODAyODE4NjB9.X60oo5qZ0I6ZGjyVheDHpGLFkMErQi9r4GVSJJQ6mMc"
 
         val request: Request = Request.Builder()
 //            .header(AUTH_TOKEN_NAME, token)
