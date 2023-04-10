@@ -2,6 +2,7 @@ package com.HomeApp.screens
 
 import android.os.Build.VERSION.SDK_INT
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.navigation.Login
+import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.util.ApiConnector
 import com.HomeApp.util.ApiResult
 import com.HomeApp.util.HttpStatus
@@ -59,7 +61,12 @@ fun LoadingScreen(
     }
 
 
-    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(GhostWhite),
+        verticalArrangement = Arrangement.Center
+    ) {
         val imageLoader = ImageLoader.Builder(context)
             .components {
                 if (SDK_INT >= 28) {
