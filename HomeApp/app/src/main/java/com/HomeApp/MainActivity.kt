@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.*
 
-val onRespond: (ApiResult) -> Unit = {
+private val onRespond: (ApiResult) -> Unit = {
     Log.d("RESPOND", it.toString())
 //    val data: JSONObject = it.data()
 //    val msg: String = data.get("msg") as String
