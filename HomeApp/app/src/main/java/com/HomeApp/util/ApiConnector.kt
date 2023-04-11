@@ -13,6 +13,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.Serializable
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.temporal.TemporalAccessor
@@ -308,42 +309,29 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    data class Action(
+        val id: String,
+        val state: JSONObject,
+        val type: String
+    ) : Serializable
+
     fun createRoutine(
         token: String,
         name: String,
         description: String,
         schedule: String,
-        specific_time: String,
+        repeatable: Boolean,
+        enabled: Boolean,
+        actionList: List<Action>,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX)
-        val cronParser = CronParser(cronDefinition)
-        val cronJob: Cron
-
-        try {
-            cronJob = cronParser.parse(schedule)
-            Log.i("Schedule Parser", cronJob.toString())
-        } catch (e: IllegalArgumentException) {
-            Log.e("Schedule Parser", schedule)
-            return
-        }
-
-        val dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        val dateTime: TemporalAccessor
-        try {
-            dateTime = dateTimeFormatter.parse(specific_time)
-            Log.i("DateTime Parser", dateTime.toString())
-        } catch (e: DateTimeParseException) {
-            Log.e("DateTime Parser", specific_time)
-            return
-        }
-
         val formObj = JSONObject()
         formObj.put("name", name)
         formObj.put("description", description)
-        formObj.put("schedule", cronJob)
-        formObj.put("specific_time", dateTime)
+        formObj.put("schedule", schedule)
+        formObj.put("repeatable", repeatable)
+        formObj.put("enabled", enabled)
+        formObj.put("actionList", actionList)
         val requestForm = formObj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
@@ -365,36 +353,12 @@ object ApiConnector {
         name: String,
         description: String,
         schedule: String,
-        specific_time: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX)
-        val cronParser = CronParser(cronDefinition)
-        val cronJob: Cron
-
-        try {
-            cronJob = cronParser.parse(schedule)
-            Log.i("Schedule Parser", cronJob.toString())
-        } catch (e: IllegalArgumentException) {
-            Log.e("Schedule Parser", schedule)
-            return
-        }
-
-        val dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        val dateTime: TemporalAccessor
-        try {
-            dateTime = dateTimeFormatter.parse(specific_time)
-            Log.i("DateTime Parser", dateTime.toString())
-        } catch (e: DateTimeParseException) {
-            Log.e("DateTime Parser", specific_time)
-            return
-        }
-
         val formObj = JSONObject()
         formObj.put("name", name)
         formObj.put("description", description)
-        formObj.put("schedule", cronJob)
-        formObj.put("specific_time", dateTime)
+        formObj.put("schedule", schedule)
         val requestForm = formObj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
