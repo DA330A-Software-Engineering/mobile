@@ -21,6 +21,7 @@ import com.HomeApp.R
 @Composable
 fun TitleBar(
     screenTitle: String,
+    isDevices: Boolean = false,
     //previousScreen: String, This is to know what screen to navigate to when pressing back
 
     modifier: Modifier = Modifier,
@@ -40,13 +41,17 @@ fun TitleBar(
                 .padding(horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "arrow-back",
-                    modifier = Modifier
-                        .size(50.dp)
-                )
+            Box(modifier = Modifier.width(50.dp)) {
+                if (!isDevices) {
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "arrow-back",
+                            modifier = Modifier
+                                .size(50.dp)
+                        )
+                    }
+                }
             }
             Text(
                 text = screenTitle,

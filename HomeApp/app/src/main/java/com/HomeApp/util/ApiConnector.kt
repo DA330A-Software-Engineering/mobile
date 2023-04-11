@@ -175,6 +175,7 @@ object ApiConnector {
         val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
+        Log.d("LOOK HERE", requestForm)
 
         val request: Request = Request.Builder()
 //            .header(AUTH_TOKEN_NAME, token)

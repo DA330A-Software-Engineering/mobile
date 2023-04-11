@@ -82,30 +82,20 @@ fun DevicesScreen(
     val context = LocalContext.current
     Scaffold(
         topBar = {
-            TitleBar(screenTitle = "Devices", navController = navController)
+            TitleBar(screenTitle = "Devices", navController = navController, isDevices = true)
         },
         content = {
-            Log.d(TAG, listHeight.toString())
             LazyColumn(
                 modifier = Modifier
+                    .height(listHeight.dp)
                     .padding(it)
-                    .fillMaxHeight()
+                    .padding(vertical = 10.dp)
+                    .padding(top = 10.dp)
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                item { TitledDivider(navController = navController, title = "Filters") }
-                item { FilteredList(filterScreen = "devices") }
-                item {
-                    LazyColumn(
-                        modifier = Modifier
-                            .height(listHeight.dp)
-                            .padding(vertical = 10.dp)
-                            .padding(top = 10.dp)
-                            .padding(horizontal = 20.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        items(items = documents, key = { item -> item.id }) { item ->
-                            DeviceCard(navController = navController, deviceItem = item)
-                        }
-                    }
+                items(items = documents, key = { item -> item.id }) { item ->
+                    DeviceCard(navController = navController, deviceItem = item)
                 }
             }
         },

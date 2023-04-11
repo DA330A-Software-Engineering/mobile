@@ -9,18 +9,15 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BrokenImage
-import androidx.compose.material.icons.filled.Curtains
-import androidx.compose.material.icons.filled.DoorFront
-import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.LockOpen
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -51,21 +48,23 @@ fun DeviceCard(
     val cardIcon: ImageVector = when (deviceItem.get("type")) {
         "toggle" -> Icons.Filled.Lightbulb
         "door" -> Icons.Filled.DoorFront
-        "curtain" -> Icons.Filled.Curtains
+        "window" -> Icons.Outlined.Window
+        "screen" -> Icons.Outlined.SmartScreen
+        "buzzer" -> Icons.Outlined.SurroundSound
         else -> Icons.Filled.BrokenImage
     }
 
     val deviceState: String = when (deviceItem.get("type")) {
-        "toggle" -> if (state["on"] == true) "On" else "Off"
-        "door" -> if (state["open"] == true) "Open" else "Closed"
-        "curtain" -> if (state["open"] == true) "Open" else "Closed"
+        "toggle", "fan", "screen" -> if (state["on"] == true) "On" else "Off"
+        "door", "window" -> if (state["open"] == true) "Open" else "Closed"
         else -> {
             "No State"
         }
     }
 
     val actionIcon: ImageVector? = when (deviceItem.get("type")) {
-        "door" -> if (state["locked"] == true) Icons.Outlined.Lock else Icons.Outlined.LockOpen
+        "door", "window" -> if (state["locked"] == true) Icons.Outlined.Lock else Icons.Outlined.LockOpen
+        "fan" -> Icons.Outlined.CompareArrows
         else -> null
 
     }
@@ -79,7 +78,7 @@ fun DeviceCard(
                     state = deviceItem.get("state") as Map<String, Boolean>,
                     type = deviceItem.get("type") as String,
                     coroutine = coroutine,
-                    changedState = "locked"
+                    changedState = if (deviceItem.get("type") == "door" ||  deviceItem.get("type") == "window") "locked" else "reverse"
                 )
             },
             modifier = modifier.then(
@@ -178,15 +177,21 @@ private fun changeState(
     if (type == "toggle") {
         //updateState = mutableMapOf("on" to !state["on"]!!)
         updateState.put("on", !state["on"]!!)
-    } else if (type == "door") {
+    }
+    else if (type == "door" || type == "window") {
         if (changedState == "locked") {
             updateState.put("locked", !state["locked"]!!)
         } else {
             updateState.put("open", !state["open"]!!)
         }
-        //updateState = mutableMapOf("locked" to state["locked"] as Boolean, "open" to !state["open"]!!)
 
-//
+        //updateState = mutableMapOf("locked" to state["locked"] as Boolean, "open" to !state["open"]!!
+    }else if (type == "fan") {
+        if (changedState == "reverse") {
+            updateState.put("reverse", !state["reverse"]!!)
+        } else {
+            updateState.put("on", !state["on"]!!)
+        }
     }
     val changeDeviceState: (ApiResult) -> Unit = {
         //val data: JSONObject = it.data()
