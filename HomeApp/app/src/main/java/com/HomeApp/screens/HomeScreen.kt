@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,6 +39,8 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.HomeApp.R
 import com.HomeApp.ui.composables.AppFooter
+import com.HomeApp.ui.composables.DeviceCard
+import com.HomeApp.ui.composables.GroupComposable
 import com.HomeApp.ui.composables.TitledDivider
 import com.HomeApp.ui.navigation.Groups
 import com.HomeApp.ui.navigation.Routines
@@ -135,6 +138,47 @@ fun HomeScreen(
     )
 }
 
+data class Groupss(
+    var id: String = "",
+    var name: String = "",
+    var description: String = "",
+    var state: String = "",
+    var devices: List<String> = emptyList()
+)
+
+private fun getDummyItems(): List<Groupss> {
+
+    val group1: Groupss = Groupss(
+        id = "123",
+        name = "Lights 1",
+        description = "group1des",
+        devices = listOf("1233", "234"),
+        state = "On"
+    )
+    val group2: Groupss = Groupss(
+        id = "123",
+        name = "Doors",
+        description = "group1des",
+        devices = listOf("1233", "234"),
+        state = "Open"
+    )
+    val group3: Groupss = Groupss(
+        id = "123",
+        name = "Windows",
+        description = "group1des",
+        devices = listOf("1233", "234"),
+        state = "Closed"
+    )
+    val group4: Groupss = Groupss(
+        id = "123",
+        name = "Lights 2",
+        description = "group1des",
+        devices = listOf("1233", "234"),
+        state = "Off"
+    )
+    return listOf(group1, group2, group3, group4)
+}
+
 @Composable
 private fun MakeGroups(
     navController: NavController,
@@ -143,6 +187,7 @@ private fun MakeGroups(
 ) {
     Spacer(modifier = Modifier.height(28.dp))
     TitledDivider(navController, "Groups", "Groups Divider", showIcon = true)
+    val items = getDummyItems()
     Column(
         modifier = modifier
     ) {
@@ -150,45 +195,22 @@ private fun MakeGroups(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(130.dp)
+                .padding(horizontal = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            val items = getDummyItems()
-            itemsIndexed(items = items) { index, item ->
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        "Group $index", color = if (MaterialTheme.colors.isLight) Color.Black else
-                            Color.White,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(5.dp)
-                    )
-                    ClickableCard( // id should be passed along, as well.
-                        onClick = { navController.navigate(Groups.route) },
-                        url = item as String,
-                        index = index,
-                        scale = scale,
-                        textCol = Color.Black
-                    )
-                }
+            items(items = items) { item ->
+                GroupComposable(groupName = item.name, groupState = item.state)
             }
+            /**
+            itemsIndexed(items = items) { index, item ->
+                GroupComposable(groupName = item.name, groupState = )
+            }*/
         }
 
     }
 }
 
-private fun getDummyItems(): List<Any> {
-    val imageUrls = listOf(
-        "https://picsum.photos/id/1025/4951/3301",
-        "https://picsum.photos/id/1012/3973/2639",
-        "https://picsum.photos/id/102/4320/3240",
-        "https://picsum.photos/id/187/4000/2667",
-        "https://picsum.photos/id/1020/4288/2848",
-        "https://picsum.photos/id/1021/2048/1206",
-        "https://picsum.photos/id/1024/1920/1280",
-        "https://picsum.photos/id/1013/4256/2832"
-    )
-    return imageUrls
-}
+
 
 
 @Composable

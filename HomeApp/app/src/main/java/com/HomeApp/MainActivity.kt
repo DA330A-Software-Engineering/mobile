@@ -32,6 +32,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.HomeApp.drawers.SideDrawer
 import com.HomeApp.ui.navigation.AnimatedAppNavHost
 import com.HomeApp.ui.navigation.Devices
+import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.navigation.Loading
 import com.HomeApp.ui.theme.HomeAppTheme
 import com.HomeApp.util.*
@@ -303,7 +304,7 @@ fun RunApp(getSpeechInput: (Context) -> Unit = {}) {
                     ) {
                         AnimatedAppNavHost(
                             navController = navController,
-                            startDestination = Devices.route,
+                            startDestination = Home.route,
                             state = state,
                             getSpeechInput = { getSpeechInput(it) }
                         )
