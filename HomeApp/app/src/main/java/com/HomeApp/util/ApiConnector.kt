@@ -191,6 +191,7 @@ object ApiConnector {
 
     fun updateDevice(
         token: String,
+        id: String,
         name: String,
         description: String,
         onRespond: (result: ApiResult) -> Unit
@@ -202,7 +203,7 @@ object ApiConnector {
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
-        val urlPath = "/api/devices"
+        val urlPath = "/api/devices/$id"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
@@ -217,11 +218,36 @@ object ApiConnector {
         id: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val urlPath = "/api/devices/$id"
+        val urlPath = "/api/groups?id=$id"
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
             .get()
+            .build()
+        onRespond(callAPI(request))
+    }
+
+    fun createGroup(
+        token: String,
+        name: String,
+        description: String,
+        devices: Array<String>,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val formObj = JSONObject()
+        formObj.put("name", name)
+        formObj.put("description", description)
+        formObj.put("devices", devices)
+        val requestForm = formObj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
+        val urlPath = "/api/groups"
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .post(requestBody)
             .build()
         onRespond(callAPI(request))
     }
