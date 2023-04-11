@@ -62,6 +62,7 @@ object LocalStorage {
         try {
             fileOutputStream = context.openFileOutput(FILENAME, Context.MODE_PRIVATE)
             fileOutputStream.write(json.toByteArray())
+            fileOutputStream.close()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -90,5 +91,11 @@ object LocalStorage {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    /** "Clears" the token by updating it to an empty string */
+    fun clearToken(context: Context) {
+        localStorageData.token = ""
+        saveData(context)
     }
 }

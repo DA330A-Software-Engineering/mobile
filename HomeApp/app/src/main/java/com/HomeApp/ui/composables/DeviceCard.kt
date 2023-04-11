@@ -1,5 +1,6 @@
 package com.HomeApp.ui.composables
 
+import android.content.Context
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +16,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -25,6 +27,7 @@ import com.HomeApp.ui.theme.RaminGrey
 import com.HomeApp.util.ApiConnector
 import com.HomeApp.util.ApiResult
 import com.HomeApp.util.HttpStatus
+import com.HomeApp.util.LocalStorage
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +40,7 @@ fun DeviceCard(
     modifier: Modifier = Modifier,
     deviceItem: DocumentSnapshot
 ) {
+    val context: Context = LocalContext.current
     val item = deviceItem
     val state = deviceItem.get("state") as Map<String, Boolean>
     val coroutine = rememberCoroutineScope()
@@ -69,6 +73,7 @@ fun DeviceCard(
         Button(
             onClick = {
                 changeState(
+                    context = context,
                     id = deviceItem.id,
                     state = deviceItem.get("state") as Map<String, Boolean>,
                     type = deviceItem.get("type") as String,
@@ -100,6 +105,7 @@ fun DeviceCard(
         Button(
             onClick = {
                 changeState(
+                    context = context,
                     id = deviceItem.id,
                     state = deviceItem.get("state") as Map<String, Boolean>,
                     type = deviceItem.get("type") as String,
@@ -156,60 +162,11 @@ fun DeviceCard(
             }
         }
     }
-
-//    Button(
-//        onClick = {
-//
-//        },
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .height(80.dp),
-//        contentPadding = PaddingValues(0.dp),
-//        colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.LightSteelBlue)),
-//        shape = RoundedCornerShape(10)
-//    ) {
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(horizontal = 3.dp),
-//            horizontalArrangement = Arrangement.SpaceBetween
-//        ) {
-//
-//            Row {
-//                Icon(
-//                    imageVector = cardIcon,
-//                    contentDescription = deviceItem.get("type") as String?,
-//                    modifier = Modifier
-//                        .size(70.dp)
-//                        .padding(top = 7.dp)
-//                )
-//                Spacer(modifier = Modifier.width(7.dp))
-//                Text(
-//                    text = deviceItem.get("name") as String,
-//                    fontSize = 25.sp,
-//                    modifier = Modifier
-//                        .fillMaxHeight()
-//                        .wrapContentHeight(align = Alignment.CenterVertically),
-//                    style = TextStyle(textDecoration = TextDecoration.Underline)
-//                )
-//            }
-//            Text(
-//                text = deviceState,
-//                fontSize = 18.sp,
-//                modifier = Modifier
-//                    .fillMaxHeight()
-//                    .fillMaxWidth()
-//                    .wrapContentHeight(align = Alignment.CenterVertically)
-//                    .padding(end = 7.dp),
-//                textAlign = TextAlign.Right,
-//                fontWeight = FontWeight.Bold,
-//            )
-//        }
-//    }
 }
 
 
 private fun changeState(
+    context: Context,
     id: String,
     state: Map<String, Boolean>,
     type: String,
@@ -236,18 +193,12 @@ private fun changeState(
             updateState.put("on", !state["on"]!!)
         }
     }
-
-    //Log.d("I am trying", updateState.toString())
-    //val newState = Json.encodeToString(updateState)
-    //val newState = Gson().toJson(updateState)
-
-
-    //Log.d(TAG, "new state $newState")
     val changeDeviceState: (ApiResult) -> Unit = {
         //val data: JSONObject = it.data()
 //        val msg: String = data.get("msg") as String
         when (it.status()) {
             HttpStatus.SUCCESS -> {
+
             }
             HttpStatus.UNAUTHORIZED -> {
 
@@ -260,39 +211,11 @@ private fun changeState(
 
     coroutine.launch(Dispatchers.IO) {
         ApiConnector.action(
+            token = LocalStorage.getToken(context),
             id = id,
             state = updateState,
             type = type,
             onRespond = changeDeviceState
         )
-        /**
-        Log.d("LOOK HERE", id)
-        Log.d("LOOK HERE", newState)
-        Log.d("LOOK HERE", type)
-        val client = OkHttpClient()
-
-        val formBody: RequestBody = FormBody.Builder()
-        .add("id", id)
-        .add("state", newState)
-        .add("type", type)
-        .build()
-
-
-
-        val request: Request = Request.Builder()
-        //            .header(AUTH_TOKEN_NAME, token)
-        .header("Content-Type", "application/json")
-        .url("http://10.0.2.2:3000/devices/actions")
-        .put(formBody)
-        .build()
-        val response = client.newCall(request).execute()
-        val responseCode = response.code
-        val responseBody = response.body?.string()
-        Log.d("----------RESPONSE CODE", responseCode.toString())
-        Log.d("----------RESPONSE BODY", responseBody.toString())
-
-        response.close()*/
     }
 }
-
-

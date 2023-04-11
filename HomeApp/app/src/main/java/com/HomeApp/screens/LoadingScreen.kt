@@ -1,7 +1,9 @@
 package com.HomeApp.screens
 
 import android.os.Build.VERSION.SDK_INT
+import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +22,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.navigation.Login
+import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.util.ApiConnector
 import com.HomeApp.util.ApiResult
 import com.HomeApp.util.HttpStatus
@@ -40,16 +43,19 @@ fun LoadingScreen(
     val context = LocalContext.current
 
     val onAuth: (ApiResult) -> Unit = {
+        Log.d("STATUS TESTING", "${it.status()} -- ${HttpStatus.SUCCESS}")
         isAuth = it.status() == HttpStatus.SUCCESS
         loading = false
-        if (!isAuth) navController.navigate(Login.route)
-        else navController.navigate(Home.route)
+        coroutine.launch(Dispatchers.Main) {
+            if (!isAuth) navController.navigate(Login.route)
+            else navController.navigate(Home.route)
+        }
     }
 
     LaunchedEffect(navBackStackEntry) {
         launch {
             // Call backend to check if we already have an valid token
-            coroutine.launch(Dispatchers.Main) {
+            coroutine.launch(Dispatchers.IO) {
                 ApiConnector.getUserData(
                     token = LocalStorage.getToken(context),
                     onRespond = { onAuth(it) }
@@ -59,7 +65,12 @@ fun LoadingScreen(
     }
 
 
-    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(GhostWhite),
+        verticalArrangement = Arrangement.Center
+    ) {
         val imageLoader = ImageLoader.Builder(context)
             .components {
                 if (SDK_INT >= 28) {

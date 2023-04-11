@@ -44,15 +44,16 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.*
 
-val onRespond: (ApiResult) -> Unit = {
-    val data: JSONObject = it.data()
+private val onRespond: (ApiResult) -> Unit = {
+    Log.d("RESPOND", it.toString())
+//    val data: JSONObject = it.data()
 //    val msg: String = data.get("msg") as String
     when (it.status()) {
         HttpStatus.SUCCESS -> {
 
         }
         HttpStatus.UNAUTHORIZED -> {
-
+            Log.d("RESPOND", it.data().toString())
         }
         HttpStatus.FAILED -> {
 
@@ -77,6 +78,7 @@ class MainActivity : ComponentActivity() {
                             if (input.lowercase()
                                     .contains((it.get("name") as String).lowercase())
                             ) {
+                                val context = this.baseContext
                                 var primaryAction: Boolean? = null
                                 var secondaryAction: Any? = null
                                 when (it.get("type")) {
@@ -90,14 +92,7 @@ class MainActivity : ComponentActivity() {
                                         if (primaryAction != null) {
                                             jsonObj.put("on", primaryAction)
                                         }
-                                        if (jsonObj.length() == 1) {
-                                            ApiConnector.action(
-                                                id = it.id,
-                                                state = jsonObj,
-                                                type = it.get("type") as String,
-                                                onRespond = onRespond
-                                            )
-                                        }
+
                                     }
                                     "door", "window" -> {
                                         primaryAction = when {
@@ -119,6 +114,7 @@ class MainActivity : ComponentActivity() {
                                         }
                                         if (jsonObj.length() == 1) {
                                             ApiConnector.action(
+                                                token = LocalStorage.getToken(context),
                                                 id = it.id,
                                                 state = jsonObj,
                                                 type = it.get("type") as String,
@@ -147,6 +143,7 @@ class MainActivity : ComponentActivity() {
                                         }
                                         if (jsonObj.length() == 1) {
                                             ApiConnector.action(
+                                                token = LocalStorage.getToken(context),
                                                 id = it.id,
                                                 state = jsonObj,
                                                 type = it.get("type") as String,
@@ -176,6 +173,7 @@ class MainActivity : ComponentActivity() {
                                             jsonObj.put("reverse", secondaryAction)
                                         }
                                         ApiConnector.action(
+                                            token = LocalStorage.getToken(context),
                                             id = it.id,
                                             state = jsonObj,
                                             type = it.get("type") as String,
@@ -315,7 +313,6 @@ fun RunApp(getSpeechInput: (Context) -> Unit = {}) {
             drawerContent = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr)
                 {
-
                     val sideDrawer: SideDrawer = SideDrawer(
                         drawerState = state.drawerState,
                         navController = navController

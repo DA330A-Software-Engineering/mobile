@@ -74,3 +74,8 @@ object CreateAccount : NavPath {
     override val icon = Icons.Rounded.Person
     override val route = "create-account"
 }
+
+object Profile : NavPath {
+    override val icon = Icons.Rounded.People
+    override val route = "profile"
+}
