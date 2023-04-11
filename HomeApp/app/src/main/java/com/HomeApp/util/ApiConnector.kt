@@ -5,17 +5,14 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import com.cronutils.model.Cron
 import com.cronutils.model.CronType
-import com.cronutils.model.definition.CronDefinition
 import com.cronutils.model.definition.CronDefinitionBuilder
 import com.cronutils.parser.CronParser
-import com.cronutils.parser.CronParserField
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
-import java.lang.IllegalArgumentException
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.temporal.TemporalAccessor
@@ -357,6 +354,57 @@ object ApiConnector {
             .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
             .post(requestBody)
+            .build()
+        onRespond(callAPI(request))
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateRoutine(
+        token: String,
+        id: String,
+        name: String,
+        description: String,
+        schedule: String,
+        specific_time: String,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX)
+        val cronParser = CronParser(cronDefinition)
+        val cronJob: Cron
+
+        try {
+            cronJob = cronParser.parse(schedule)
+            Log.i("Schedule Parser", cronJob.toString())
+        } catch (e: IllegalArgumentException) {
+            Log.e("Schedule Parser", schedule)
+            return
+        }
+
+        val dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        val dateTime: TemporalAccessor
+        try {
+            dateTime = dateTimeFormatter.parse(specific_time)
+            Log.i("DateTime Parser", dateTime.toString())
+        } catch (e: DateTimeParseException) {
+            Log.e("DateTime Parser", specific_time)
+            return
+        }
+
+        val formObj = JSONObject()
+        formObj.put("name", name)
+        formObj.put("description", description)
+        formObj.put("schedule", cronJob)
+        formObj.put("specific_time", dateTime)
+        val requestForm = formObj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
+        val urlPath = "/api/routines?id=$id"
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .put(requestBody)
             .build()
         onRespond(callAPI(request))
     }
