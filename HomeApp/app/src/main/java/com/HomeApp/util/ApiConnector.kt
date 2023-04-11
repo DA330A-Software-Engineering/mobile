@@ -231,7 +231,7 @@ object ApiConnector {
         token: String,
         name: String,
         description: String,
-        devices: Array<String>,
+        devices: List<String>,
         onRespond: (result: ApiResult) -> Unit
     ) {
         val formObj = JSONObject()
@@ -273,6 +273,27 @@ object ApiConnector {
             .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
             .put(requestBody)
+            .build()
+        onRespond(callAPI(request))
+    }
+
+    fun deleteGroup(
+        token: String,
+        id: String,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val formObj = JSONObject()
+        formObj.put("id", id)
+        val requestForm = formObj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
+        val urlPath = "/api/groups"
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .delete(requestBody)
             .build()
         onRespond(callAPI(request))
     }
