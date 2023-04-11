@@ -12,7 +12,7 @@ data class Groups(
     var name: String = "",
     var description: String = "",
     var state: Boolean = false,
-    var available: Boolean = true
+    var available: List<String> = emptyList()
 )
 
 @Composable
