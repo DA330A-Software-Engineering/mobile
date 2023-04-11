@@ -254,9 +254,10 @@ object ApiConnector {
 
     fun updateGroup(
         token: String,
+        id: String,
         name: String,
         description: String,
-        devices: Array<String>,
+        devices: List<String>,
         onRespond: (result: ApiResult) -> Unit
     ) {
         val formObj = JSONObject()
@@ -267,7 +268,7 @@ object ApiConnector {
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
-        val urlPath = "/api/groups"
+        val urlPath = "/api/groups?id=$id"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
