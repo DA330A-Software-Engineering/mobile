@@ -62,6 +62,7 @@ object LocalStorage {
         try {
             fileOutputStream = context.openFileOutput(FILENAME, Context.MODE_PRIVATE)
             fileOutputStream.write(json.toByteArray())
+            fileOutputStream.close()
         } catch (e: Exception) {
             e.printStackTrace()
         }
