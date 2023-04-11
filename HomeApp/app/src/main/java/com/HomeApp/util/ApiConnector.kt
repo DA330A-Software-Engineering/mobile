@@ -212,6 +212,27 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
+    fun getGroup(
+        token: String,
+        id: String,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val formObj = JSONObject()
+        formObj.put("id", id)
+        val requestForm = formObj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
+        val urlPath = "/api/devices"
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .put(requestBody)
+            .build()
+        onRespond(callAPI(request))
+    }
+
     private fun callAPI(request: Request): ApiResult {
         return try {
             Log.d("callAPI", request.url.toString())
