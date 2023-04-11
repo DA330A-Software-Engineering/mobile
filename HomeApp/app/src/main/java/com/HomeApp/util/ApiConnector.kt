@@ -217,18 +217,11 @@ object ApiConnector {
         id: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        formObj.put("id", id)
-        val requestForm = formObj.toString()
-        val mediaType = "application/json".toMediaType()
-        val requestBody = requestForm.toRequestBody(mediaType)
-
-        val urlPath = "/api/devices"
-
+        val urlPath = "/api/devices/$id"
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
-            .put(requestBody)
+            .get()
             .build()
         onRespond(callAPI(request))
     }
