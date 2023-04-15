@@ -185,6 +185,7 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
+    /** Api call for group actions */
     fun groupAction(
         token: String,
         id: String,
@@ -210,6 +211,7 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
+    /** Api call to update a device */
     fun updateDevice(
         token: String,
         id: String,
@@ -234,6 +236,7 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
+    /** Api call to get a group */
     fun getGroup(
         token: String,
         id: String,
@@ -248,6 +251,7 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
+    /** Api call to create a group */
     fun createGroup(
         token: String,
         name: String,
@@ -273,6 +277,7 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
+    /** Api call to update a group */
     fun updateGroup(
         token: String,
         id: String,
@@ -299,6 +304,7 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
+    /** Api call to delete a group */
     fun deleteGroup(
         token: String,
         id: String,
@@ -325,6 +331,7 @@ object ApiConnector {
         val type: String
     ) : Serializable
 
+    /** Api call to create a routine */
     fun createRoutine(
         token: String,
         name: String,
@@ -335,6 +342,12 @@ object ApiConnector {
         actionList: List<Action>,
         onRespond: (result: ApiResult) -> Unit
     ) {
+        val cronRegex = "^\\s*(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-9]|[0-2][0-3])\\s+(\\*|[0-9]|[0-3][0-9])\\s+(\\*|[0-9]|1[0-2])\\s*$"
+        if (!schedule.matches(Regex(cronRegex))) {
+            onRespond(ApiResult("{\"error\": \"Invalid schedule parameter\"}", 422))
+            return
+        }
+
         val formObj = JSONObject()
         formObj.put("name", name)
         formObj.put("description", description)
@@ -356,6 +369,7 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
+    /** Api call to update a routine */
     fun updateRoutine(
         token: String,
         id: String,
@@ -365,6 +379,12 @@ object ApiConnector {
         enabled: Boolean,
         onRespond: (result: ApiResult) -> Unit
     ) {
+        val cronRegex = "^\\s*(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-9]|[0-2][0-3])\\s+(\\*|[0-9]|[0-3][0-9])\\s+(\\*|[0-9]|1[0-2])\\s*$"
+        if (!schedule.matches(Regex(cronRegex))) {
+            onRespond(ApiResult("{\"error\": \"Invalid schedule parameter\"}", 422))
+            return
+        }
+
         val formObj = JSONObject()
         formObj.put("name", name)
         formObj.put("description", description)
@@ -384,6 +404,7 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
+    /** Api call to delete a routine */
     fun deleteRoutine(
         token: String,
         id: String,
@@ -418,7 +439,6 @@ object ApiConnector {
             ApiResult("{msg: \"Connection timeout\"}")
         }
     }
-
 }
 
 
@@ -432,8 +452,11 @@ data class ApiResult(
             in 100..299 -> {
                 HttpStatus.SUCCESS
             }
-            in 400..500 -> {
+            in 400..499 -> {
                 HttpStatus.UNAUTHORIZED
+            }
+            422 -> {
+                HttpStatus.INVALID_PARAMETER
             }
             else -> {
                 HttpStatus.FAILED
@@ -455,4 +478,5 @@ enum class HttpStatus {
     SUCCESS,
     UNAUTHORIZED,
     FAILED,
+    INVALID_PARAMETER
 }
