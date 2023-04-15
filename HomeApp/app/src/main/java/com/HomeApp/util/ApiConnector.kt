@@ -42,7 +42,7 @@ object ApiConnector {
         val requestForm = formObj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
-        val urlPath = "/api/users/login"
+        val urlPath = "/users/login"
 
         val request: Request = Request.Builder()
             .url(DB_ADDR + urlPath)
@@ -67,7 +67,7 @@ object ApiConnector {
         val requestForm = formObj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
-        val urlPath = "/api/users/signin"
+        val urlPath = "/users/signin"
 
         val request: Request = Request.Builder()
             .url(DB_ADDR + urlPath)
@@ -87,7 +87,7 @@ object ApiConnector {
         val requestForm = formObj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
-        val urlPath = "/api/users/reset_request"
+        val urlPath = "/users/reset_request"
 
         val request: Request = Request.Builder()
             .url(DB_ADDR + urlPath)
@@ -108,7 +108,7 @@ object ApiConnector {
         val requestForm = formObj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
-        val urlPath = "/api/users/reset"
+        val urlPath = "/users/reset"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
@@ -120,7 +120,7 @@ object ApiConnector {
 
     /** Retrieves the information about the users **/
     fun getUsersData(token: String, onRespond: (result: ApiResult) -> Unit) {
-        val urlPath = "/api/user"
+        val urlPath = "/users"
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
             .url(firebaseConfig["databaseURL"] + urlPath)
@@ -129,7 +129,7 @@ object ApiConnector {
     }
 
     fun getAllUserData(token: String, onRespond: (result: ApiResult) -> Unit) {
-        val urlPath = "/api/users"
+        val urlPath = "/users"
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
@@ -149,7 +149,7 @@ object ApiConnector {
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
-        val urlPath = "/api/users/remove"
+        val urlPath = "/users/remove"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
@@ -224,7 +224,7 @@ object ApiConnector {
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
-        val urlPath = "/api/devices/$id"
+        val urlPath = "/devices/$id"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
@@ -239,7 +239,7 @@ object ApiConnector {
         id: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val urlPath = "/api/groups/$id"
+        val urlPath = "/groups/$id"
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
@@ -263,7 +263,7 @@ object ApiConnector {
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
-        val urlPath = "/api/groups"
+        val urlPath = "/groups"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
@@ -289,7 +289,7 @@ object ApiConnector {
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
-        val urlPath = "/api/groups/$id"
+        val urlPath = "/groups/$id"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
@@ -309,7 +309,7 @@ object ApiConnector {
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
-        val urlPath = "/api/groups/$id"
+        val urlPath = "/groups/$id"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
@@ -346,7 +346,7 @@ object ApiConnector {
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
-        val urlPath = "/api/routines"
+        val urlPath = "/routines"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
@@ -374,7 +374,7 @@ object ApiConnector {
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
-        val urlPath = "/api/routines/$id"
+        val urlPath = "/routines/$id"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
@@ -394,7 +394,7 @@ object ApiConnector {
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
-        val urlPath = "/api/routines/$id"
+        val urlPath = "/routines/$id"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)

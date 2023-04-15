@@ -14,15 +14,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
-import com.HomeApp.R
 import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.navigation.navigateSingleTopTo
+import com.HomeApp.ui.theme.LightSteelBlue
 
 @Composable
 fun AppFooter(
@@ -30,7 +29,7 @@ fun AppFooter(
     micColor: Color = if (MaterialTheme.colors.isLight) Color.Black else Color.White
 ) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-        val rowBgCol = colorResource(id = R.color.LightSteelBlue)
+        val rowBgCol = LightSteelBlue
         val screenWidth = LocalConfiguration.current.screenWidthDp
         val screenHeight = LocalConfiguration.current.screenHeightDp
 

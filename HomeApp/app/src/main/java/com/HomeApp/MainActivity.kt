@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -32,6 +31,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.HomeApp.drawers.SideDrawer
 import com.HomeApp.ui.navigation.AnimatedAppNavHost
 import com.HomeApp.ui.navigation.Loading
+import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.ui.theme.HomeAppTheme
 import com.HomeApp.util.*
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -59,6 +59,7 @@ val onRespond: (ApiResult) -> Unit = {
 }
 
 class MainActivity : ComponentActivity() {
+    private val token = LocalStorage.getToken(this)
     var contextContainer: Context? = null
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -90,6 +91,7 @@ class MainActivity : ComponentActivity() {
                                         }
                                         if (jsonObj.length() == 1) {
                                             ApiConnector.deviceAction(
+                                                token = token,
                                                 id = it.id,
                                                 state = jsonObj,
                                                 type = it.get("type") as String,
@@ -117,6 +119,7 @@ class MainActivity : ComponentActivity() {
                                         }
                                         if (jsonObj.length() == 1) {
                                             ApiConnector.deviceAction(
+                                                token = token,
                                                 id = it.id,
                                                 state = jsonObj,
                                                 type = it.get("type") as String,
@@ -145,6 +148,7 @@ class MainActivity : ComponentActivity() {
                                         }
                                         if (jsonObj.length() == 1) {
                                             ApiConnector.deviceAction(
+                                                token = token,
                                                 id = it.id,
                                                 state = jsonObj,
                                                 type = it.get("type") as String,
@@ -174,6 +178,7 @@ class MainActivity : ComponentActivity() {
                                             jsonObj.put("reverse", secondaryAction)
                                         }
                                         ApiConnector.deviceAction(
+                                            token = token,
                                             id = it.id,
                                             state = jsonObj,
                                             type = it.get("type") as String,
@@ -224,7 +229,7 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = colorResource(id = R.color.GhostWhite)
+                    color = GhostWhite
                 ) {
                     ActivityCompat.requestPermissions(this, arrayOf(RECORD_AUDIO), 0)
                     RunApp(getSpeechInput = { getSpeechInput(it) })
@@ -259,7 +264,7 @@ fun RunApp(getSpeechInput: (Context) -> Unit = {}) {
             // Call backend to check if we already have an valid token
             coroutine.launch(Dispatchers.IO) {
                 ApiConnector.getAllUserData(
-                    token = LocalStorage.getToken(context),
+                    token = token,
                     onRespond = { onAuth(it) }
                 )
             }
