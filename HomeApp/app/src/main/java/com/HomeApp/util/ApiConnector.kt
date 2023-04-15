@@ -285,12 +285,11 @@ object ApiConnector {
         onRespond: (result: ApiResult) -> Unit
     ) {
         val formObj = JSONObject()
-        formObj.put("id", id)
         val requestForm = formObj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
-        val urlPath = "/api/groups"
+        val urlPath = "/api/groups/$id"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
@@ -369,12 +368,11 @@ object ApiConnector {
         onRespond: (result: ApiResult) -> Unit
     ) {
         val formObj = JSONObject()
-        formObj.put("id", id)
         val requestForm = formObj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
-        val urlPath = "/api/routines"
+        val urlPath = "/api/routines/$id"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
