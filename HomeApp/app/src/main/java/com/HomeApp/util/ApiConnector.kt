@@ -149,7 +149,7 @@ object ApiConnector {
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
-        val urlPath = "/api/user/remove"
+        val urlPath = "/api/users/remove"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
@@ -161,7 +161,7 @@ object ApiConnector {
 
     /** Api call for device actions */
     fun action(
-//        token: String,
+        token: String,
         id: String,
         state: JSONObject,
         type: String,
@@ -171,17 +171,13 @@ object ApiConnector {
         formObj.put("id", id)
         formObj.put("state", state)
         formObj.put("type", type)
-        Log.d("ACTION", "$formObj")
-        val urlPath = "/devices/actions"
         val requestForm = formObj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
-        val token =
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndlbHRlci50b21AaG90bWFpbC5jb20iLCJpYXQiOjE2ODAyODE4NjB9.X60oo5qZ0I6ZGjyVheDHpGLFkMErQi9r4GVSJJQ6mMc"
+        val urlPath = "/devices/actions"
 
         val request: Request = Request.Builder()
-//            .header(AUTH_TOKEN_NAME, token)
             .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
             .put(requestBody)
@@ -310,8 +306,8 @@ object ApiConnector {
         name: String,
         description: String,
         schedule: String,
-        repeatable: Boolean,
         enabled: Boolean,
+        repeatable: Boolean,
         actionList: List<Action>,
         onRespond: (result: ApiResult) -> Unit
     ) {
@@ -319,8 +315,8 @@ object ApiConnector {
         formObj.put("name", name)
         formObj.put("description", description)
         formObj.put("schedule", schedule)
-        formObj.put("repeatable", repeatable)
         formObj.put("enabled", enabled)
+        formObj.put("repeatable", repeatable)
         formObj.put("actionList", actionList)
         val requestForm = formObj.toString()
         val mediaType = "application/json".toMediaType()
@@ -342,12 +338,14 @@ object ApiConnector {
         name: String,
         description: String,
         schedule: String,
+        enabled: Boolean,
         onRespond: (result: ApiResult) -> Unit
     ) {
         val formObj = JSONObject()
         formObj.put("name", name)
         formObj.put("description", description)
         formObj.put("schedule", schedule)
+        formObj.put("enabled", enabled)
         val requestForm = formObj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
