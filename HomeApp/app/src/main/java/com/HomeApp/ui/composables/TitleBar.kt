@@ -5,7 +5,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.R
+import com.HomeApp.ui.navigation.Home
 
 
 @Composable
@@ -33,6 +34,9 @@ fun TitleBar(
 
     var leftSelected by remember { mutableStateOf(true) }
 
+    val showDialog = remember { mutableStateOf(false) }
+    if (showDialog.value) { DialogBox(showDialog) }
+
     Column(modifier = Modifier) {
         Spacer(modifier = Modifier.height(30.dp))
         Row(
@@ -43,7 +47,7 @@ fun TitleBar(
         ) {
             Box(modifier = Modifier.width(50.dp)) {
                 if (!isDevices) {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { navController.navigate(Home.route) }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "arrow-back",
@@ -59,10 +63,10 @@ fun TitleBar(
                 fontSize = 40.sp,
                 textAlign = TextAlign.Center
             )
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { showDialog.value = true }) {
                 Icon(
-                    imageVector = Icons.Outlined.Settings,
-                    contentDescription = "settings-icon",
+                    imageVector = Icons.Outlined.Add,
+                    contentDescription = "add-icon",
                     modifier = Modifier
                         .size(50.dp)
                 )

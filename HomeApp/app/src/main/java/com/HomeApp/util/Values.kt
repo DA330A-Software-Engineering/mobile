@@ -44,3 +44,19 @@ enum class DevicesFilters(
 
 val AUTH_TOKEN_NAME = "x-auth-header"
 val DB_ADDR = "http://192.168.1.232:3000"
+
+enum class DayFilters(
+    val letter: String,
+    val filter: Int
+) {
+    MONDAY("M", 1),
+    TUESDAY("T", 2),
+    WEDNESDAY("W", 3),
+    THURSDAY("T", 4),
+    FRIDAY("F", 5),
+    SATURDAY("S", 6),
+    SUNDAY("S", 0)
+}
+
+val months = listOf("Any", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+val days = listOf("Any", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
