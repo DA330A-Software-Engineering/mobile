@@ -89,7 +89,7 @@ class MainActivity : ComponentActivity() {
                                             jsonObj.put("on", primaryAction)
                                         }
                                         if (jsonObj.length() == 1) {
-                                            ApiConnector.action(
+                                            ApiConnector.deviceAction(
                                                 id = it.id,
                                                 state = jsonObj,
                                                 type = it.get("type") as String,
@@ -116,7 +116,7 @@ class MainActivity : ComponentActivity() {
                                             jsonObj.put("locked", secondaryAction)
                                         }
                                         if (jsonObj.length() == 1) {
-                                            ApiConnector.action(
+                                            ApiConnector.deviceAction(
                                                 id = it.id,
                                                 state = jsonObj,
                                                 type = it.get("type") as String,
@@ -144,7 +144,7 @@ class MainActivity : ComponentActivity() {
                                             jsonObj.put("reverse", secondaryAction)
                                         }
                                         if (jsonObj.length() == 1) {
-                                            ApiConnector.action(
+                                            ApiConnector.deviceAction(
                                                 id = it.id,
                                                 state = jsonObj,
                                                 type = it.get("type") as String,
@@ -173,7 +173,7 @@ class MainActivity : ComponentActivity() {
                                         if (secondaryAction != null) {
                                             jsonObj.put("reverse", secondaryAction)
                                         }
-                                        ApiConnector.action(
+                                        ApiConnector.deviceAction(
                                             id = it.id,
                                             state = jsonObj,
                                             type = it.get("type") as String,

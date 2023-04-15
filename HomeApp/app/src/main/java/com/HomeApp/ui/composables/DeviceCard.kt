@@ -253,7 +253,7 @@ private fun changeState(
     }
 
     coroutine.launch(Dispatchers.IO) {
-        ApiConnector.action(
+        ApiConnector.deviceAction(
             id = id,
             state = updateState,
             type = type,

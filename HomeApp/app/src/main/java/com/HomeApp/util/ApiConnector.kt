@@ -160,7 +160,7 @@ object ApiConnector {
     }
 
     /** Api call for device actions */
-    fun action(
+    fun deviceAction(
         token: String,
         id: String,
         state: JSONObject,
@@ -182,7 +182,31 @@ object ApiConnector {
             .url(DB_ADDR + urlPath)
             .put(requestBody)
             .build()
+        onRespond(callAPI(request))
+    }
 
+    fun groupAction(
+        token: String,
+        id: String,
+        state: JSONObject,
+        type: String,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val formObj = JSONObject()
+        formObj.put("id", id)
+        formObj.put("state", state)
+        formObj.put("type", type)
+        val requestForm = formObj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
+        val urlPath = "/groups/actions"
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .put(requestBody)
+            .build()
         onRespond(callAPI(request))
     }
 
