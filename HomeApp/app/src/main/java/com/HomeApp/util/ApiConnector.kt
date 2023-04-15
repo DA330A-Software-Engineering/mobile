@@ -376,6 +376,7 @@ object ApiConnector {
         obj.put("description", description)
         obj.put("schedule", schedule)
         obj.put("enabled", enabled)
+        obj.put("repeatable", repeatable)
         val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
