@@ -36,10 +36,10 @@ object ApiConnector {
         password: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        formObj.put("email", email)
-        formObj.put("password", password)
-        val requestForm = formObj.toString()
+        val obj = JSONObject()
+        obj.put("email", email)
+        obj.put("password", password)
+        val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
         val urlPath = "/users/login"
@@ -60,11 +60,11 @@ object ApiConnector {
         password: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        formObj.put("name", name)
-        formObj.put("email", email)
-        formObj.put("password", password)
-        val requestForm = formObj.toString()
+        val obj = JSONObject()
+        obj.put("name", name)
+        obj.put("email", email)
+        obj.put("password", password)
+        val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
         val urlPath = "/users/signin"
@@ -82,9 +82,9 @@ object ApiConnector {
         email: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        formObj.put("email", email)
-        val requestForm = formObj.toString()
+        val obj = JSONObject()
+        obj.put("email", email)
+        val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
         val urlPath = "/users/reset_request"
@@ -103,9 +103,9 @@ object ApiConnector {
         onRespond: (result: ApiResult) -> Unit
     ) {
 
-        val formObj = JSONObject()
-        formObj.put("password", password)
-        val requestForm = formObj.toString()
+        val obj = JSONObject()
+        obj.put("password", password)
+        val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
         val urlPath = "/users/reset"
@@ -143,9 +143,9 @@ object ApiConnector {
         email: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        formObj.put("email", email)
-        val requestForm = formObj.toString()
+        val obj = JSONObject()
+        obj.put("email", email)
+        val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
@@ -167,11 +167,11 @@ object ApiConnector {
         type: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        formObj.put("id", id)
-        formObj.put("state", state)
-        formObj.put("type", type)
-        val requestForm = formObj.toString()
+        val obj = JSONObject()
+        obj.put("id", id)
+        obj.put("state", state)
+        obj.put("type", type)
+        val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
@@ -193,11 +193,11 @@ object ApiConnector {
         type: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        formObj.put("id", id)
-        formObj.put("state", state)
-        formObj.put("type", type)
-        val requestForm = formObj.toString()
+        val obj = JSONObject()
+        obj.put("id", id)
+        obj.put("state", state)
+        obj.put("type", type)
+        val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
@@ -219,10 +219,10 @@ object ApiConnector {
         description: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        formObj.put("name", name)
-        formObj.put("description", description)
-        val requestForm = formObj.toString()
+        val obj = JSONObject()
+        obj.put("name", name)
+        obj.put("description", description)
+        val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
@@ -236,21 +236,6 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
-    /** Api call to get a group */
-    fun getGroup(
-        token: String,
-        id: String,
-        onRespond: (result: ApiResult) -> Unit
-    ) {
-        val urlPath = "/groups/$id"
-        val request: Request = Request.Builder()
-            .header(AUTH_TOKEN_NAME, token)
-            .url(DB_ADDR + urlPath)
-            .get()
-            .build()
-        onRespond(callAPI(request))
-    }
-
     /** Api call to create a group */
     fun createGroup(
         token: String,
@@ -259,11 +244,11 @@ object ApiConnector {
         devices: List<String>,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        formObj.put("name", name)
-        formObj.put("description", description)
-        formObj.put("devices", devices)
-        val requestForm = formObj.toString()
+        val obj = JSONObject()
+        obj.put("name", name)
+        obj.put("description", description)
+        obj.put("devices", devices)
+        val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
@@ -286,11 +271,11 @@ object ApiConnector {
         devices: List<String>,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        formObj.put("name", name)
-        formObj.put("description", description)
-        formObj.put("devices", devices)
-        val requestForm = formObj.toString()
+        val obj = JSONObject()
+        obj.put("name", name)
+        obj.put("description", description)
+        obj.put("devices", devices)
+        val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
@@ -310,8 +295,8 @@ object ApiConnector {
         id: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        val requestForm = formObj.toString()
+        val obj = JSONObject()
+        val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
@@ -326,7 +311,8 @@ object ApiConnector {
     }
 
     data class Action(
-        val id: String,
+        val deviceId: String?,
+        val groupId: String?,
         val state: JSONObject,
         val type: String
     ) : Serializable
@@ -348,14 +334,14 @@ object ApiConnector {
             return
         }
 
-        val formObj = JSONObject()
-        formObj.put("name", name)
-        formObj.put("description", description)
-        formObj.put("schedule", schedule)
-        formObj.put("enabled", enabled)
-        formObj.put("repeatable", repeatable)
-        formObj.put("actionList", actionList)
-        val requestForm = formObj.toString()
+        val obj = JSONObject()
+        obj.put("name", name)
+        obj.put("description", description)
+        obj.put("schedule", schedule)
+        obj.put("enabled", enabled)
+        obj.put("repeatable", repeatable)
+        obj.put("actionList", actionList)
+        val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
@@ -377,6 +363,7 @@ object ApiConnector {
         description: String,
         schedule: String,
         enabled: Boolean,
+        repeatable: Boolean,
         onRespond: (result: ApiResult) -> Unit
     ) {
         val cronRegex = "^\\s*(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-9]|[0-2][0-3])\\s+(\\*|[0-9]|[0-3][0-9])\\s+(\\*|[0-9]|1[0-2])\\s*$"
@@ -385,12 +372,12 @@ object ApiConnector {
             return
         }
 
-        val formObj = JSONObject()
-        formObj.put("name", name)
-        formObj.put("description", description)
-        formObj.put("schedule", schedule)
-        formObj.put("enabled", enabled)
-        val requestForm = formObj.toString()
+        val obj = JSONObject()
+        obj.put("name", name)
+        obj.put("description", description)
+        obj.put("schedule", schedule)
+        obj.put("enabled", enabled)
+        val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
@@ -410,8 +397,8 @@ object ApiConnector {
         id: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val formObj = JSONObject()
-        val requestForm = formObj.toString()
+        val obj = JSONObject()
+        val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
