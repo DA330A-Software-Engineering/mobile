@@ -30,6 +30,8 @@ import androidx.core.app.ActivityCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.HomeApp.drawers.SideDrawer
 import com.HomeApp.ui.navigation.AnimatedAppNavHost
+import com.HomeApp.ui.navigation.Devices
+import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.navigation.Loading
 import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.ui.theme.HomeAppTheme
@@ -42,15 +44,16 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.*
 
-val onRespond: (ApiResult) -> Unit = {
-    val data: JSONObject = it.data()
+private val onRespond: (ApiResult) -> Unit = {
+    Log.d("RESPOND", it.toString())
+//    val data: JSONObject = it.data()
 //    val msg: String = data.get("msg") as String
     when (it.status()) {
         HttpStatus.SUCCESS -> {
 
         }
         HttpStatus.UNAUTHORIZED -> {
-
+            Log.d("RESPOND", it.data().toString())
         }
         HttpStatus.FAILED -> {
 
@@ -59,7 +62,6 @@ val onRespond: (ApiResult) -> Unit = {
 }
 
 class MainActivity : ComponentActivity() {
-    private val token = LocalStorage.getToken(this)
     var contextContainer: Context? = null
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -76,6 +78,7 @@ class MainActivity : ComponentActivity() {
                             if (input.lowercase()
                                     .contains((it.get("name") as String).lowercase())
                             ) {
+                                val context = this.baseContext
                                 var primaryAction: Boolean? = null
                                 var secondaryAction: Any? = null
                                 when (it.get("type")) {
@@ -89,15 +92,7 @@ class MainActivity : ComponentActivity() {
                                         if (primaryAction != null) {
                                             jsonObj.put("on", primaryAction)
                                         }
-                                        if (jsonObj.length() == 1) {
-                                            ApiConnector.deviceAction(
-                                                token = token,
-                                                id = it.id,
-                                                state = jsonObj,
-                                                type = it.get("type") as String,
-                                                onRespond = onRespond
-                                            )
-                                        }
+
                                     }
                                     "door", "window" -> {
                                         primaryAction = when {
@@ -119,7 +114,7 @@ class MainActivity : ComponentActivity() {
                                         }
                                         if (jsonObj.length() == 1) {
                                             ApiConnector.deviceAction(
-                                                token = token,
+                                                token = LocalStorage.getToken(context),
                                                 id = it.id,
                                                 state = jsonObj,
                                                 type = it.get("type") as String,
@@ -148,7 +143,7 @@ class MainActivity : ComponentActivity() {
                                         }
                                         if (jsonObj.length() == 1) {
                                             ApiConnector.deviceAction(
-                                                token = token,
+                                                token = LocalStorage.getToken(context),
                                                 id = it.id,
                                                 state = jsonObj,
                                                 type = it.get("type") as String,
@@ -178,7 +173,7 @@ class MainActivity : ComponentActivity() {
                                             jsonObj.put("reverse", secondaryAction)
                                         }
                                         ApiConnector.deviceAction(
-                                            token = token,
+                                            token = LocalStorage.getToken(context),
                                             id = it.id,
                                             state = jsonObj,
                                             type = it.get("type") as String,
@@ -264,7 +259,7 @@ fun RunApp(getSpeechInput: (Context) -> Unit = {}) {
             // Call backend to check if we already have an valid token
             coroutine.launch(Dispatchers.IO) {
                 ApiConnector.getAllUserData(
-                    token = token,
+                    token = LocalStorage.getToken(context),
                     onRespond = { onAuth(it) }
                 )
             }
@@ -318,7 +313,6 @@ fun RunApp(getSpeechInput: (Context) -> Unit = {}) {
             drawerContent = {
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr)
                 {
-
                     val sideDrawer: SideDrawer = SideDrawer(
                         drawerState = state.drawerState,
                         navController = navController

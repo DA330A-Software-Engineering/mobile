@@ -46,7 +46,6 @@ object ApiConnector {
 
         val request: Request = Request.Builder()
             .url(DB_ADDR + urlPath)
-            .header("Content-Type", "application/json")
             .post(requestBody)
             .build()
 

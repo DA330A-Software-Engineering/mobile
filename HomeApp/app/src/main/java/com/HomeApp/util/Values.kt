@@ -4,11 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Curtains
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.outlined.DoorFront
-import androidx.compose.material.icons.rounded.History
-import androidx.compose.material.icons.rounded.Logout
-import androidx.compose.material.icons.rounded.Mic
-import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.People
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.navigation.Loading
@@ -47,4 +43,4 @@ enum class DevicesFilters(
 }
 
 val AUTH_TOKEN_NAME = "x-auth-header"
-val DB_ADDR = "http://10.0.2.2:3000"
+val DB_ADDR = "http://192.168.1.232:3000"
