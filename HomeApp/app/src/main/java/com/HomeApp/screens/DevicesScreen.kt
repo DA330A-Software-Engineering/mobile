@@ -53,7 +53,7 @@ fun DevicesScreen(
     val coroutine = rememberCoroutineScope()
     val listHeight = LocalConfiguration.current.screenHeightDp
     val db = Firebase.firestore
-    val documents = rememberFirestoreCollection("devices", Devices::class.java)
+    val documents = rememberFirestoreCollection("devices", Devices::class.java, "devices")
     val context = LocalContext.current
     Scaffold(
         topBar = {

@@ -47,6 +47,7 @@ import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.ui.theme.LightSteelBlue
 import com.HomeApp.ui.theme.montserrat
 import com.HomeApp.util.microphoneIcon
+import com.HomeApp.util.rememberFirestoreCollection
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
@@ -178,32 +179,6 @@ private fun getDummyItems(): List<Groupss> {
     return listOf(group1, group2, group3, group4)
 }
 
-fun <T> rememberFirestoregroups(
-    documentRef: String,
-    clazz: Class<T>
-): SnapshotStateList<DocumentSnapshot> {
-    val collectionRef = FirebaseFirestore.getInstance().collection("profiles").document("raminkhareji@gmail.com").collection("groups")
-    val documents = mutableStateListOf<DocumentSnapshot>()  //mutableStateOf(MutableList<T>())
-    var counter = 0
-
-    collectionRef.addSnapshotListener { snapshot, error ->
-        if (error != null) {
-            // Handle the error
-            return@addSnapshotListener
-        }
-        if (snapshot != null) {
-            documents.clear()
-            snapshot.documents.forEach { item ->
-                documents.add(item)
-            }
-
-            //Log.d(TAG, "Look here ${snapshot.documents}")
-            //Log.d(TAG, "Look here 2 ${documents}")
-        }
-
-    }
-    return documents
-}
 
 @Composable
 private fun MakeGroups(
@@ -213,7 +188,7 @@ private fun MakeGroups(
 ) {
     Spacer(modifier = Modifier.height(28.dp))
     TitledDivider(navController, "Groups", "Groups Divider", showIcon = true)
-    val items = rememberFirestoregroups("", Devices::class.java)
+    val items = rememberFirestoreCollection("", Devices::class.java, "groups")
     Column(
         modifier = modifier
     ) {

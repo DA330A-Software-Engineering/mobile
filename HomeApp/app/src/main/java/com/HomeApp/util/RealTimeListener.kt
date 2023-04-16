@@ -7,9 +7,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 fun <T> rememberFirestoreCollection(
     collectionPath: String,
-    clazz: Class<T>
+    clazz: Class<T>,
+    collectionType: String
 ): SnapshotStateList<DocumentSnapshot> {
-    val collectionRef = FirebaseFirestore.getInstance().collection(collectionPath)
+    val collectionRef = if (collectionType == "devices") FirebaseFirestore.getInstance().collection(collectionPath)
+    else if (collectionType == "groups") FirebaseFirestore.getInstance().collection("profiles").document("raminkhareji@gmail.com").collection("groups")
+    else FirebaseFirestore.getInstance().collection(collectionPath)
     val documents = mutableStateListOf<DocumentSnapshot>()  //mutableStateOf(MutableList<T>())
     var counter = 0
 
