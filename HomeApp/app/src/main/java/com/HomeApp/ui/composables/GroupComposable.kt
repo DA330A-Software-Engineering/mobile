@@ -26,7 +26,7 @@ data class Groups(
 fun GroupComposable(
     modifier: Modifier = Modifier,
     groupName: String,
-    groupState: String
+    //groupState: String
 ) {
 
     Button(onClick = { /*TODO*/ }, modifier = Modifier
@@ -42,7 +42,7 @@ fun GroupComposable(
         Column(modifier = Modifier) {
             Text(text = groupName, modifier = Modifier.fillMaxWidth(),textAlign = TextAlign.Center, textDecoration = TextDecoration.Underline, fontSize = 20.sp)
             Spacer(modifier = Modifier.height(15.dp))
-            Text(text = groupState, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+            Text(text = "groupState", fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
         }
 
     }

@@ -178,6 +178,33 @@ private fun getDummyItems(): List<Groupss> {
     return listOf(group1, group2, group3, group4)
 }
 
+fun <T> rememberFirestoregroups(
+    documentRef: String,
+    clazz: Class<T>
+): SnapshotStateList<DocumentSnapshot> {
+    val collectionRef = FirebaseFirestore.getInstance().collection("profiles").document("raminkhareji@gmail.com").collection("groups")
+    val documents = mutableStateListOf<DocumentSnapshot>()  //mutableStateOf(MutableList<T>())
+    var counter = 0
+
+    collectionRef.addSnapshotListener { snapshot, error ->
+        if (error != null) {
+            // Handle the error
+            return@addSnapshotListener
+        }
+        if (snapshot != null) {
+            documents.clear()
+            snapshot.documents.forEach { item ->
+                documents.add(item)
+            }
+
+            //Log.d(TAG, "Look here ${snapshot.documents}")
+            //Log.d(TAG, "Look here 2 ${documents}")
+        }
+
+    }
+    return documents
+}
+
 @Composable
 private fun MakeGroups(
     navController: NavController,
@@ -186,7 +213,7 @@ private fun MakeGroups(
 ) {
     Spacer(modifier = Modifier.height(28.dp))
     TitledDivider(navController, "Groups", "Groups Divider", showIcon = true)
-    val items = getDummyItems()
+    val items = rememberFirestoregroups("", Devices::class.java)
     Column(
         modifier = modifier
     ) {
@@ -198,7 +225,7 @@ private fun MakeGroups(
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(items = items) { item ->
-                GroupComposable(groupName = item.name, groupState = item.state)
+                GroupComposable(groupName = item.get("name") as String)
             }
             /**
             itemsIndexed(items = items) { index, item ->
