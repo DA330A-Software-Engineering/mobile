@@ -310,8 +310,7 @@ object ApiConnector {
     }
 
     data class Action(
-        val deviceId: String?,
-        val groupId: String?,
+        val deviceId: String,
         val state: JSONObject,
         val type: String
     ) : Serializable
