@@ -1,5 +1,7 @@
 package com.HomeApp.util
 
+import android.util.Log
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.firebase.firestore.DocumentSnapshot
@@ -34,4 +36,28 @@ fun <T> rememberFirestoreCollection(
 
     }
     return documents
+}
+
+/**fun getDocument(collectionPath: String, documentPath: String): DocumentSnapshot? {
+    Log.d("I'm HERRRRRREEEEE", "collection path: $collectionPath documentpath: $documentPath")
+    var document: DocumentSnapshot? = null
+    val documentRef = FirebaseFirestore.getInstance().collection(collectionPath).document(documentPath)
+
+
+    documentRef.get().addOnSuccessListener { documentSnapshot ->
+            Log.d("OK OK OK HERE", documentSnapshot.id)
+            document = documentSnapshot
+    }
+
+    return document
+}*/
+
+fun getDocument(collectionPath: String, documentPath: String, callback: (document: DocumentSnapshot?) -> Unit) {
+    val documentRef = FirebaseFirestore.getInstance().collection(collectionPath).document(documentPath)
+
+    documentRef.get().addOnSuccessListener { documentSnapshot ->
+        callback(documentSnapshot)
+    }.addOnFailureListener {
+        callback(null)
+    }
 }

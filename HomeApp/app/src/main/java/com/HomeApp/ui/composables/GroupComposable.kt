@@ -1,5 +1,6 @@
 package com.HomeApp.ui.composables
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -10,6 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -22,7 +24,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.Navigation
 import com.HomeApp.ui.navigation.Settings
 import com.HomeApp.ui.theme.RaminGrey
+import com.HomeApp.util.getDocument
 import com.google.firebase.firestore.DocumentSnapshot
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -102,27 +106,50 @@ private fun editGroup(
     var groupDesc by remember { mutableStateOf(groupItem.get("description") as String) }
 
     Column(modifier = Modifier, verticalArrangement = Arrangement.spacedBy(5.dp)) {
-        Spacer(modifier = Modifier.height(10.dp))
         Row(modifier = Modifier
             .height(50.dp),
             verticalAlignment = Alignment.CenterVertically) {
             Text(text = "Name", modifier = Modifier.weight(2f))
             Spacer(modifier = Modifier.weight(0.1f))
-            TextField(value = groupName, onValueChange = {groupName = it}, modifier = Modifier.width(100.dp).weight(5f))
+            TextField(value = groupName, onValueChange = {groupName = it}, modifier = Modifier
+                .width(100.dp)
+                .weight(5f))
         }
         Row(modifier = Modifier
             .height(50.dp),
             verticalAlignment = Alignment.CenterVertically) {
             Text(text = "Description", modifier = Modifier.weight(2f))
             Spacer(modifier = Modifier.weight(0.1f))
-            TextField(value = groupDesc, onValueChange = {groupDesc = it}, modifier = Modifier.width(100.dp).weight(5f))
+            TextField(value = groupDesc, onValueChange = {groupDesc = it}, modifier = Modifier
+                .width(100.dp)
+                .weight(5f))
         }
+        val coroutine = rememberCoroutineScope()
         Row(modifier = Modifier
             .height(50.dp),
             verticalAlignment = Alignment.CenterVertically) {
             Text(text = "Devices", modifier = Modifier.weight(2f))
             Spacer(modifier = Modifier.weight(0.1f))
-            TextField(value = groupDesc, onValueChange = {groupDesc = it}, modifier = Modifier.width(100.dp).weight(5f))
+            Column(modifier = Modifier) {
+                for (item in groupItem.get("devices") as ArrayList<*>){
+                    //var device = mutableStateListOf<DocumentSnapshot>()
+                    var device: DocumentSnapshot?
+                    var deviceName by remember {
+                        mutableStateOf("")
+                    }
+                    getDocument("devices", item as String) { doc ->
+                        device = doc
+                        if (doc != null) {
+                            deviceName = doc.get("name") as String
+                        }
+                    }
+                    Row(modifier = Modifier) {
+                        Text(text = deviceName)
+                    }
+
+
+                }
+            }
         }
 
 
