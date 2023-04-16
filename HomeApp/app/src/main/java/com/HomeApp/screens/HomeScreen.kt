@@ -3,6 +3,7 @@ package com.HomeApp.screens
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,6 +18,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -36,21 +38,21 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.HomeApp.ui.composables.AppFooter
-import com.HomeApp.ui.composables.DeviceCard
-import com.HomeApp.ui.composables.GroupComposable
-import com.HomeApp.ui.composables.TitledDivider
+import com.HomeApp.ui.composables.*
 import com.HomeApp.ui.navigation.Groups
+import com.HomeApp.ui.navigation.Loading
 import com.HomeApp.ui.navigation.Routines
 import com.HomeApp.ui.navigation.Settings
 import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.ui.theme.LightSteelBlue
 import com.HomeApp.ui.theme.montserrat
-import com.HomeApp.util.microphoneIcon
-import com.HomeApp.util.rememberFirestoreCollection
+import com.HomeApp.util.*
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 fun <T> rememberFirestoreCollections(
     collectionPath: String,
@@ -138,47 +140,6 @@ fun HomeScreen(
     )
 }
 
-data class Groupss(
-    var id: String = "",
-    var name: String = "",
-    var description: String = "",
-    var state: String = "",
-    var devices: List<String> = emptyList()
-)
-
-private fun getDummyItems(): List<Groupss> {
-
-    val group1: Groupss = Groupss(
-        id = "123",
-        name = "Lights 1",
-        description = "group1des",
-        devices = listOf("1233", "234"),
-        state = "On"
-    )
-    val group2: Groupss = Groupss(
-        id = "123",
-        name = "Doors",
-        description = "group1des",
-        devices = listOf("1233", "234"),
-        state = "Open"
-    )
-    val group3: Groupss = Groupss(
-        id = "123",
-        name = "Windows",
-        description = "group1des",
-        devices = listOf("1233", "234"),
-        state = "Closed"
-    )
-    val group4: Groupss = Groupss(
-        id = "123",
-        name = "Lights 2",
-        description = "group1des",
-        devices = listOf("1233", "234"),
-        state = "Off"
-    )
-    return listOf(group1, group2, group3, group4)
-}
-
 
 @Composable
 private fun MakeGroups(
@@ -186,9 +147,14 @@ private fun MakeGroups(
     modifier: Modifier = Modifier,
     scale: Float = 1f
 ) {
+    val coroutine = rememberCoroutineScope()
+    val context = LocalContext.current
+    val items = rememberFirestoreCollection("", GroupsClass::class.java, "groups")
+
+
     Spacer(modifier = Modifier.height(28.dp))
     TitledDivider(navController, "Groups", "Groups Divider", showIcon = true)
-    val items = rememberFirestoreCollection("", Devices::class.java, "groups")
+
     Column(
         modifier = modifier
     ) {
@@ -200,7 +166,7 @@ private fun MakeGroups(
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(items = items) { item ->
-                GroupComposable(groupName = item.get("name") as String)
+                GroupComposable(groupItem = item)
             }
             /**
             itemsIndexed(items = items) { index, item ->

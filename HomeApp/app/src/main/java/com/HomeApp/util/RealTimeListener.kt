@@ -8,7 +8,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 fun <T> rememberFirestoreCollection(
     collectionPath: String,
     clazz: Class<T>,
-    collectionType: String
+    collectionType: String,
+    userEmail: String = ""
 ): SnapshotStateList<DocumentSnapshot> {
     val collectionRef = if (collectionType == "devices") FirebaseFirestore.getInstance().collection(collectionPath)
     else if (collectionType == "groups") FirebaseFirestore.getInstance().collection("profiles").document("raminkhareji@gmail.com").collection("groups")
