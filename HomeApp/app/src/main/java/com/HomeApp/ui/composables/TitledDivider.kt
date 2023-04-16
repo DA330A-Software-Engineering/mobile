@@ -3,16 +3,19 @@ package com.HomeApp.ui.composables
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,8 +49,17 @@ fun TitledDivider(
             thickness = 1.dp
         )
         if (showIcon) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Rounded.Edit, contentDescription = description)
+            IconButton(onClick = { /*TODO*/ }, modifier = Modifier.size(50.dp)) {
+                if (title == "Groups") {
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = description,
+                        modifier = Modifier.scale(1.5f)
+                    )
+                } else {
+                    Icon(imageVector = Icons.Rounded.Edit, contentDescription = description)
+                }
+
             }
         }
     }

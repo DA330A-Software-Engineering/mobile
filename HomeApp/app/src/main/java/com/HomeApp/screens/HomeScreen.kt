@@ -3,7 +3,6 @@ package com.HomeApp.screens
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,17 +10,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -32,7 +27,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -40,20 +34,13 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.HomeApp.realTimeData
 import com.HomeApp.ui.composables.*
-import com.HomeApp.ui.navigation.Groups
-import com.HomeApp.ui.navigation.Loading
 import com.HomeApp.ui.navigation.Routines
 import com.HomeApp.ui.navigation.Settings
 import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.ui.theme.LightSteelBlue
 import com.HomeApp.ui.theme.montserrat
 import com.HomeApp.util.*
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 
 @SuppressLint("ShowToast")
@@ -128,7 +115,7 @@ private fun MakeGroups(
 
 
     Spacer(modifier = Modifier.height(28.dp))
-    TitledDivider(navController, "Groups", "Groups Divider")
+    TitledDivider(navController, "Groups", "Groups Divider", showIcon = true)
 
     Column(
         modifier = modifier
@@ -145,14 +132,12 @@ private fun MakeGroups(
             }
             /**
             itemsIndexed(items = items) { index, item ->
-                GroupComposable(groupName = item.name, groupState = )
+            GroupComposable(groupName = item.name, groupState = )
             }*/
         }
 
     }
 }
-
-
 
 
 @Composable

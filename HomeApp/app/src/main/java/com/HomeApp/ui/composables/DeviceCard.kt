@@ -178,7 +178,7 @@ private fun changeState(
     if (type == "toggle") {
         //updateState = mutableMapOf("on" to !state["on"]!!)
         updateState.put("on", !state["on"]!!)
-    } else if (type == "door" || type == "window") {
+    } else if (type == "openLock") {
         if (changedState == "locked") {
             updateState.put("locked", !state["locked"]!!)
         } else {
