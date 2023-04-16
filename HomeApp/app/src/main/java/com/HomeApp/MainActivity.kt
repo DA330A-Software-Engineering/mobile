@@ -238,7 +238,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun RunApp(getSpeechInput: (Context) -> Unit = {}) {
     val context = LocalContext.current
+    email = getEmailFromToken(context)
     FirebaseApp.initializeApp(context)
+    
     val navController = rememberAnimatedNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val state = rememberScaffoldState(

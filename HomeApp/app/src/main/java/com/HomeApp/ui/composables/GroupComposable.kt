@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -22,9 +23,13 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.Navigation
+import com.HomeApp.screens.Devices
 import com.HomeApp.ui.navigation.Settings
 import com.HomeApp.ui.theme.RaminGrey
 import com.HomeApp.util.getDocument
+import com.HomeApp.util.getEmailFromToken
+import com.HomeApp.util.realTimeData
+import com.HomeApp.util.rememberFirestoreCollection
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,7 +51,7 @@ fun GroupComposable(
     //groupState: String
 ) {
     var editGroup by remember { mutableStateOf(false) }
-    Button(onClick = { /*TODO*/ }, modifier = Modifier
+    Button(onClick = { }, modifier = Modifier
         .border(
             width = 1.dp,
             shape = RoundedCornerShape(10.dp),
@@ -124,23 +129,33 @@ private fun editGroup(
                 .width(100.dp)
                 .weight(5f))
         }
-        val coroutine = rememberCoroutineScope()
+
         Row(modifier = Modifier
-            .height(50.dp),
-            verticalAlignment = Alignment.CenterVertically) {
+            .padding(top = 10.dp),
+            ) {
             Text(text = "Devices", modifier = Modifier.weight(2f))
             Spacer(modifier = Modifier.weight(0.1f))
             Column(modifier = Modifier.weight(5f)) {
                 for (item in groupItem.get("devices") as ArrayList<*>){
-                    DeviceItem(item = item as String)
+                    DeviceItem(item = item as String, groupItem = groupItem)
                 }
             }
+        }
+
+        Row(modifier = Modifier
+            .height(30.dp),
+            verticalAlignment = Alignment.CenterVertically) {
+            Spacer(modifier = Modifier.weight(0.1f))
+            Text(text = "Delete?", modifier = Modifier.weight(2f))
+            TextField(value = groupDesc, onValueChange = {groupDesc = it}, modifier = Modifier
+                .width(100.dp)
+                .weight(5f))
         }
     }
 }
 
 @Composable
-private fun DeviceItem(modifier: Modifier = Modifier, item: String) {
+private fun DeviceItem(modifier: Modifier = Modifier, item: String, groupItem: DocumentSnapshot) { // groupItem is for when a device is getting deleted and an API call needs to be made
     //var device = mutableStateListOf<DocumentSnapshot>()
     var device: DocumentSnapshot?
     var deviceName by remember {
@@ -152,7 +167,14 @@ private fun DeviceItem(modifier: Modifier = Modifier, item: String) {
             deviceName = doc.get("name") as String
         }
     }
-    Row(modifier = Modifier) {
-        Text(text = deviceName)
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .height(30.dp)) {
+        Text(text = deviceName, modifier = Modifier.weight(2f))
+        Spacer(modifier = Modifier.weight(0.1f))
+        IconButton(onClick = { /*TODO*/ }, modifier = Modifier.weight(0.5f).size(40.dp)) {
+            Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete Icon")
+
+        }
     }
 }

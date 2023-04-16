@@ -54,32 +54,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
-fun <T> rememberFirestoreCollections(
-    collectionPath: String,
-    clazz: Class<T>
-): SnapshotStateList<DocumentSnapshot> {
-    val collectionRef = FirebaseFirestore.getInstance().collection(collectionPath)
-    val documents = mutableStateListOf<DocumentSnapshot>()  //mutableStateOf(MutableList<T>())
-    var counter = 0
-
-    collectionRef.addSnapshotListener { snapshot, error ->
-        if (error != null) {
-            // Handle the error
-            return@addSnapshotListener
-        }
-        if (snapshot != null) {
-            documents.clear()
-            snapshot.documents.forEach { item ->
-                documents.add(item)
-            }
-
-            //Log.d(TAG, "Look here ${snapshot.documents}")
-            //Log.d(TAG, "Look here 2 ${documents}")
-        }
-
-    }
-    return documents
-}
 
 @SuppressLint("ShowToast")
 @Composable
@@ -148,8 +122,9 @@ private fun MakeGroups(
     scale: Float = 1f
 ) {
     val coroutine = rememberCoroutineScope()
+
     val context = LocalContext.current
-    val items = rememberFirestoreCollection("", GroupsClass::class.java, "groups")
+    val groups = realTimeData.groups
 
 
     Spacer(modifier = Modifier.height(28.dp))
@@ -165,7 +140,7 @@ private fun MakeGroups(
                 .padding(horizontal = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            items(items = items) { item ->
+            items(items = groups) { item ->
                 GroupComposable(groupItem = item)
             }
             /**

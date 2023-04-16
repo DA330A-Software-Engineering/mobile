@@ -24,6 +24,7 @@ import androidx.navigation.NavController
 import com.HomeApp.ui.composables.*
 import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.util.microphoneIcon
+import com.HomeApp.util.realTimeData
 import com.HomeApp.util.rememberFirestoreCollection
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -53,7 +54,8 @@ fun DevicesScreen(
     val coroutine = rememberCoroutineScope()
     val listHeight = LocalConfiguration.current.screenHeightDp
     val db = Firebase.firestore
-    val documents = rememberFirestoreCollection("devices", Devices::class.java, "devices")
+    //val documents = rememberFirestoreCollection("devices", Devices::class.java, "devices")
+    val documents = realTimeData.devices
     val context = LocalContext.current
     Scaffold(
         topBar = {
