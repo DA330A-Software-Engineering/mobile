@@ -21,10 +21,10 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.HomeApp.realTimeData
 import com.HomeApp.ui.composables.*
 import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.util.microphoneIcon
-import com.HomeApp.util.realTimeData
 import com.HomeApp.util.rememberFirestoreCollection
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -55,7 +55,7 @@ fun DevicesScreen(
     val listHeight = LocalConfiguration.current.screenHeightDp
     val db = Firebase.firestore
     //val documents = rememberFirestoreCollection("devices", Devices::class.java, "devices")
-    val documents = realTimeData.devices
+    val documents = realTimeData!!.devices
     val context = LocalContext.current
     Scaffold(
         topBar = {

@@ -1,18 +1,16 @@
 package com.HomeApp.ui.composables
 
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -22,17 +20,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.Navigation
-import com.HomeApp.screens.Devices
-import com.HomeApp.ui.navigation.Settings
+import com.HomeApp.realTimeData
 import com.HomeApp.ui.theme.RaminGrey
 import com.HomeApp.util.getDocument
-import com.HomeApp.util.getEmailFromToken
-import com.HomeApp.util.realTimeData
-import com.HomeApp.util.rememberFirestoreCollection
 import com.google.firebase.firestore.DocumentSnapshot
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 data class GroupsClass(
@@ -51,25 +42,32 @@ fun GroupComposable(
     //groupState: String
 ) {
     var editGroup by remember { mutableStateOf(false) }
-    Button(onClick = { }, modifier = Modifier
-        .border(
-            width = 1.dp,
-            shape = RoundedCornerShape(10.dp),
-            color = RaminGrey
-        )
-        .width(110.dp)
-        .height(100.dp),
+    Button(
+        onClick = { }, modifier = Modifier
+            .border(
+                width = 1.dp,
+                shape = RoundedCornerShape(10.dp),
+                color = RaminGrey
+            )
+            .width(110.dp)
+            .height(100.dp),
         contentPadding = PaddingValues(start = 0.dp, top = 8.dp, end = 0.dp, bottom = 0.dp),
-        shape = RoundedCornerShape(10.dp)) {
+        shape = RoundedCornerShape(10.dp)
+    ) {
         Column(modifier = Modifier.padding(horizontal = 15.dp)) {
-            Text(text = groupItem.get("name") as String, modifier = Modifier.fillMaxWidth(), textDecoration = TextDecoration.Underline, fontSize = 20.sp)
+            Text(
+                text = groupItem.get("name") as String,
+                modifier = Modifier.fillMaxWidth(),
+                textDecoration = TextDecoration.Underline,
+                fontSize = 20.sp
+            )
             Spacer(modifier = Modifier.height(15.dp))
             Row(modifier = Modifier) {
                 Text(text = "On", fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
                     onClick = {
-                              editGroup = true
+                        editGroup = true
 
                     }, modifier = Modifier
                         .size(20.dp)
@@ -88,7 +86,7 @@ fun GroupComposable(
             AlertDialog(
                 onDismissRequest = { editGroup = false },
                 title = { Text(groupItem.get("name") as String) },
-                text = { editGroup(groupItem = groupItem)},
+                text = { EditGroup(groupItem = groupItem) },
                 confirmButton = {
                     Button(
                         onClick = { editGroup = false },
@@ -103,78 +101,130 @@ fun GroupComposable(
 }
 
 @Composable
-private fun editGroup(
-    modifier: Modifier= Modifier,
+private fun EditGroup(
+    modifier: Modifier = Modifier,
     groupItem: DocumentSnapshot,
 ) {
     var groupName by remember { mutableStateOf(groupItem.get("name") as String) }
     var groupDesc by remember { mutableStateOf(groupItem.get("description") as String) }
 
     Column(modifier = Modifier, verticalArrangement = Arrangement.spacedBy(5.dp)) {
-        Row(modifier = Modifier
-            .height(50.dp),
-            verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier
+                .height(50.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(text = "Name", modifier = Modifier.weight(2f))
             Spacer(modifier = Modifier.weight(0.1f))
-            TextField(value = groupName, onValueChange = {groupName = it}, modifier = Modifier
-                .width(100.dp)
-                .weight(5f))
+            TextField(
+                value = groupName, onValueChange = { groupName = it }, modifier = Modifier
+                    .width(100.dp)
+                    .weight(5f)
+            )
         }
-        Row(modifier = Modifier
-            .height(50.dp),
-            verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier
+                .height(50.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(text = "Description", modifier = Modifier.weight(2f))
             Spacer(modifier = Modifier.weight(0.1f))
-            TextField(value = groupDesc, onValueChange = {groupDesc = it}, modifier = Modifier
-                .width(100.dp)
-                .weight(5f))
+            TextField(
+                value = groupDesc, onValueChange = { groupDesc = it }, modifier = Modifier
+                    .width(100.dp)
+                    .weight(5f)
+            )
         }
 
-        Row(modifier = Modifier
-            .padding(top = 10.dp),
-            ) {
+        Row(
+            modifier = Modifier
+                .padding(top = 10.dp),
+        ) {
             Text(text = "Devices", modifier = Modifier.weight(2f))
             Spacer(modifier = Modifier.weight(0.1f))
             Column(modifier = Modifier.weight(5f)) {
-                for (item in groupItem.get("devices") as ArrayList<*>){
-                    DeviceItem(item = item as String, groupItem = groupItem)
+                for (item in groupItem.get("devices") as ArrayList<*>) {
+                    DeviceItem(item = item as String, groupItem = groupItem, isInGroup = true)
+                }
+            }
+
+        }
+        Row(modifier = Modifier.padding(top = 10.dp)) {
+            Spacer(modifier = Modifier.weight(2.1f))
+            LazyColumn(modifier = Modifier.weight(5f)) {
+                items(items = realTimeData!!.devices, key = { item -> item.id }) { item ->
+                    val groupDevices = groupItem.get("devices") as ArrayList<*>
+                    val isMatch = groupDevices.any { it == item.id }
+                    if (!isMatch) {
+                        DeviceItem(item = item.id, groupItem = groupItem, isInGroup = false)
+                    }
                 }
             }
         }
 
-        Row(modifier = Modifier
-            .height(30.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-            Spacer(modifier = Modifier.weight(0.1f))
-            Text(text = "Delete?", modifier = Modifier.weight(2f))
-            TextField(value = groupDesc, onValueChange = {groupDesc = it}, modifier = Modifier
-                .width(100.dp)
-                .weight(5f))
+
+        /**Row(modifier = Modifier
+        .height(30.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Spacer(modifier = Modifier.weight(2f))
+
+        Box(modifier = Modifier.clickable {  }.weight(1f)) {
+        Row {
+
+        Text(text = "Add Device", modifier = Modifier)
+        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
         }
+
+        }
+
+        }*/
     }
 }
 
 @Composable
-private fun DeviceItem(modifier: Modifier = Modifier, item: String, groupItem: DocumentSnapshot) { // groupItem is for when a device is getting deleted and an API call needs to be made
+private fun DeviceItem(
+    modifier: Modifier = Modifier,
+    item: String,
+    groupItem: DocumentSnapshot,
+    isInGroup: Boolean
+) { // groupItem is for when a device is getting deleted and an API call needs to be made
     //var device = mutableStateListOf<DocumentSnapshot>()
     var device: DocumentSnapshot?
     var deviceName by remember {
         mutableStateOf("")
     }
-    getDocument("devices", item as String) { doc ->
+    getDocument("devices", item) { doc ->
         device = doc
         if (doc != null) {
             deviceName = doc.get("name") as String
         }
     }
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .height(30.dp)) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(30.dp)
+    ) {
         Text(text = deviceName, modifier = Modifier.weight(2f))
         Spacer(modifier = Modifier.weight(0.1f))
-        IconButton(onClick = { /*TODO*/ }, modifier = Modifier.weight(0.5f).size(40.dp)) {
-            Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete Icon")
+        if (isInGroup) {
+            IconButton(
+                onClick = { /*TODO*/ }, modifier = Modifier
+                    .weight(0.5f)
+                    .size(40.dp)
+            ) {
+                Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete Icon")
 
+            }
+        } else {
+            IconButton(
+                onClick = { /*TODO*/ }, modifier = Modifier
+                    .weight(0.5f)
+                    .size(40.dp)
+            ) {
+                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
+
+            }
         }
+
     }
 }

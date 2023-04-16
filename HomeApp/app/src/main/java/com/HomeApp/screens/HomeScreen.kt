@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.HomeApp.realTimeData
 import com.HomeApp.ui.composables.*
 import com.HomeApp.ui.navigation.Groups
 import com.HomeApp.ui.navigation.Loading
@@ -122,13 +123,12 @@ private fun MakeGroups(
     scale: Float = 1f
 ) {
     val coroutine = rememberCoroutineScope()
-
     val context = LocalContext.current
-    val groups = realTimeData.groups
+    val groups = realTimeData!!.groups
 
 
     Spacer(modifier = Modifier.height(28.dp))
-    TitledDivider(navController, "Groups", "Groups Divider", showIcon = true)
+    TitledDivider(navController, "Groups", "Groups Divider")
 
     Column(
         modifier = modifier

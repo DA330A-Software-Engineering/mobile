@@ -21,13 +21,12 @@ fun <T> rememberFirestoreCollection(
     collectionPath: String,
     clazz: Class<T>,
     collectionType: String,
-    userEmail: String = ""
+    userEmail: String = "",
 ): SnapshotStateList<DocumentSnapshot> {
-    val collectionRef = if (collectionType == "groups" || collectionType == "routine") FirebaseFirestore.getInstance().collection("profiles").document(email).collection(collectionType)
+    val collectionRef = if (collectionType == "groups" || collectionType == "routine") FirebaseFirestore.getInstance().collection("profiles").document("raminkhareji@gmail.com").collection(collectionType)
     else FirebaseFirestore.getInstance().collection(collectionPath)
     val documents = mutableStateListOf<DocumentSnapshot>()  //mutableStateOf(MutableList<T>())
     var counter = 0
-
     collectionRef.addSnapshotListener { snapshot, error ->
         if (error != null) {
             // Handle the error
@@ -72,11 +71,15 @@ fun getDocument(collectionPath: String, documentPath: String, callback: (documen
 }
 
 
-val realTimeData = RealTimeData()
-var email = ""
 
-class RealTimeData() {
+
+
+class RealTimeData(context: Context) {
+    var email = getEmailFromToken(context)
     val devices = rememberFirestoreCollection("devices", Devices::class.java, "devices")
-    val groups = rememberFirestoreCollection("", GroupsClass::class.java, "groups")
+    val groups = rememberFirestoreCollection("", GroupsClass::class.java, "groups", userEmail = email)
 
 }
+
+
+

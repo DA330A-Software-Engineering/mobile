@@ -30,8 +30,6 @@ import androidx.core.app.ActivityCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.HomeApp.drawers.SideDrawer
 import com.HomeApp.ui.navigation.AnimatedAppNavHost
-import com.HomeApp.ui.navigation.Devices
-import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.navigation.Loading
 import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.ui.theme.HomeAppTheme
@@ -61,8 +59,10 @@ private val onRespond: (ApiResult) -> Unit = {
     }
 }
 
+var realTimeData: RealTimeData? = null
+
 class MainActivity : ComponentActivity() {
-    var contextContainer: Context? = null
+
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -212,7 +212,7 @@ class MainActivity : ComponentActivity() {
 
             // at last we are calling start activity
             // for result to start our activity.
-            contextContainer = context
+
             resultLauncher.launch(intent)
         }
     }
@@ -227,6 +227,7 @@ class MainActivity : ComponentActivity() {
                     color = GhostWhite
                 ) {
                     ActivityCompat.requestPermissions(this, arrayOf(RECORD_AUDIO), 0)
+                    realTimeData = RealTimeData(this.baseContext)
                     RunApp(getSpeechInput = { getSpeechInput(it) })
                 }
             }
@@ -234,13 +235,14 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun RunApp(getSpeechInput: (Context) -> Unit = {}) {
     val context = LocalContext.current
-    email = getEmailFromToken(context)
     FirebaseApp.initializeApp(context)
-    
+    //realTimeData.email = getEmailFromToken(context)
+    //Log.d("MY DATA", realTimeData.email)
     val navController = rememberAnimatedNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val state = rememberScaffoldState(

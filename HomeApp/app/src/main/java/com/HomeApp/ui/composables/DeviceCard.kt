@@ -9,7 +9,9 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.BrokenImage
+import androidx.compose.material.icons.filled.DoorFront
+import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -17,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -56,7 +57,7 @@ fun DeviceCard(
 
     val deviceState: String = when (deviceItem.get("type")) {
         "toggle", "fan", "screen" -> if (state["on"] == true) "On" else "Off"
-        "door", "window" -> if (state["open"] == true) "Open" else "Closed"
+        "door", "window" -> if (state["openLock"] == true) "openLock" else "openLock"
         else -> {
             "No State"
         }
@@ -78,7 +79,7 @@ fun DeviceCard(
                     state = deviceItem.get("state") as Map<String, Boolean>,
                     type = deviceItem.get("type") as String,
                     coroutine = coroutine,
-                    changedState = if (deviceItem.get("type") == "door" ||  deviceItem.get("type") == "window") "locked" else "reverse"
+                    changedState = if (deviceItem.get("type") == "openLock") "locked" else "reverse"
                 )
             },
             modifier = modifier.then(
@@ -177,8 +178,7 @@ private fun changeState(
     if (type == "toggle") {
         //updateState = mutableMapOf("on" to !state["on"]!!)
         updateState.put("on", !state["on"]!!)
-    }
-    else if (type == "door" || type == "window") {
+    } else if (type == "door" || type == "window") {
         if (changedState == "locked") {
             updateState.put("locked", !state["locked"]!!)
         } else {
@@ -186,7 +186,7 @@ private fun changeState(
         }
 
         //updateState = mutableMapOf("locked" to state["locked"] as Boolean, "open" to !state["open"]!!
-    }else if (type == "fan") {
+    } else if (type == "fan") {
         if (changedState == "reverse") {
             updateState.put("reverse", !state["reverse"]!!)
         } else {
