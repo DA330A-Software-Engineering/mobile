@@ -130,30 +130,29 @@ private fun editGroup(
             verticalAlignment = Alignment.CenterVertically) {
             Text(text = "Devices", modifier = Modifier.weight(2f))
             Spacer(modifier = Modifier.weight(0.1f))
-            Column(modifier = Modifier) {
+            Column(modifier = Modifier.weight(5f)) {
                 for (item in groupItem.get("devices") as ArrayList<*>){
-                    //var device = mutableStateListOf<DocumentSnapshot>()
-                    var device: DocumentSnapshot?
-                    var deviceName by remember {
-                        mutableStateOf("")
-                    }
-                    getDocument("devices", item as String) { doc ->
-                        device = doc
-                        if (doc != null) {
-                            deviceName = doc.get("name") as String
-                        }
-                    }
-                    Row(modifier = Modifier) {
-                        Text(text = deviceName)
-                    }
-
-
+                    DeviceItem(item = item as String)
                 }
             }
         }
+    }
+}
 
-
-
-
+@Composable
+private fun DeviceItem(modifier: Modifier = Modifier, item: String) {
+    //var device = mutableStateListOf<DocumentSnapshot>()
+    var device: DocumentSnapshot?
+    var deviceName by remember {
+        mutableStateOf("")
+    }
+    getDocument("devices", item as String) { doc ->
+        device = doc
+        if (doc != null) {
+            deviceName = doc.get("name") as String
+        }
+    }
+    Row(modifier = Modifier) {
+        Text(text = deviceName)
     }
 }
