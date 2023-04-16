@@ -12,20 +12,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
-import com.HomeApp.R
 import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Home
+import com.HomeApp.ui.theme.GhostWhite
+import com.HomeApp.ui.theme.LightSteelBlue
 import com.HomeApp.util.microphoneIcon
 
 @Composable
 fun AppBottomBar(navController: NavController, modifier: Modifier = Modifier) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-        val bgCol = colorResource(id = R.color.GhostWhite)
+        val bgCol = GhostWhite
         val screenWidth = LocalConfiguration.current.screenWidthDp
         Column(
             modifier = Modifier
@@ -59,7 +59,7 @@ fun AppBottomBar(navController: NavController, modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
-                    .background(colorResource(id = R.color.LightSteelBlue))
+                    .background(LightSteelBlue)
                     .padding(top = 5.dp)
                     .zIndex(1f)
             ) {
@@ -75,7 +75,7 @@ fun AppBottomBar(navController: NavController, modifier: Modifier = Modifier) {
                     Icon(
                         imageVector = Home.icon,
                         contentDescription = "Home Icon",
-                        tint = colorResource(id = R.color.GhostWhite),
+                        tint = GhostWhite,
                         modifier = Modifier.scale(1.5f)
                     )
                 }
@@ -92,7 +92,7 @@ fun AppBottomBar(navController: NavController, modifier: Modifier = Modifier) {
                     Icon(
                         imageVector = Devices.icon,
                         contentDescription = "Devices Icon",
-                        tint = colorResource(id = R.color.GhostWhite),
+                        tint = GhostWhite,
                         modifier = Modifier.scale(1.4f)
                     )
                 }

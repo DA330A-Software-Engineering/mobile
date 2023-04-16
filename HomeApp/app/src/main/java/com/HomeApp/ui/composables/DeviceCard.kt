@@ -210,7 +210,7 @@ private fun changeState(
     }
 
     coroutine.launch(Dispatchers.IO) {
-        ApiConnector.action(
+        ApiConnector.deviceAction(
             token = LocalStorage.getToken(context),
             id = id,
             state = updateState,
