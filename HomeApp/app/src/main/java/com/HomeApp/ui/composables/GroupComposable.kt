@@ -5,10 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
@@ -53,10 +50,10 @@ fun GroupComposable(
         .height(100.dp),
         contentPadding = PaddingValues(start = 0.dp, top = 8.dp, end = 0.dp, bottom = 0.dp),
         shape = RoundedCornerShape(10.dp)) {
-        Column(modifier = Modifier) {
-            Text(text = groupItem.get("name") as String, modifier = Modifier.fillMaxWidth(),textAlign = TextAlign.Center, textDecoration = TextDecoration.Underline, fontSize = 20.sp)
+        Column(modifier = Modifier.padding(horizontal = 15.dp)) {
+            Text(text = groupItem.get("name") as String, modifier = Modifier.fillMaxWidth(), textDecoration = TextDecoration.Underline, fontSize = 20.sp)
             Spacer(modifier = Modifier.height(15.dp))
-            Row(modifier = Modifier.padding(horizontal = 15.dp)) {
+            Row(modifier = Modifier) {
                 Text(text = "On", fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
@@ -76,11 +73,29 @@ fun GroupComposable(
 
         }
 
+        if (editGroup) {
+            AlertDialog(
+                onDismissRequest = { editGroup = false },
+                title = { Text(groupItem.get("name") as String) },
+                text = { editGroup()},
+                confirmButton = {
+                    Button(
+                        onClick = { editGroup = false },
+                    ) {
+                        Text("Done")
+                    }
+                }
+            )
+        }
+
     }
 }
 
+@Composable
 private fun editGroup(
     modifier: Modifier= Modifier
 ) {
+    Column(modifier = Modifier) {
 
+    }
 }
