@@ -7,6 +7,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.Serializable
 
 /** The Api Connector has all the functions for talking to the API,
  *  each function will return an onRespond Callback that has an parameter of
@@ -62,7 +63,6 @@ object ApiConnector {
         obj.put("name", name)
         obj.put("email", email)
         obj.put("password", password)
-        Log.d("CREATE_ACC", "createAccount: $obj")
         val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
@@ -117,15 +117,15 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
-//    /** Retrieves the information about the users **/
-//    fun getUsersData(token: String, onRespond: (result: ApiResult) -> Unit) {
-//        val urlPath = "/user"
-//        val request: Request = Request.Builder()
-//            .header(AUTH_TOKEN_NAME, token)
-//            .url(firebaseConfig["databaseURL"] + urlPath)
-//            .build()
-//        onRespond(callAPI(request))
-//    }
+    /** Retrieves the information about the users **/
+    fun getUsersData(token: String, onRespond: (result: ApiResult) -> Unit) {
+        val urlPath = "/users"
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(firebaseConfig["databaseURL"] + urlPath)
+            .build()
+        onRespond(callAPI(request))
+    }
 
     fun getAllUserData(token: String, onRespond: (result: ApiResult) -> Unit) {
         val urlPath = "/users"
@@ -148,7 +148,7 @@ object ApiConnector {
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
-        val urlPath = "/user/remove"
+        val urlPath = "/users/remove"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
@@ -159,7 +159,7 @@ object ApiConnector {
     }
 
     /** Api call for device actions */
-    fun action(
+    fun deviceAction(
         token: String,
         id: String,
         state: JSONObject,
@@ -170,20 +170,244 @@ object ApiConnector {
         obj.put("id", id)
         obj.put("state", state)
         obj.put("type", type)
-        Log.d("ACTION", "$obj")
-        val urlPath = "/devices/actions"
         val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
-        Log.d("LOOK HERE", requestForm)
+
+        val urlPath = "/devices/actions"
 
         val request: Request = Request.Builder()
-//            .header(AUTH_TOKEN_NAME, token)
             .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
             .put(requestBody)
             .build()
+        onRespond(callAPI(request))
+    }
 
+    /** Api call for group actions */
+    fun groupAction(
+        token: String,
+        id: String,
+        state: JSONObject,
+        type: String,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val obj = JSONObject()
+        obj.put("id", id)
+        obj.put("state", state)
+        obj.put("type", type)
+        val requestForm = obj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
+        val urlPath = "/groups/actions"
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .put(requestBody)
+            .build()
+        onRespond(callAPI(request))
+    }
+
+    /** Api call to update a device */
+    fun updateDevice(
+        token: String,
+        id: String,
+        name: String,
+        description: String,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val obj = JSONObject()
+        obj.put("name", name)
+        obj.put("description", description)
+        val requestForm = obj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
+        val urlPath = "/devices/$id"
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .put(requestBody)
+            .build()
+        onRespond(callAPI(request))
+    }
+
+    /** Api call to create a group */
+    fun createGroup(
+        token: String,
+        name: String,
+        description: String,
+        devices: List<String>,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val obj = JSONObject()
+        obj.put("name", name)
+        obj.put("description", description)
+        obj.put("devices", devices)
+        val requestForm = obj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
+        val urlPath = "/groups"
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .post(requestBody)
+            .build()
+        onRespond(callAPI(request))
+    }
+
+    /** Api call to update a group */
+    fun updateGroup(
+        token: String,
+        id: String,
+        name: String,
+        description: String,
+        devices: List<String>,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val obj = JSONObject()
+        obj.put("name", name)
+        obj.put("description", description)
+        obj.put("devices", devices)
+        val requestForm = obj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
+        val urlPath = "/groups/$id"
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .put(requestBody)
+            .build()
+        onRespond(callAPI(request))
+    }
+
+    /** Api call to delete a group */
+    fun deleteGroup(
+        token: String,
+        id: String,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val obj = JSONObject()
+        val requestForm = obj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
+        val urlPath = "/groups/$id"
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .delete(requestBody)
+            .build()
+        onRespond(callAPI(request))
+    }
+
+    data class Action(
+        val deviceId: String,
+        val state: JSONObject,
+        val type: String
+    ) : Serializable
+
+    /** Api call to create a routine */
+    fun createRoutine(
+        token: String,
+        name: String,
+        description: String,
+        schedule: String,
+        enabled: Boolean,
+        repeatable: Boolean,
+        actionList: List<Action>,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val cronRegex = "^\\s*(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-9]|[0-2][0-3])\\s+(\\*|[0-9]|[0-3][0-9])\\s+(\\*|[0-9]|1[0-2])\\s*$"
+        if (!schedule.matches(Regex(cronRegex))) {
+            onRespond(ApiResult("{\"error\": \"Invalid schedule parameter\"}", 422))
+            return
+        }
+
+        val obj = JSONObject()
+        obj.put("name", name)
+        obj.put("description", description)
+        obj.put("schedule", schedule)
+        obj.put("enabled", enabled)
+        obj.put("repeatable", repeatable)
+        obj.put("actionList", actionList)
+        val requestForm = obj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
+        val urlPath = "/routines"
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .post(requestBody)
+            .build()
+        onRespond(callAPI(request))
+    }
+
+    /** Api call to update a routine */
+    fun updateRoutine(
+        token: String,
+        id: String,
+        name: String,
+        description: String,
+        schedule: String,
+        enabled: Boolean,
+        repeatable: Boolean,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val cronRegex = "^\\s*(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-9]|[0-2][0-3])\\s+(\\*|[0-9]|[0-3][0-9])\\s+(\\*|[0-9]|1[0-2])\\s*$"
+        if (!schedule.matches(Regex(cronRegex))) {
+            onRespond(ApiResult("{\"error\": \"Invalid schedule parameter\"}", 422))
+            return
+        }
+
+        val obj = JSONObject()
+        obj.put("name", name)
+        obj.put("description", description)
+        obj.put("schedule", schedule)
+        obj.put("enabled", enabled)
+        obj.put("repeatable", repeatable)
+        val requestForm = obj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
+        val urlPath = "/routines/$id"
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .put(requestBody)
+            .build()
+        onRespond(callAPI(request))
+    }
+
+    /** Api call to delete a routine */
+    fun deleteRoutine(
+        token: String,
+        id: String,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        val obj = JSONObject()
+        val requestForm = obj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
+        val urlPath = "/routines/$id"
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .delete(requestBody)
+            .build()
         onRespond(callAPI(request))
     }
 
@@ -201,7 +425,6 @@ object ApiConnector {
             ApiResult("{msg: \"Connection timeout\"}")
         }
     }
-
 }
 
 
@@ -215,8 +438,11 @@ data class ApiResult(
             in 100..299 -> {
                 HttpStatus.SUCCESS
             }
-            in 400..500 -> {
+            in 400..499 -> {
                 HttpStatus.UNAUTHORIZED
+            }
+            422 -> {
+                HttpStatus.INVALID_PARAMETER
             }
             else -> {
                 HttpStatus.FAILED
@@ -238,4 +464,5 @@ enum class HttpStatus {
     SUCCESS,
     UNAUTHORIZED,
     FAILED,
+    INVALID_PARAMETER
 }

@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -34,7 +33,7 @@ import com.HomeApp.ui.navigation.AnimatedAppNavHost
 import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.navigation.Loading
-import com.HomeApp.ui.navigation.Routines
+import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.ui.theme.HomeAppTheme
 import com.HomeApp.util.*
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -114,7 +113,7 @@ class MainActivity : ComponentActivity() {
                                             jsonObj.put("locked", secondaryAction)
                                         }
                                         if (jsonObj.length() == 1) {
-                                            ApiConnector.action(
+                                            ApiConnector.deviceAction(
                                                 token = LocalStorage.getToken(context),
                                                 id = it.id,
                                                 state = jsonObj,
@@ -143,7 +142,7 @@ class MainActivity : ComponentActivity() {
                                             jsonObj.put("reverse", secondaryAction)
                                         }
                                         if (jsonObj.length() == 1) {
-                                            ApiConnector.action(
+                                            ApiConnector.deviceAction(
                                                 token = LocalStorage.getToken(context),
                                                 id = it.id,
                                                 state = jsonObj,
@@ -173,7 +172,7 @@ class MainActivity : ComponentActivity() {
                                         if (secondaryAction != null) {
                                             jsonObj.put("reverse", secondaryAction)
                                         }
-                                        ApiConnector.action(
+                                        ApiConnector.deviceAction(
                                             token = LocalStorage.getToken(context),
                                             id = it.id,
                                             state = jsonObj,
@@ -225,7 +224,7 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = colorResource(id = R.color.GhostWhite)
+                    color = GhostWhite
                 ) {
                     ActivityCompat.requestPermissions(this, arrayOf(RECORD_AUDIO), 0)
                     RunApp(getSpeechInput = { getSpeechInput(it) })
@@ -303,7 +302,7 @@ fun RunApp(getSpeechInput: (Context) -> Unit = {}) {
                     ) {
                         AnimatedAppNavHost(
                             navController = navController,
-                            startDestination = Routines.route,
+                            startDestination = Loading.route,
                             state = state,
                             getSpeechInput = { getSpeechInput(it) }
                         )

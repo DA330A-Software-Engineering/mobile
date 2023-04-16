@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -37,7 +36,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.HomeApp.R
 import com.HomeApp.ui.composables.AppFooter
 import com.HomeApp.ui.composables.DeviceCard
 import com.HomeApp.ui.composables.GroupComposable
@@ -46,6 +44,7 @@ import com.HomeApp.ui.navigation.Groups
 import com.HomeApp.ui.navigation.Routines
 import com.HomeApp.ui.navigation.Settings
 import com.HomeApp.ui.theme.GhostWhite
+import com.HomeApp.ui.theme.LightSteelBlue
 import com.HomeApp.ui.theme.montserrat
 import com.HomeApp.util.microphoneIcon
 import com.google.firebase.firestore.DocumentSnapshot
@@ -349,7 +348,7 @@ private fun Activities(
             onClick = { /*TODO*/ }, shape = RoundedCornerShape(10.dp),
             elevation = null,
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(id = R.color.LightSteelBlue)
+                backgroundColor = LightSteelBlue
             ),
             modifier = Modifier
                 .padding(horizontal = 40.dp)
