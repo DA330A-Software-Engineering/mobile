@@ -1,5 +1,6 @@
 package com.HomeApp.ui.composables
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -135,6 +136,18 @@ private fun EditGroup(
                     .weight(5f)
             )
         }
+        val deviceList = groupItem.get("devices") as ArrayList<*>
+        var firstDevice: DocumentSnapshot
+        var groupType by remember {
+            mutableStateOf("")
+        }
+
+        getDocument("devices", deviceList.first() as String) { doc ->
+            if (doc != null) {
+                firstDevice = doc
+                groupType = doc.get("type") as String
+            }
+        }
 
         Row(
             modifier = Modifier
@@ -143,7 +156,7 @@ private fun EditGroup(
             Text(text = "Devices", modifier = Modifier.weight(2f))
             Spacer(modifier = Modifier.weight(0.1f))
             Column(modifier = Modifier.weight(5f)) {
-                for (item in groupItem.get("devices") as ArrayList<*>) {
+                for (item in deviceList) {
                     DeviceItem(item = item as String, groupItem = groupItem, isInGroup = true)
                 }
             }
@@ -153,9 +166,13 @@ private fun EditGroup(
             Spacer(modifier = Modifier.weight(2.1f))
             LazyColumn(modifier = Modifier.weight(5f)) {
                 items(items = realTimeData!!.devices, key = { item -> item.id }) { item ->
-                    val groupDevices = groupItem.get("devices") as ArrayList<*>
-                    val isMatch = groupDevices.any { it == item.id }
-                    if (!isMatch) {
+                    val isInGroup = deviceList.any { it == item.id }
+                    val isSameType = item.get("type") == groupType
+                    Log.d(
+                        "THIS IS THE STUFF",
+                        "Item type: ${item.get("type")} ---- groupType : $groupType"
+                    )
+                    if (!isInGroup && isSameType) {
                         DeviceItem(item = item.id, groupItem = groupItem, isInGroup = false)
                     }
                 }
