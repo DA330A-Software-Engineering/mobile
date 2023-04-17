@@ -43,6 +43,38 @@ fun GroupComposable(
     //groupState: String
 ) {
     var editGroup by remember { mutableStateOf(false) }
+    val deviceList = groupItem.get("devices") as ArrayList<*>
+    var groupStateBool by remember {
+        mutableStateOf(true)
+    }
+    var groupType = ""
+
+    for (device in deviceList) {
+        getDocument("devices", device as String) { doc ->
+            if (doc != null) {
+                val deviceType = doc.get("type") as String
+                if (deviceType == "openLock" && !(doc.get("open") as Boolean)) {
+                    groupStateBool = false
+                    groupType = "openLock"
+                } else if (deviceType == "toggle" && !(doc.get("on") as Boolean)) {
+                    groupStateBool = false
+                    groupType = "toggle"
+                }
+
+            }
+        }
+    }
+    var groupState by remember {
+        mutableStateOf("")
+    }
+    groupState = when (groupType) {
+        "openLock" -> if (groupStateBool) "Open" else "Closed"
+        "toggle" -> if (groupStateBool) "On" else "Off"
+        else -> {
+            ""
+        }
+    }
+
     Button(
         onClick = { }, modifier = Modifier
             .border(
@@ -64,7 +96,7 @@ fun GroupComposable(
             )
             Spacer(modifier = Modifier.height(15.dp))
             Row(modifier = Modifier) {
-                Text(text = "On", fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                Text(text = groupState, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
                     onClick = {
