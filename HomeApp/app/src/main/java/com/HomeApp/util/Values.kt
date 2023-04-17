@@ -4,9 +4,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Curtains
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.outlined.DoorFront
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.Logout
+import androidx.compose.material.icons.rounded.Mic
+import androidx.compose.material.icons.rounded.People
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.navigation.Loading
 import com.HomeApp.ui.navigation.Profile
 
@@ -25,8 +26,9 @@ val microphoneIcon: ImageVector = Icons.Rounded.Mic
 
 enum class SideBarOptions(val title: String, val icon: ImageVector?, val route: String) {
     PROFILE("Profile & Family", Icons.Rounded.People, Profile.route),
-    NOTIFICATIONS("Notifications", Icons.Rounded.Notifications, Home.route),
-    History("History", Icons.Rounded.History, Home.route),
+
+    //    NOTIFICATIONS("Notifications", Icons.Rounded.Notifications, Home.route),
+//    History("History", Icons.Rounded.History, Home.route),
     LOGOUT("Logout", Icons.Rounded.Logout, Loading.route),
 }
 

@@ -36,7 +36,7 @@ fun LoadingScreen(
 ) {
     // screen for loading while checking token
     // Backend respond, if we have an valid token
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
+//    val navBackStackEntry by navController.currentBackStackEntryAsState()
     var isAuth by remember { mutableStateOf(false) }
     var loading by remember { mutableStateOf(true) }
     val coroutine = rememberCoroutineScope()
@@ -52,7 +52,7 @@ fun LoadingScreen(
         }
     }
 
-    LaunchedEffect(navBackStackEntry) {
+    LaunchedEffect(isAuth) {
         launch {
             // Call backend to check if we already have an valid token
             coroutine.launch(Dispatchers.IO) {
