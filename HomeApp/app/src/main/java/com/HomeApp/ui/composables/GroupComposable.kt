@@ -44,19 +44,23 @@ fun GroupComposable(
 ) {
     var editGroup by remember { mutableStateOf(false) }
     val deviceList = groupItem.get("devices") as ArrayList<*>
+    val state: Map<String, Any> = emptyMap()
     var groupStateBool by remember {
         mutableStateOf(true)
     }
-    var groupType = ""
+    var groupType by remember {
+        mutableStateOf("")
+    }
 
     for (device in deviceList) {
         getDocument("devices", device as String) { doc ->
             if (doc != null) {
-                val deviceType = doc.get("type") as String
-                if (deviceType == "openLock" && !(doc.get("open") as Boolean)) {
+                groupType = doc.get("type") as String
+                val deviceState = doc.get("state") as Map<*, *>
+                if (groupType == "openLock" && !(deviceState["open"] as Boolean)) {
                     groupStateBool = false
                     groupType = "openLock"
-                } else if (deviceType == "toggle" && !(doc.get("on") as Boolean)) {
+                } else if (groupType == "toggle" && !(deviceState["on"] as Boolean)) {
                     groupStateBool = false
                     groupType = "toggle"
                 }
