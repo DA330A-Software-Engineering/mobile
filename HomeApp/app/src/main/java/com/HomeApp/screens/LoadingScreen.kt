@@ -51,8 +51,10 @@ fun LoadingScreen(
         val msg: String = data?.get("msg").toString()
         loading = false
         coroutine.launch(Dispatchers.Main) {
-            if (!isAuth) navController.navigate(Login.route)
-            else navController.navigate(Home.route)
+            if (!isAuth) {
+                LocalStorage.clearToken(context) // force logout
+                navController.navigate(Login.route)
+            } else navController.navigate(Home.route)
             if (msg.contains("timeout")) {
                 Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
             }
@@ -98,5 +100,4 @@ fun LoadingScreen(
             contentScale = ContentScale.FillHeight
         )
     }
-
 }
