@@ -48,8 +48,7 @@ fun DeviceCard(
 
     val cardIcon: ImageVector = when (deviceItem.get("type")) {
         "toggle" -> Icons.Filled.Lightbulb
-        "door" -> Icons.Filled.DoorFront
-        "window" -> Icons.Outlined.Window
+        "openLock" -> if (deviceItem.get("tag") == "window") Icons.Outlined.Window else Icons.Filled.DoorFront
         "screen" -> Icons.Outlined.SmartScreen
         "buzzer" -> Icons.Outlined.SurroundSound
         else -> Icons.Filled.BrokenImage
@@ -57,14 +56,14 @@ fun DeviceCard(
 
     val deviceState: String = when (deviceItem.get("type")) {
         "toggle", "fan", "screen" -> if (state["on"] == true) "On" else "Off"
-        "door", "window" -> if (state["openLock"] == true) "openLock" else "openLock"
+        "openLock" -> if (state["open"] == true) "Open" else "Close"
         else -> {
-            "No State"
+            ""
         }
     }
 
     val actionIcon: ImageVector? = when (deviceItem.get("type")) {
-        "door", "window" -> if (state["locked"] == true) Icons.Outlined.Lock else Icons.Outlined.LockOpen
+        "openLock" -> if (state["locked"] == true) Icons.Outlined.Lock else Icons.Outlined.LockOpen
         "fan" -> Icons.Outlined.CompareArrows
         else -> null
 
