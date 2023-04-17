@@ -4,8 +4,8 @@ import android.Manifest.permission.RECORD_AUDIO
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import android.os.Looper
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.util.Log
@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -31,8 +32,6 @@ import androidx.core.app.ActivityCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.HomeApp.drawers.SideDrawer
 import com.HomeApp.ui.navigation.AnimatedAppNavHost
-import com.HomeApp.ui.navigation.Devices
-import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.navigation.Loading
 import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.ui.theme.HomeAppTheme
@@ -41,27 +40,46 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.*
+import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
-import kotlinx.coroutines.Dispatchers
-import org.json.JSONException
 
 class MainActivity : ComponentActivity() {
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun onResume() {
+        super.onResume()
+        window.decorView.windowInsetsController!!.hide(android.view.WindowInsets.Type.navigationBars())
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun onStart() {
+        super.onStart()
+        window.decorView.windowInsetsController!!.hide(android.view.WindowInsets.Type.navigationBars())
+    }
+
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val onRespond: (ApiResult) -> Unit = {
                 Log.d("RESPOND", it.toString())
                 val coroutine = CoroutineScope(Dispatchers.Main)
-                val data: JSONObject? = try { it.data() } catch (e: JSONException) { null }
+                val data: JSONObject? = try {
+                    it.data()
+                } catch (e: JSONException) {
+                    null
+                }
                 val msg: String = data?.get("msg").toString()
                 val context = this.baseContext
                 Log.d("ACTION", "onRespond got called with object $it")
                 coroutine.launch {
                     when (it.status()) {
                         HttpStatus.SUCCESS -> {
-                            Toast.makeText(context, "Successfully updated your device or group", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                "Successfully updated your device or group",
+                                Toast.LENGTH_SHORT
+                            ).show()
                             Log.d("ACTION", "msg: $msg | Action successful")
                         }
                         HttpStatus.UNAUTHORIZED -> {
@@ -77,13 +95,13 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            val actionCall : (
+            val actionCall: (
                 context: Context,
                 jsonObj: JSONObject,
                 documentSnapShot: DocumentSnapshot
-                    ) -> Unit = { context, jsonObj, it ->
+            ) -> Unit = { context, jsonObj, it ->
                 val coroutine = CoroutineScope(Dispatchers.Main)
-                coroutine.launch(Dispatchers.IO){
+                coroutine.launch(Dispatchers.IO) {
                     if (jsonObj.length() == 1) {
                         ApiConnector.deviceAction(
                             token = LocalStorage.getToken(context),
@@ -123,7 +141,10 @@ class MainActivity : ComponentActivity() {
                                         if (primaryAction != null) {
                                             jsonObj.put("on", primaryAction)
                                         }
-                                        Log.d("ACTION", "obj = $jsonObj \naction=$primaryAction\nobjLength: ${jsonObj.length()}")
+                                        Log.d(
+                                            "ACTION",
+                                            "obj = $jsonObj \naction=$primaryAction\nobjLength: ${jsonObj.length()}"
+                                        )
                                         actionCall(context, jsonObj, it)
                                     }
                                     "door", "window" -> {
