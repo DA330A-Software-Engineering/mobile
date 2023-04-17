@@ -193,7 +193,7 @@ private fun EditGroup(
             Spacer(modifier = Modifier.weight(0.1f))
             Column(modifier = Modifier.weight(5f)) {
                 for (item in deviceList) {
-                    DeviceItem(item = item as String, groupItem = groupItem, isInGroup = true)
+                    DeviceItem(item = item as String, isInGroup = true)
                 }
             }
 
@@ -209,7 +209,7 @@ private fun EditGroup(
                         "Item type: ${item.get("type")} ---- groupType : $groupType"
                     )
                     if (!isInGroup && isSameType) {
-                        DeviceItem(item = item.id, groupItem = groupItem, isInGroup = false)
+                        DeviceItem(item = item.id, isInGroup = false)
                     }
                 }
             }
@@ -235,11 +235,11 @@ private fun EditGroup(
 }
 
 @Composable
-private fun DeviceItem(
+fun DeviceItem(
     modifier: Modifier = Modifier,
     item: String,
-    groupItem: DocumentSnapshot,
-    isInGroup: Boolean
+    isInGroup: Boolean,
+    onItemAdded: (String) -> Unit = {}
 ) { // groupItem is for when a device is getting deleted and an API call needs to be made
     //var device = mutableStateListOf<DocumentSnapshot>()
     var device: DocumentSnapshot?

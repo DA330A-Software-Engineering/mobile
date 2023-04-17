@@ -15,8 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.LightMode
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -114,6 +113,7 @@ private fun MakeGroups(
     val groups = realTimeData!!.groups
 
 
+
     Spacer(modifier = Modifier.height(28.dp))
     TitledDivider(navController, "Groups", "Groups Divider", showIcon = true)
 
@@ -180,6 +180,7 @@ private fun MenuIcons(
 ) {
     val coroutine = rememberCoroutineScope()
     val screenWidth = LocalConfiguration.current.screenWidthDp
+
     // Routines
     Spacer(modifier = Modifier.width((screenWidth / 4).dp))
 
@@ -224,6 +225,7 @@ private fun MenuIcons(
         }
         Spacer(modifier = Modifier.weight(1f))
     }
+
 }
 
 

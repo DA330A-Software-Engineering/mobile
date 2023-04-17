@@ -4,14 +4,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -30,6 +27,7 @@ fun TitledDivider(
     showIcon: Boolean = false,
     fontSize: Int = 20
 ) {
+    var addGroupState by remember { mutableStateOf(false) }
     Row(
         Modifier
             .fillMaxWidth()
@@ -49,7 +47,7 @@ fun TitledDivider(
             thickness = 1.dp
         )
         if (showIcon) {
-            IconButton(onClick = { /*TODO*/ }, modifier = Modifier.size(50.dp)) {
+            IconButton(onClick = { addGroupState = true }, modifier = Modifier.size(50.dp)) {
                 if (title == "Groups") {
                     Icon(
                         imageVector = Icons.Rounded.Add,
@@ -61,6 +59,22 @@ fun TitledDivider(
                 }
 
             }
+        }
+
+
+        if (addGroupState && title == "Groups") {
+            AlertDialog(
+                onDismissRequest = { addGroupState = false },
+                title = { Text(text = "Add new group") },
+                text = { AddGroup() },
+                confirmButton = {
+                    Button(
+                        onClick = { addGroupState = false },
+                    ) {
+                        Text("Done")
+                    }
+                }
+            )
         }
     }
 }
