@@ -176,6 +176,7 @@ object ApiConnector {
 
         val urlPath = "/devices/actions"
 
+        Log.d("ACTION", "$obj")
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
