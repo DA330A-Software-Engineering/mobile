@@ -2,6 +2,7 @@ package com.HomeApp.screens
 
 import android.os.Build.VERSION.SDK_INT
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
@@ -29,26 +29,33 @@ import com.HomeApp.util.HttpStatus
 import com.HomeApp.util.LocalStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONException
+import org.json.JSONObject
 
 @Composable
 fun LoadingScreen(
     navController: NavController
 ) {
-    // screen for loading while checking token
-    // Backend respond, if we have an valid token
-//    val navBackStackEntry by navController.currentBackStackEntryAsState()
     var isAuth by remember { mutableStateOf(false) }
     var loading by remember { mutableStateOf(true) }
     val coroutine = rememberCoroutineScope()
     val context = LocalContext.current
-
     val onAuth: (ApiResult) -> Unit = {
         Log.d("STATUS TESTING", "${it.status()} -- ${HttpStatus.SUCCESS}")
         isAuth = it.status() == HttpStatus.SUCCESS
+        val data: JSONObject? = try {
+            it.data()
+        } catch (e: JSONException) {
+            null
+        }
+        val msg: String = data?.get("msg").toString()
         loading = false
         coroutine.launch(Dispatchers.Main) {
             if (!isAuth) navController.navigate(Login.route)
             else navController.navigate(Home.route)
+            if (msg.contains("timeout")) {
+                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -63,7 +70,6 @@ fun LoadingScreen(
             }
         }
     }
-
 
     Column(
         Modifier
