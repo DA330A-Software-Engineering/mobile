@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.navigation.Loading
 import com.HomeApp.ui.navigation.Profile
+import com.google.firebase.firestore.DocumentSnapshot
 
 val firebaseConfig = mapOf(
     "apiKey" to "AIzaSyBe9OfClxqevJF_7X5v2Rk1lP9EQTWv458",
@@ -43,7 +44,7 @@ enum class DevicesFilters(
 }
 
 val AUTH_TOKEN_NAME = "x-auth-header"
-val DB_ADDR = "http://192.168.1.232:3000"
+val DB_ADDR = "http://10.0.2.2:3000"
 
 enum class DayFilters(
     val letter: String,

@@ -1,0 +1,402 @@
+package com.HomeApp.screens
+
+import android.util.Log
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
+import androidx.compose.material.FabPosition
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BrokenImage
+import androidx.compose.material.icons.filled.DoorFront
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.ModeFanOff
+import androidx.compose.material.icons.filled.Window
+import androidx.compose.material.icons.outlined.CompareArrows
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.SmartScreen
+import androidx.compose.material.icons.outlined.SurroundSound
+import androidx.compose.material.icons.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.Power
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.HomeApp.ui.composables.RoutinesTitleBar
+import com.HomeApp.ui.composables.RoutinesTitleBarItem
+import com.HomeApp.ui.navigation.ChooseSchedule
+import com.HomeApp.ui.theme.FadedLightGrey
+import com.HomeApp.ui.theme.GhostWhite
+import com.HomeApp.ui.theme.LightSteelBlue
+import com.google.firebase.firestore.DocumentSnapshot
+import java.io.Serializable
+
+data class Action(
+    val deviceId: String,
+    val type: String,
+    val state: Map<String, Boolean>
+) : Serializable
+
+data class ActionListData(
+    var actionList: List<Action> = emptyList()
+)
+
+object ActionList {
+    private var actionListData: ActionListData = ActionListData()
+
+    fun addAction(
+        id: String,
+        type: String,
+        state: Map<String, Boolean>
+    ) {
+        val action = Action(id, type, state)
+        Log.d("ActionItem", action.toString())
+        val index = actionListData.actionList.indexOfFirst { it.deviceId == id }
+        // If an action with the same id already exists, replace it
+        if (index != -1) {
+            actionListData.actionList = actionListData.actionList.toMutableList().apply {
+                removeAt(index)
+                add(index, action)
+            }
+        } else {
+            actionListData.actionList += action
+        }
+    }
+
+    fun getList(): List<Action> {
+        return actionListData.actionList
+    }
+}
+
+@Composable
+fun ChooseActionsScreen(
+    navController: NavController,
+    OnSelfClick: () -> Unit = {}
+) {
+    val listHeight = LocalConfiguration.current.screenHeightDp
+    val documents = SelectedItems.getItems(devices = true)
+
+    // Add all actions to a list, or else they would only be added when first shown on the screen.
+    // I.e. when the user scrolls though the lazy column
+    documents.forEach {
+        val state = it.get("state") as MutableMap<String, Boolean>
+        val keys = remember { mutableListOf<String>() }
+        keys.clear()
+        for (key in state.keys) {
+            keys.add(key)
+            keys.add(keys.removeAt(0)) // This makes the keys for door [open, locked] instead of [locked, open]
+            Log.d("Keys", keys.toString())
+        }
+
+        state[keys[0]] = true
+        if (keys.size == 2) {
+            state[keys[1]] = false // I want reverse and locked to be false initially
+        }
+        ActionList.addAction(it.id, it.get("type") as String, state)
+    }
+
+    Scaffold(
+        topBar = {
+            RoutinesTitleBar(
+                item = RoutinesTitleBarItem.ChooseActions,
+                navController = navController
+            )
+        },
+        content = {
+            LazyColumn(
+                modifier = Modifier
+                    .height(listHeight.dp)
+                    .padding(it)
+                    .padding(vertical = 10.dp)
+                    .padding(top = 10.dp)
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                content = {
+                    items(items = documents, key = { item -> item.id }) { item ->
+                        ActionCards(deviceItem = item)
+                    }
+                }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                modifier = Modifier.scale(1f),
+                onClick = { navController.navigate(ChooseSchedule.route) },
+                backgroundColor = GhostWhite,
+                content = {
+                    Icon(
+                        modifier = Modifier.scale(1.4f),
+                        imageVector = Icons.Rounded.ArrowForward,
+                        contentDescription = "arrow-icon",
+                        tint = Color.Black
+                    )
+                },
+            )
+        },
+        isFloatingActionButtonDocked = true,
+        floatingActionButtonPosition = FabPosition.End
+    )
+}
+
+@Composable
+private fun ActionCards(
+    deviceItem: DocumentSnapshot
+) {
+    val type = deviceItem.get("type") as String
+
+    val primaryOn: String = when (type) {
+        "openLock" -> "Open"
+        else -> "Turn On"
+    }
+
+    val primaryOff: String = when (type) {
+        "toggle" -> "Turn off"
+        "openLock" -> "Close"
+        else -> "Turn off"
+    }
+
+    val secondaryOn: String? = when (type) {
+        "openLock" -> "Unlock"
+        "fan" -> "Normal"
+        else -> null
+    }
+
+    val secondaryOff: String? = when (type) {
+        "openLock" -> "Lock"
+        "fan" -> "Reverse"
+        else -> null
+    }
+
+    val cardIcon: ImageVector = when (type) {
+        "toggle" -> Icons.Filled.Lightbulb
+        "fan" -> Icons.Filled.ModeFanOff
+        "screen" -> Icons.Outlined.SmartScreen
+        "buzzer" -> Icons.Outlined.SurroundSound
+        else -> Icons.Filled.BrokenImage
+    }
+
+    val actionIcon: ImageVector? = when (type) {
+        "door", "window" -> Icons.Outlined.Lock
+        "fan" -> Icons.Outlined.CompareArrows
+        else -> null
+    }
+
+    val primaryCheck = remember { mutableStateOf(true) }
+    val selectedPrimary = if (primaryCheck.value) LightSteelBlue else FadedLightGrey
+    val notSelectedPrimary = if (!primaryCheck.value) LightSteelBlue else FadedLightGrey
+
+    val secondaryCheck = remember { mutableStateOf(true) }
+    val selectedSecondary = if (secondaryCheck.value) LightSteelBlue else FadedLightGrey
+    val notSelectedSecondary = if (!secondaryCheck.value) LightSteelBlue else FadedLightGrey
+
+    val id = deviceItem.id
+    val state = deviceItem.get("state") as MutableMap<String, Boolean>
+    val keys = remember { mutableListOf<String>() }
+    keys.clear()
+    for (key in state.keys) {
+        keys.add(key)
+        keys.add(keys.removeAt(0)) // This makes the keys for door [open, locked] instead of [locked, open]
+        Log.d("Keys", keys.toString())
+    }
+
+    state[keys[0]] = primaryCheck.value
+    if (keys.size == 2) {
+        state[keys[1]] = !secondaryCheck.value // I want reverse and locked to be false initially
+    }
+    ActionList.addAction(id, type, state)
+    Log.d("Actions", ActionList.getList().toString())
+
+    val name = deviceItem.get("name") as String
+
+    Column(
+        Modifier
+            .border(
+                width = 4.dp,
+                color = LightSteelBlue,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .padding(10.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                modifier = Modifier
+                    .weight(1f)
+                    .size(48.dp),
+                imageVector =
+                if (deviceItem.get("tag") == "door") {
+                    Icons.Filled.DoorFront
+                } else if (deviceItem.get("tag") == "window") {
+                    Icons.Filled.Window
+                } else {
+                    cardIcon
+                },
+                contentDescription = "$name-icon"
+            )
+            Text(
+                modifier = Modifier.weight(8f),
+                text = name,
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        Text(
+            text = "Choose an action to execute",
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(top = 5.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Card(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(100.dp)
+                        .clickable(onClick = {
+                            primaryCheck.value = false
+                            Log.d(
+                                "Action1",
+                                ActionList
+                                    .getList()
+                                    .toString()
+                            )
+                        }),
+                    backgroundColor = notSelectedPrimary,
+                ) {
+                    Column(
+                        Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(modifier = Modifier.weight(1f), text = primaryOff, fontSize = 25.sp)
+                        Icon(
+                            modifier = Modifier.weight(2f),
+                            imageVector = Icons.Rounded.Power,
+                            contentDescription = "on-icon"
+                        )
+                    }
+                }
+                Card(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(100.dp)
+                        .clickable(onClick = {
+                            primaryCheck.value = true
+                            Log.d(
+                                "Action2",
+                                ActionList
+                                    .getList()
+                                    .toString()
+                            )
+                        }),
+                    backgroundColor = selectedPrimary,
+                ) {
+                    Column(
+                        Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(modifier = Modifier.weight(1f), text = primaryOn, fontSize = 25.sp)
+                        Icon(
+                            modifier = Modifier.weight(2f),
+                            imageVector = Icons.Rounded.Power,
+                            contentDescription = "off-icon"
+                        )
+                    }
+                }
+            }
+            if (secondaryOn != null && secondaryOff != null) {
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Card(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(100.dp)
+                            .clickable(onClick = {
+                                secondaryCheck.value = false
+                                Log.d(
+                                    "Action3",
+                                    ActionList
+                                        .getList()
+                                        .toString()
+                                )
+                            }),
+                        backgroundColor = notSelectedSecondary,
+                    ) {
+                        Column(
+                            Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                modifier = Modifier.weight(1f),
+                                text = secondaryOff,
+                                fontSize = 25.sp
+                            )
+                            Icon(
+                                modifier = Modifier.weight(2f),
+                                imageVector = Icons.Rounded.Power,
+                                contentDescription = "off-icon"
+                            )
+                        }
+                    }
+                    Card(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(100.dp)
+                            .clickable(onClick = {
+                                secondaryCheck.value = true
+                                Log.d(
+                                    "Action4",
+                                    ActionList
+                                        .getList()
+                                        .toString()
+                                )
+                            }),
+                        backgroundColor = selectedSecondary,
+                    ) {
+                        Column(
+                            Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                modifier = Modifier.weight(1f),
+                                text = secondaryOn,
+                                fontSize = 25.sp
+                            )
+                            Icon(
+                                modifier = Modifier.weight(2f),
+                                imageVector = Icons.Rounded.Power,
+                                contentDescription = "off-icon"
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

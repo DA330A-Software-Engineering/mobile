@@ -219,6 +219,76 @@ fun AnimatedAppNavHost(
                 OnSelfClick = { navController.navigateSingleTopTo(Profile.route) }
             )
         }
+
+        // CHOOSE TYPE
+        composable(
+            route = ChooseType.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            ChooseTypeScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(ChooseType.route) }
+            )
+        }
+
+        // CHOOSE DEVICES
+        composable(
+            route = ChooseDevices.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            ChooseDevicesScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(ChooseDevices.route) }
+            )
+        }
+
+        // CHOOSE GROUPS
+        composable(
+            route = ChooseGroups.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            ChooseGroupsScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(ChooseGroups.route) }
+            )
+        }
+
+        // CHOOSE ACTION
+        composable(
+            route = ChooseActions.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            ChooseActionsScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(ChooseActions.route) }
+            )
+        }
+
+        // CHOOSE SCHEDULE
+        composable(
+            route = ChooseSchedule.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            ChooseScheduleScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(ChooseSchedule.route) }
+            )
+        }
     }
 }
 

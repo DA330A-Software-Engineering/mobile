@@ -5,7 +5,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,7 +17,6 @@ import androidx.navigation.NavController
 import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.LightSteelBlue
 import com.HomeApp.ui.navigation.Home
-
 
 @Composable
 fun TitleBar(
@@ -33,9 +32,6 @@ fun TitleBar(
     val notSelectedColor = FadedLightGrey
 
     var leftSelected by remember { mutableStateOf(true) }
-
-    val showDialog = remember { mutableStateOf(false) }
-    if (showDialog.value) { DialogBox(showDialog) }
 
     Column(modifier = Modifier) {
         Spacer(modifier = Modifier.height(30.dp))
@@ -63,10 +59,10 @@ fun TitleBar(
                 fontSize = 40.sp,
                 textAlign = TextAlign.Center
             )
-            IconButton(onClick = { showDialog.value = true }) {
+            IconButton(onClick = { }) {
                 Icon(
-                    imageVector = Icons.Outlined.Add,
-                    contentDescription = "add-icon",
+                    imageVector = Icons.Outlined.Settings,
+                    contentDescription = "settings-icon",
                     modifier = Modifier
                         .size(50.dp)
                 )

@@ -39,34 +39,6 @@ data class Devices(
     var available: Boolean = true
 )
 
-fun <T> rememberFirestoreCollection(
-    collectionPath: String,
-    clazz: Class<T>
-): SnapshotStateList<DocumentSnapshot> {
-    val collectionRef = FirebaseFirestore.getInstance().collection(collectionPath)
-    val documents = mutableStateListOf<DocumentSnapshot>()  //mutableStateOf(MutableList<T>())
-    var counter = 0
-
-    collectionRef.addSnapshotListener { snapshot, error ->
-        if (error != null) {
-            // Handle the error
-            return@addSnapshotListener
-        }
-        if (snapshot != null) {
-            documents.clear()
-            snapshot.documents.forEach { item ->
-                documents.add(item)
-            }
-
-            //Log.d(TAG, "Look here ${snapshot.documents}")
-            //Log.d(TAG, "Look here 2 ${documents}")
-        }
-
-    }
-    return documents
-}
-
-
 @Composable
 fun DevicesScreen(
     navController: NavController,
@@ -78,7 +50,7 @@ fun DevicesScreen(
     val coroutine = rememberCoroutineScope()
     val listHeight = LocalConfiguration.current.screenHeightDp
     val db = Firebase.firestore
-    val documents = rememberFirestoreCollection("devices", Devices::class.java)
+    val documents = rememberFirestoreCollection("devices", Devices::class.java, "devices")
     val context = LocalContext.current
     Scaffold(
         topBar = {

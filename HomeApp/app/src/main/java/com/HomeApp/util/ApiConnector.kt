@@ -1,6 +1,7 @@
 package com.HomeApp.util
 
 import android.util.Log
+import com.HomeApp.screens.Action
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -308,12 +309,6 @@ object ApiConnector {
             .build()
         onRespond(callAPI(request))
     }
-
-    data class Action(
-        val deviceId: String,
-        val state: JSONObject,
-        val type: String
-    ) : Serializable
 
     /** Api call to create a routine */
     fun createRoutine(
