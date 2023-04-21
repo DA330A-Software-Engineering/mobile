@@ -89,20 +89,20 @@ fun GroupComposable(
                 shape = RoundedCornerShape(10.dp),
                 color = RaminGrey
             )
-            .width(110.dp)
-            .height(100.dp),
+            .width(130.dp)
+            .height(110.dp),
         contentPadding = PaddingValues(start = 0.dp, top = 8.dp, end = 0.dp, bottom = 0.dp),
         shape = RoundedCornerShape(10.dp)
     ) {
         Column(modifier = Modifier.padding(horizontal = 15.dp)) {
             Text(
                 text = groupItem.get("name") as String,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().weight(1f),
                 textDecoration = TextDecoration.Underline,
                 fontSize = 20.sp
             )
-            Spacer(modifier = Modifier.height(15.dp))
-            Row(modifier = Modifier) {
+            Spacer(modifier = Modifier.weight(0.2f))
+            Row(modifier = Modifier.weight(0.5f)) {
                 Text(text = groupState, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
@@ -126,7 +126,7 @@ fun GroupComposable(
             AlertDialog( // use Dismissbutton to have a composable with two buttons, for dismiss and delete
                 onDismissRequest = { editGroup = false },
                 title = { Text(groupItem.get("name") as String) },
-                text = { EditGroup(groupItem = groupItem) },
+                text = { EditGroup(groupItem = groupItem, onDelEdit = {newState -> editGroup = newState}) },
                 confirmButton = {
                     Button(
                         onClick = { editGroup = false },
@@ -144,6 +144,7 @@ fun GroupComposable(
 private fun EditGroup(
     modifier: Modifier = Modifier,
     groupItem: DocumentSnapshot,
+    onDelEdit: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
     val coroutine = rememberCoroutineScope()
@@ -177,7 +178,7 @@ private fun EditGroup(
                     .weight(5f)
             )
         }
-        val deviceList = groupItem.get("devices") as ArrayList<*>
+        val deviceList = groupItem.get("devices") as ArrayList<String>
         var firstDevice: DocumentSnapshot
         var groupType by remember {
             mutableStateOf("")
@@ -237,6 +238,7 @@ private fun EditGroup(
         Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
             Spacer(modifier = Modifier.weight(1f))
             Button(onClick = {
+                onDelEdit(false)
                 coroutine.launch(Dispatchers.IO) {
                     ApiConnector.deleteGroup(
                         id = groupItem.id,
@@ -248,7 +250,18 @@ private fun EditGroup(
                 Text(text = "Delete")
             }
             Spacer(modifier = Modifier.width(10.dp))
-            Button(onClick = { /*TODO*/ }) {
+            Button(onClick = {
+                onDelEdit(false)
+                coroutine.launch(Dispatchers.IO) {
+                    ApiConnector.updateGroup(
+                        name = groupName,
+                        token = LocalStorage.getToken(context),
+                        id = groupItem.id,
+                        description = groupDesc,
+                        devices = deviceList,
+                        onRespond = onDeleteGroup
+                    )
+            } }) {
                 Text(text = "Update")
             }
         }
