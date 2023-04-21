@@ -103,12 +103,6 @@ fun RoutinesScreen(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 item { TitledDivider(navController = navController, title = "Filters") }
-                item {
-                    DayIcons(documents = documents) { newList ->
-                        documents.clear()
-                        documents.addAll(newList)
-                    }
-                }
                 items(items = documents, key = { item -> item.id }) { item ->
                     RoutineCard(navController = navController, RoutineItem = item)
                 }
@@ -116,71 +110,3 @@ fun RoutinesScreen(
         }
     )
 }
-
-@Composable
-private fun DayIcons(
-    documents: List<DocumentSnapshot>,
-    onFilterChanged: (List<DocumentSnapshot>) -> Unit
-) {
-    val selectedColor = colorResource(id = R.color.LightSteelBlue)
-    val notSelectedColor = colorResource(id = R.color.FadedLightGrey)
-    val filteredDocuments = remember(documents) {
-        mutableStateListOf(*documents.toTypedArray())
-    }
-
-    // add a map to store the selection state of each filter
-    val selectionState = remember {
-        mutableStateMapOf<DayFilters, Boolean>().apply {
-            putAll(DayFilters.values().associateWith { false })
-        }
-    }
-
-    Row(
-        Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        DayFilters.values().forEach { dayFilter ->
-            // modify the IconButton to change background based on the selection state
-            val selected = selectionState[dayFilter] ?: false
-            IconButton(
-                modifier = Modifier.background(
-                    if (selected) selectedColor else notSelectedColor,
-                    CircleShape
-                ),
-                onClick = {
-                    // toggle the selection state
-                    val newSelectionState = !selected
-                    selectionState[dayFilter] = newSelectionState
-                    if (newSelectionState) {
-                        // filter documents by the selected day filter
-                        filteredDocuments.clear()
-                        documents.forEach { item ->
-                            val schedule = item.getString("schedule")
-                            if (schedule != null) {
-                                val cronFields = schedule.split(" ")
-                                if (cronFields.size == 5) {
-                                    val dayOfWeek = cronFields[4]
-                                    if (dayOfWeek == "*" || dayOfWeek == dayFilter.filter.toString()) {
-                                        filteredDocuments.add(item)
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        // clear filter if the same button is pressed again
-                        filteredDocuments.clear()
-                        filteredDocuments.addAll(documents)
-                    }
-                    onFilterChanged(filteredDocuments)
-                }
-            ) {
-                Text(
-                    modifier = Modifier.scale(1.6f),
-                    text = dayFilter.letter,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
-    }
-}
-

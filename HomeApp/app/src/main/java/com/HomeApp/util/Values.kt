@@ -48,7 +48,7 @@ val DB_ADDR = "http://10.0.2.2:3000"
 
 enum class DayFilters(
     val letter: String,
-    val filter: Int
+    val cron: Int
 ) {
     MONDAY("M", 1),
     TUESDAY("T", 2),

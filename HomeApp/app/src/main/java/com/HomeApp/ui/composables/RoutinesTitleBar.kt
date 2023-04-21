@@ -98,7 +98,7 @@ private fun Dialog(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
-                Text(text = "Any progress will be lost", fontSize = 15.sp)
+                Text(text = "All progress will be lost", fontSize = 15.sp)
             }
         },
         confirmButton = {
@@ -165,6 +165,14 @@ sealed class RoutinesTitleBarItem(
         title = "Schedule",
         iconLeft = Icons.Rounded.ArrowBack,
         routeLeftButton = com.HomeApp.ui.navigation.ChooseActions.route,
+        iconRight = Icons.Rounded.Close,
+        routeRightButton = com.HomeApp.ui.navigation.Routines.route
+    )
+
+    object FinishRoutine : RoutinesTitleBarItem(
+        title = "Summary",
+        iconLeft = Icons.Rounded.ArrowBack,
+        routeLeftButton = com.HomeApp.ui.navigation.ChooseSchedule.route,
         iconRight = Icons.Rounded.Close,
         routeRightButton = com.HomeApp.ui.navigation.Routines.route
     )

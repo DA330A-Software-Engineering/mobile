@@ -82,7 +82,7 @@ object Profile : NavPath {
 
 object ChooseType : NavPath {
     override val icon = Icons.Rounded.Devices
-    override val route = "choose-device-type"
+    override val route = "choose-type"
 }
 
 object ChooseDevices : NavPath {
@@ -97,10 +97,15 @@ object ChooseGroups : NavPath {
 
 object ChooseActions : NavPath {
     override val icon = Icons.Rounded.Devices
-    override val route = "choose-action"
+    override val route = "choose-actions"
 }
 
 object ChooseSchedule : NavPath {
     override val icon = Icons.Rounded.Schedule
     override val route = "choose-schedule"
+}
+
+object FinishRoutine : NavPath {
+    override val icon = Icons.Rounded.Schedule
+    override val route = "finish.routine"
 }

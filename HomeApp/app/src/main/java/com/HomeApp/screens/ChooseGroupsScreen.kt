@@ -31,9 +31,7 @@ fun ChooseGroupsScreen(
                 modifier = androidx.compose.ui.Modifier
                     .height(listHeight.dp)
                     .padding(it)
-                    .padding(vertical = 10.dp)
-                    .padding(top = 10.dp)
-                    .padding(horizontal = 20.dp),
+                    .padding(vertical = 10.dp, horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 content = {
                     items(items = documents, key = { item -> item.id }) { item ->

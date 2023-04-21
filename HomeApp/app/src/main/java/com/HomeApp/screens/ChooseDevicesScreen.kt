@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
 import androidx.compose.material.Checkbox
 import androidx.compose.material.FabPosition
-import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -29,48 +28,40 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.HomeApp.ui.composables.RoutinesFAB
 import com.HomeApp.ui.composables.RoutinesTitleBar
 import com.HomeApp.ui.composables.RoutinesTitleBarItem
 import com.HomeApp.ui.navigation.ChooseActions
-import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.ui.theme.LightSteelBlue
 import com.google.firebase.firestore.DocumentSnapshot
 
 data class SelectedItemsData(
-    var selectedDevices: List<DocumentSnapshot> = emptyList(),
-    var selectedGroups: List<DocumentSnapshot> = emptyList()
+    var selectedItems: List<DocumentSnapshot> = emptyList()
 )
 
 object SelectedItems {
     private var selectedItemsData: SelectedItemsData = SelectedItemsData()
 
-    fun addItem(item: DocumentSnapshot, devices: Boolean) {
-        if (devices) selectedItemsData.selectedDevices += item
-        else selectedItemsData.selectedGroups += item
+    fun modifySelection(item: DocumentSnapshot) {
+        if (selectedItemsData.selectedItems.contains(item)) {
+            selectedItemsData.selectedItems -= item
+        } else {
+            selectedItemsData.selectedItems += item
+        }
     }
 
-    fun removeItem(item: DocumentSnapshot, devices: Boolean) {
-        if (devices) selectedItemsData.selectedDevices -= item
-        else selectedItemsData.selectedGroups -= item
-
-    }
-
-    fun getItems(devices: Boolean): List<DocumentSnapshot> {
-        if (devices) return selectedItemsData.selectedDevices
-        return selectedItemsData.selectedGroups
+    fun getItems(): List<DocumentSnapshot> {
+        return selectedItemsData.selectedItems
     }
 
     fun clearItems() {
-        selectedItemsData.selectedDevices = emptyList()
-        selectedItemsData.selectedGroups = emptyList()
+        selectedItemsData.selectedItems = emptyList()
     }
 }
 
@@ -94,9 +85,7 @@ fun ChooseDevicesScreen(
                 modifier = Modifier
                     .height(listHeight.dp)
                     .padding(it)
-                    .padding(vertical = 10.dp)
-                    .padding(top = 10.dp)
-                    .padding(horizontal = 20.dp),
+                    .padding(vertical = 10.dp, horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 content = {
                     items(items = documents, key = { item -> item.id }) { item ->
@@ -106,18 +95,10 @@ fun ChooseDevicesScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier.scale(1f),
-                onClick = { navController.navigate(ChooseActions.route) },
-                backgroundColor = GhostWhite
-            ) {
-                Icon(
-                    modifier = Modifier.scale(1.4f),
-                    imageVector = Icons.Rounded.ArrowForward,
-                    contentDescription = "arrow-icon",
-                    tint = Color.Black
-                )
-            }
+            RoutinesFAB(
+                icon = Icons.Rounded.ArrowForward,
+                onClick = { navController.navigate(ChooseActions.route) }
+            )
         },
         isFloatingActionButtonDocked = true,
         floatingActionButtonPosition = FabPosition.End
@@ -138,7 +119,7 @@ private fun SelectDeviceCard(
     }
 
     val name = deviceItem.get("name") as String
-    val check = remember { mutableStateOf(SelectedItems.getItems(devices = true).contains(deviceItem)) }
+    val check = remember { mutableStateOf(SelectedItems.getItems().contains(deviceItem)) }
 
     Card(
         modifier = Modifier
@@ -146,14 +127,7 @@ private fun SelectDeviceCard(
             .height(60.dp)
             .clickable(onClick = {
                 check.value = !check.value
-                if (SelectedItems
-                        .getItems(devices = true)
-                        .contains(deviceItem)
-                ) {
-                    SelectedItems.removeItem(item = deviceItem, devices = true)
-                } else {
-                    SelectedItems.addItem(item = deviceItem, devices = true)
-                }
+                SelectedItems.modifySelection(deviceItem)
             }),
         backgroundColor = LightSteelBlue
     ) {
@@ -163,14 +137,7 @@ private fun SelectDeviceCard(
                 checked = check.value,
                 onCheckedChange = {
                     check.value = !check.value
-                    if (SelectedItems
-                            .getItems(devices = true)
-                            .contains(deviceItem)
-                    ) {
-                        SelectedItems.removeItem(item = deviceItem, devices = true)
-                    } else {
-                        SelectedItems.addItem(item = deviceItem, devices = true)
-                    }
+                    SelectedItems.modifySelection(deviceItem)
                 })
             Icon(
                 modifier = Modifier

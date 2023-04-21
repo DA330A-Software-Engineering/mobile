@@ -18,6 +18,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.*
+import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.Shapes
 
 @Composable
@@ -41,7 +42,7 @@ fun TextInput(
         leadingIcon = { Icon(imageVector = inputType.icon, null) },
         label = { Text(text = inputType.label) },
         shape = Shapes.small,
-        colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Gray),
+        colors = TextFieldDefaults.textFieldColors(backgroundColor = FadedLightGrey),
         singleLine = true,
         keyboardOptions = inputType.keyboardOptions,
         visualTransformation = inputType.visualTransformation,
@@ -55,7 +56,6 @@ sealed class InputType(
     val keyboardOptions: KeyboardOptions,
     val visualTransformation: VisualTransformation
 ) {
-
     object Name : InputType(
         label = "Name",
         icon = Icons.Rounded.Person,

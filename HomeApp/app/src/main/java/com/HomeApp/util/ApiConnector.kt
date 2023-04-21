@@ -321,12 +321,6 @@ object ApiConnector {
         actionList: List<Action>,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val cronRegex = "^\\s*(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-9]|[0-2][0-3])\\s+(\\*|[0-9]|[0-3][0-9])\\s+(\\*|[0-9]|1[0-2])\\s*$"
-        if (!schedule.matches(Regex(cronRegex))) {
-            onRespond(ApiResult("{\"error\": \"Invalid schedule parameter\"}", 422))
-            return
-        }
-
         val obj = JSONObject()
         obj.put("name", name)
         obj.put("description", description)
@@ -359,12 +353,6 @@ object ApiConnector {
         repeatable: Boolean,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val cronRegex = "^\\s*(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-9]|[0-2][0-3])\\s+(\\*|[0-9]|[0-3][0-9])\\s+(\\*|[0-9]|1[0-2])\\s*$"
-        if (!schedule.matches(Regex(cronRegex))) {
-            onRespond(ApiResult("{\"error\": \"Invalid schedule parameter\"}", 422))
-            return
-        }
-
         val obj = JSONObject()
         obj.put("name", name)
         obj.put("description", description)
@@ -436,9 +424,6 @@ data class ApiResult(
             in 400..499 -> {
                 HttpStatus.UNAUTHORIZED
             }
-            422 -> {
-                HttpStatus.INVALID_PARAMETER
-            }
             else -> {
                 HttpStatus.FAILED
             }
@@ -459,5 +444,4 @@ enum class HttpStatus {
     SUCCESS,
     UNAUTHORIZED,
     FAILED,
-    INVALID_PARAMETER
 }

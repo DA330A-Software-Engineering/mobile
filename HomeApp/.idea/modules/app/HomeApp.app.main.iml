@@ -14,6 +14,7 @@
             <stringArg name="classpath">
               <args>
                 <arg>$MODULE_DIR$/../../../app/build/intermediates/compile_and_runtime_not_namespaced_r_class_jar/debug/R.jar</arg>
+                <arg>$USER_HOME$/.gradle/caches/transforms-3/aee51d19b6054733de9821bda1a4d6f7/transformed/snapper-0.2.0-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/4350260a442e57af7bcc03f978637c55/transformed/accompanist-coil-0.13.0-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/logging-interceptor/4.10.0/ae7524eec42d4ab0c3a7cb93da010cf9bcc5007c/logging-interceptor-4.10.0.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/be260417436c1d2f1d2051547a894297/transformed/coil-gif-2.1.0-api.jar</arg>
@@ -36,10 +37,10 @@
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/bdbdb981817f7f5dbf72f194c7f63d2c/transformed/ui-tooling-preview-1.3.3-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/fb0a465b14378cb932ea7c36888b4a4c/transformed/material-1.3.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/ec8223bb6c629e14c86b60c17ab90b10/transformed/ui-tooling-data-1.3.3-api.jar</arg>
-                <arg>$USER_HOME$/.gradle/caches/transforms-3/ab5509eead2e64b596133439b7f1038f/transformed/material-icons-extended-1.3.1-api.jar</arg>
-                <arg>$USER_HOME$/.gradle/caches/transforms-3/c4bff9a97328357b60ef8c44e4f953ad/transformed/material-icons-core-1.3.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/f56d1719f539d35696844d7056b4524a/transformed/material-ripple-1.3.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/8012436a0ccadb24a331cb97155659eb/transformed/foundation-1.3.1-api.jar</arg>
+                <arg>$USER_HOME$/.gradle/caches/transforms-3/ab5509eead2e64b596133439b7f1038f/transformed/material-icons-extended-1.3.1-api.jar</arg>
+                <arg>$USER_HOME$/.gradle/caches/transforms-3/c4bff9a97328357b60ef8c44e4f953ad/transformed/material-icons-core-1.3.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/24a160faf7dc36a9f884c01abc1545b3/transformed/animation-1.3.3-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/b6284f48c60d1eadf20018f02768ed4a/transformed/foundation-layout-1.3.1-api.jar</arg>
                 <arg>$USER_HOME$/.gradle/caches/transforms-3/57174bcba756d74643dd3c85eedd8624/transformed/ui-1.3.3-api.jar</arg>

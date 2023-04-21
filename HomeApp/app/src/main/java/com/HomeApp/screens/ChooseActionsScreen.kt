@@ -1,6 +1,5 @@
 package com.HomeApp.screens
 
-import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,11 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.FabPosition
-import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -33,34 +30,29 @@ import androidx.compose.material.icons.outlined.SurroundSound
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Power
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.HomeApp.ui.composables.RoutinesFAB
 import com.HomeApp.ui.composables.RoutinesTitleBar
 import com.HomeApp.ui.composables.RoutinesTitleBarItem
 import com.HomeApp.ui.navigation.ChooseSchedule
 import com.HomeApp.ui.theme.FadedLightGrey
-import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.ui.theme.LightSteelBlue
 import com.google.firebase.firestore.DocumentSnapshot
-import java.io.Serializable
 
 data class Action(
-    val deviceId: String,
+    val id: String,
     val type: String,
     val state: Map<String, Boolean>
-) : Serializable
+)
 
 data class ActionListData(
     var actionList: List<Action> = emptyList()
@@ -75,8 +67,7 @@ object ActionList {
         state: Map<String, Boolean>
     ) {
         val action = Action(id, type, state)
-        Log.d("ActionItem", action.toString())
-        val index = actionListData.actionList.indexOfFirst { it.deviceId == id }
+        val index = actionListData.actionList.indexOfFirst { it.id == id }
         // If an action with the same id already exists, replace it
         if (index != -1) {
             actionListData.actionList = actionListData.actionList.toMutableList().apply {
@@ -91,6 +82,10 @@ object ActionList {
     fun getList(): List<Action> {
         return actionListData.actionList
     }
+
+    fun clearList() {
+        actionListData.actionList = emptyList()
+    }
 }
 
 @Composable
@@ -98,11 +93,13 @@ fun ChooseActionsScreen(
     navController: NavController,
     OnSelfClick: () -> Unit = {}
 ) {
+    Schedule.clearCronString()
     val listHeight = LocalConfiguration.current.screenHeightDp
-    val documents = SelectedItems.getItems(devices = true)
+    val documents = SelectedItems.getItems()
 
     // Add all actions to a list, or else they would only be added when first shown on the screen.
     // I.e. when the user scrolls though the lazy column
+    ActionList.clearList()
     documents.forEach {
         val state = it.get("state") as MutableMap<String, Boolean>
         val keys = remember { mutableListOf<String>() }
@@ -110,7 +107,6 @@ fun ChooseActionsScreen(
         for (key in state.keys) {
             keys.add(key)
             keys.add(keys.removeAt(0)) // This makes the keys for door [open, locked] instead of [locked, open]
-            Log.d("Keys", keys.toString())
         }
 
         state[keys[0]] = true
@@ -132,9 +128,7 @@ fun ChooseActionsScreen(
                 modifier = Modifier
                     .height(listHeight.dp)
                     .padding(it)
-                    .padding(vertical = 10.dp)
-                    .padding(top = 10.dp)
-                    .padding(horizontal = 20.dp),
+                    .padding(vertical = 10.dp, horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 content = {
                     items(items = documents, key = { item -> item.id }) { item ->
@@ -144,18 +138,9 @@ fun ChooseActionsScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier.scale(1f),
-                onClick = { navController.navigate(ChooseSchedule.route) },
-                backgroundColor = GhostWhite,
-                content = {
-                    Icon(
-                        modifier = Modifier.scale(1.4f),
-                        imageVector = Icons.Rounded.ArrowForward,
-                        contentDescription = "arrow-icon",
-                        tint = Color.Black
-                    )
-                },
+            RoutinesFAB(
+                icon = Icons.Rounded.ArrowForward,
+                onClick = { navController.navigate(ChooseSchedule.route) }
             )
         },
         isFloatingActionButtonDocked = true,
@@ -221,7 +206,6 @@ private fun ActionCards(
     for (key in state.keys) {
         keys.add(key)
         keys.add(keys.removeAt(0)) // This makes the keys for door [open, locked] instead of [locked, open]
-        Log.d("Keys", keys.toString())
     }
 
     state[keys[0]] = primaryCheck.value
@@ -229,7 +213,6 @@ private fun ActionCards(
         state[keys[1]] = !secondaryCheck.value // I want reverse and locked to be false initially
     }
     ActionList.addAction(id, type, state)
-    Log.d("Actions", ActionList.getList().toString())
 
     val name = deviceItem.get("name") as String
 
@@ -280,22 +263,19 @@ private fun ActionCards(
                     modifier = Modifier
                         .weight(1f)
                         .height(100.dp)
-                        .clickable(onClick = {
-                            primaryCheck.value = false
-                            Log.d(
-                                "Action1",
-                                ActionList
-                                    .getList()
-                                    .toString()
-                            )
-                        }),
+                        .clickable(onClick = { primaryCheck.value = false }),
                     backgroundColor = notSelectedPrimary,
                 ) {
                     Column(
                         Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(modifier = Modifier.weight(1f), text = primaryOff, fontSize = 25.sp)
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = primaryOff,
+                            fontSize = 25.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                         Icon(
                             modifier = Modifier.weight(2f),
                             imageVector = Icons.Rounded.Power,
@@ -307,22 +287,19 @@ private fun ActionCards(
                     modifier = Modifier
                         .weight(1f)
                         .height(100.dp)
-                        .clickable(onClick = {
-                            primaryCheck.value = true
-                            Log.d(
-                                "Action2",
-                                ActionList
-                                    .getList()
-                                    .toString()
-                            )
-                        }),
+                        .clickable(onClick = { primaryCheck.value = true }),
                     backgroundColor = selectedPrimary,
                 ) {
                     Column(
                         Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(modifier = Modifier.weight(1f), text = primaryOn, fontSize = 25.sp)
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = primaryOn,
+                            fontSize = 25.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                         Icon(
                             modifier = Modifier.weight(2f),
                             imageVector = Icons.Rounded.Power,
@@ -337,15 +314,7 @@ private fun ActionCards(
                         modifier = Modifier
                             .weight(1f)
                             .height(100.dp)
-                            .clickable(onClick = {
-                                secondaryCheck.value = false
-                                Log.d(
-                                    "Action3",
-                                    ActionList
-                                        .getList()
-                                        .toString()
-                                )
-                            }),
+                            .clickable(onClick = { secondaryCheck.value = false }),
                         backgroundColor = notSelectedSecondary,
                     ) {
                         Column(
@@ -355,7 +324,8 @@ private fun ActionCards(
                             Text(
                                 modifier = Modifier.weight(1f),
                                 text = secondaryOff,
-                                fontSize = 25.sp
+                                fontSize = 25.sp,
+                                fontWeight = FontWeight.Bold
                             )
                             Icon(
                                 modifier = Modifier.weight(2f),
@@ -368,15 +338,7 @@ private fun ActionCards(
                         modifier = Modifier
                             .weight(1f)
                             .height(100.dp)
-                            .clickable(onClick = {
-                                secondaryCheck.value = true
-                                Log.d(
-                                    "Action4",
-                                    ActionList
-                                        .getList()
-                                        .toString()
-                                )
-                            }),
+                            .clickable(onClick = { secondaryCheck.value = true }),
                         backgroundColor = selectedSecondary,
                     ) {
                         Column(
@@ -386,7 +348,8 @@ private fun ActionCards(
                             Text(
                                 modifier = Modifier.weight(1f),
                                 text = secondaryOn,
-                                fontSize = 25.sp
+                                fontSize = 25.sp,
+                                fontWeight = FontWeight.Bold
                             )
                             Icon(
                                 modifier = Modifier.weight(2f),
