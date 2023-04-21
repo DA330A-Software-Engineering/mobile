@@ -1,6 +1,5 @@
 package com.HomeApp.ui.composables
 
-import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -23,8 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.HomeApp.realTimeData
 import com.HomeApp.ui.theme.RaminGrey
-import com.HomeApp.util.getDocument
+import com.HomeApp.util.*
 import com.google.firebase.firestore.DocumentSnapshot
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 data class GroupsClass(
@@ -120,7 +122,7 @@ fun GroupComposable(
         }
 
         if (editGroup) {
-            AlertDialog(
+            AlertDialog( // use Dismissbutton to have a composable with two buttons, for dismiss and delete
                 onDismissRequest = { editGroup = false },
                 title = { Text(groupItem.get("name") as String) },
                 text = { EditGroup(groupItem = groupItem) },
@@ -193,7 +195,7 @@ private fun EditGroup(
             Spacer(modifier = Modifier.weight(0.1f))
             Column(modifier = Modifier.weight(5f)) {
                 for (item in deviceList) {
-                    DeviceItem(item = item as String, isInGroup = true)
+                    DeviceItem(item = item as String, groupItem = groupItem, isInGroup = true)
                 }
             }
 
@@ -204,33 +206,17 @@ private fun EditGroup(
                 items(items = realTimeData!!.devices, key = { item -> item.id }) { item ->
                     val isInGroup = deviceList.any { it == item.id }
                     val isSameType = item.get("type") == groupType
-                    Log.d(
+                    /**Log.d(
                         "THIS IS THE STUFF",
                         "Item type: ${item.get("type")} ---- groupType : $groupType"
-                    )
+                    )*/
                     if (!isInGroup && isSameType) {
-                        DeviceItem(item = item.id, isInGroup = false)
+                        DeviceItem(item = item.id, groupItem = groupItem , isInGroup = false)
                     }
                 }
             }
         }
 
-
-        /**Row(modifier = Modifier
-        .height(30.dp),
-        verticalAlignment = Alignment.CenterVertically) {
-        Spacer(modifier = Modifier.weight(2f))
-
-        Box(modifier = Modifier.clickable {  }.weight(1f)) {
-        Row {
-
-        Text(text = "Add Device", modifier = Modifier)
-        Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
-        }
-
-        }
-
-        }*/
     }
 }
 
@@ -240,9 +226,12 @@ fun DeviceItem(
     item: String,
     isInGroup: Boolean,
     addGroup: Boolean = false,
+    groupItem: DocumentSnapshot? = null,
     onItemAdded: (String) -> Unit = {}
 ) { // groupItem is for when a device is getting deleted and an API call needs to be made
     //var device = mutableStateListOf<DocumentSnapshot>()
+    val context = LocalContext.current
+    val coroutine = rememberCoroutineScope()
     var device: DocumentSnapshot?
     var deviceID by remember {
         mutableStateOf("")
@@ -250,11 +239,28 @@ fun DeviceItem(
     var deviceName by remember {
         mutableStateOf("")
     }
+    var groupDevices by remember { mutableStateOf(groupItem?.get("devices") as ArrayList<String>) }
     getDocument("devices", item) { doc ->
         device = doc
         if (doc != null) {
             deviceName = doc.get("name") as String
             deviceID = doc.id
+            //groupDevices = doc.get("devices") as Array<String>
+        }
+    }
+    val onChangeDevices: (ApiResult) -> Unit = {
+        //val data: JSONObject = it.data()
+//        val msg: String = data.get("msg") as String
+        when (it.status()) {
+            HttpStatus.SUCCESS -> {
+
+            }
+            HttpStatus.UNAUTHORIZED -> {
+
+            }
+            HttpStatus.FAILED -> {
+
+            }
         }
     }
     Row(
@@ -266,7 +272,20 @@ fun DeviceItem(
         Spacer(modifier = Modifier.weight(0.1f))
         if (isInGroup) {
             IconButton(
-                onClick = { if (addGroup) onItemAdded(deviceID) }, modifier = Modifier
+                onClick = {
+                    groupDevices.remove(deviceID)
+                    coroutine.launch(Dispatchers.IO) {
+                        if (groupItem != null) {
+                            ApiConnector.updateGroup(
+                                name = groupItem.get("name") as String,
+                                token = LocalStorage.getToken(context),
+                                id = groupItem.id,
+                                description = groupItem.get("description") as String,
+                                devices = groupDevices,
+                                onRespond = onChangeDevices
+                            )
+                        }
+                    } }, modifier = Modifier
                     .weight(0.5f)
                     .size(40.dp)
             ) {
@@ -275,7 +294,22 @@ fun DeviceItem(
             }
         } else {
             IconButton(
-                onClick = { /*TODO*/ }, modifier = Modifier
+                onClick = {
+                        groupDevices.add(deviceID)
+                        coroutine.launch(Dispatchers.IO) {
+                            if (groupItem != null) {
+                                ApiConnector.updateGroup(
+                                    name = groupItem.get("name") as String,
+                                    token = LocalStorage.getToken(context),
+                                    id = groupItem.id,
+                                    description = groupItem.get("description") as String,
+                                    devices = groupDevices,
+                                    onRespond = onChangeDevices
+                                )
+                            }
+                        }
+
+                          }, modifier = Modifier
                     .weight(0.5f)
                     .size(40.dp)
             ) {
@@ -285,4 +319,6 @@ fun DeviceItem(
         }
 
     }
+
+
 }

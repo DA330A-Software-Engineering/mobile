@@ -267,7 +267,7 @@ object ApiConnector {
         id: String,
         name: String,
         description: String,
-        devices: List<String>,
+        devices: ArrayList<String>,
         onRespond: (result: ApiResult) -> Unit
     ) {
         val obj = JSONObject()
