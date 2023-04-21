@@ -81,7 +81,9 @@ fun AddGroup(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.weight(0.1f))
             LazyColumn(modifier = Modifier.weight(5f)) {
                 items(items = realTimeData!!.devices, key = { item -> item.id }) { item ->
-                    DeviceItem(item = item.id, isInGroup = false)
+                    DeviceItem(item = item.id, isInGroup = false, addGroup = true, onItemAdded = {
+                        item -> deviceList = (deviceList + item) as MutableList<String>
+                    })
 
                 }
             }

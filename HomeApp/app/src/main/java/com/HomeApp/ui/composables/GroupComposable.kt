@@ -239,10 +239,14 @@ fun DeviceItem(
     modifier: Modifier = Modifier,
     item: String,
     isInGroup: Boolean,
+    addGroup: Boolean = false,
     onItemAdded: (String) -> Unit = {}
 ) { // groupItem is for when a device is getting deleted and an API call needs to be made
     //var device = mutableStateListOf<DocumentSnapshot>()
     var device: DocumentSnapshot?
+    var deviceID by remember {
+        mutableStateOf("")
+    }
     var deviceName by remember {
         mutableStateOf("")
     }
@@ -250,6 +254,7 @@ fun DeviceItem(
         device = doc
         if (doc != null) {
             deviceName = doc.get("name") as String
+            deviceID = doc.id
         }
     }
     Row(
@@ -261,7 +266,7 @@ fun DeviceItem(
         Spacer(modifier = Modifier.weight(0.1f))
         if (isInGroup) {
             IconButton(
-                onClick = { /*TODO*/ }, modifier = Modifier
+                onClick = { if (addGroup) onItemAdded(deviceID) }, modifier = Modifier
                     .weight(0.5f)
                     .size(40.dp)
             ) {
