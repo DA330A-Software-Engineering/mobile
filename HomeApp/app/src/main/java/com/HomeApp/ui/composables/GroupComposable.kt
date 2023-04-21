@@ -26,6 +26,7 @@ import com.HomeApp.ui.theme.RaminGrey
 import com.HomeApp.util.*
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 
@@ -144,6 +145,8 @@ private fun EditGroup(
     modifier: Modifier = Modifier,
     groupItem: DocumentSnapshot,
 ) {
+    val context = LocalContext.current
+    val coroutine = rememberCoroutineScope()
     var groupName by remember { mutableStateOf(groupItem.get("name") as String) }
     var groupDesc by remember { mutableStateOf(groupItem.get("description") as String) }
 
@@ -216,6 +219,40 @@ private fun EditGroup(
                 }
             }
         }
+        val onDeleteGroup: (ApiResult) -> Unit = {
+            //val data: JSONObject = it.data()
+//        val msg: String = data.get("msg") as String
+            when (it.status()) {
+                HttpStatus.SUCCESS -> {
+
+                }
+                HttpStatus.UNAUTHORIZED -> {
+
+                }
+                HttpStatus.FAILED -> {
+
+                }
+            }
+        }
+        Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
+            Spacer(modifier = Modifier.weight(1f))
+            Button(onClick = {
+                coroutine.launch(Dispatchers.IO) {
+                    ApiConnector.deleteGroup(
+                        id = groupItem.id,
+                        token = LocalStorage.getToken(context),
+                        onRespond = onDeleteGroup
+                    )
+                }
+            }) {
+                Text(text = "Delete")
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Button(onClick = { /*TODO*/ }) {
+                Text(text = "Update")
+            }
+        }
+
 
     }
 }
