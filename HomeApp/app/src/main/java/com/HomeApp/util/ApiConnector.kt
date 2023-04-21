@@ -318,7 +318,7 @@ object ApiConnector {
         schedule: String,
         enabled: Boolean,
         repeatable: Boolean,
-        actionList: List<Action>,
+        actions: Array<Action>,
         onRespond: (result: ApiResult) -> Unit
     ) {
         val obj = JSONObject()
@@ -327,7 +327,7 @@ object ApiConnector {
         obj.put("schedule", schedule)
         obj.put("enabled", enabled)
         obj.put("repeatable", repeatable)
-        obj.put("actionList", actionList)
+        obj.put("actions", actions)
         val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)

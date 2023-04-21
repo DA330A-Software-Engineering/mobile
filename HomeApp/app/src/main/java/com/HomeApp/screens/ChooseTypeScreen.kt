@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.RoutinesTitleBar
 import com.HomeApp.ui.composables.RoutinesTitleBarItem
-import com.HomeApp.ui.composables.TitledDivider
 import com.HomeApp.ui.navigation.ChooseDevices
 import com.HomeApp.ui.navigation.ChooseGroups
 import com.HomeApp.ui.theme.LightSteelBlue
@@ -57,7 +56,7 @@ fun ChooseTypeScreen(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 content = {
                     item {
-                        DeviceType(
+                        TypeCard(
                             title = "Device",
                             text = "Choose from all devices",
                             icon = Icons.Rounded.Devices,
@@ -65,7 +64,7 @@ fun ChooseTypeScreen(
                         )
                     }
                     item {
-                        DeviceType(
+                        TypeCard(
                             title = "Group",
                             text = "Choose from all groups",
                             icon = Icons.Rounded.Groups,
@@ -79,7 +78,7 @@ fun ChooseTypeScreen(
 }
 
 @Composable
-private fun DeviceType(
+private fun TypeCard(
     title: String,
     text: String,
     icon: ImageVector,

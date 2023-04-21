@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -51,12 +52,15 @@ import com.HomeApp.ui.theme.LightSteelBlue
 import com.HomeApp.util.ApiConnector
 import com.HomeApp.util.ApiResult
 import com.HomeApp.util.LocalStorage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun RoutineFinishScreen(
     navController: NavController,
     OnSelfClick: () -> Unit = {}
 ) {
+    val coroutine = rememberCoroutineScope()
     val context = LocalContext.current
     val token = LocalStorage.getToken(context)
     val listHeight = LocalConfiguration.current.screenHeightDp
@@ -126,16 +130,21 @@ fun RoutineFinishScreen(
             RoutinesFAB(
                 icon = Icons.Rounded.Done,
                 onClick = {
-                    ApiConnector.createRoutine(
-                        token = token,
-                        name = routineName.value,
-                        description = routineDescription.value,
-                        schedule = cronString,
-                        enabled = enabled.value,
-                        repeatable = repeatable.value,
-                        actionList = ActionList.getList(),
-                        onRespond = onRespond
-                    )
+                    Log.d("Actions", Actions.getActions().toString())
+                    val type1 = Actions.getActions()::class
+                    println("The type of myVariable is ${type1.simpleName}")
+                    coroutine.launch(Dispatchers.IO) {
+                        ApiConnector.createRoutine(
+                            token = token,
+                            name = routineName.value,
+                            description = routineDescription.value,
+                            schedule = cronString,
+                            enabled = enabled.value,
+                            repeatable = repeatable.value,
+                            actions = Actions.getActions(),
+                            onRespond = onRespond
+                        )
+                    }
                     navController.navigate(Routines.route)
                 }
             )

@@ -1,5 +1,6 @@
 package com.HomeApp.screens
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +48,7 @@ import com.HomeApp.ui.navigation.ChooseSchedule
 import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.LightSteelBlue
 import com.google.firebase.firestore.DocumentSnapshot
+import kotlin.reflect.typeOf
 
 data class Action(
     val id: String,
@@ -54,37 +56,46 @@ data class Action(
     val state: Map<String, Boolean>
 )
 
-data class ActionListData(
-    var actionList: List<Action> = emptyList()
-)
+data class ActionsData(
+    var actions: Array<Action> = emptyArray()
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
-object ActionList {
-    private var actionListData: ActionListData = ActionListData()
+        other as ActionsData
 
-    fun addAction(
-        id: String,
-        type: String,
-        state: Map<String, Boolean>
-    ) {
+        if (!actions.contentEquals(other.actions)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return actions.contentHashCode()
+    }
+}
+
+object Actions {
+    private var actionsData: ActionsData = ActionsData()
+
+    fun addAction(id: String, type: String, state: Map<String, Boolean>) {
         val action = Action(id, type, state)
-        val index = actionListData.actionList.indexOfFirst { it.id == id }
-        // If an action with the same id already exists, replace it
+        val index = actionsData.actions.indexOfFirst { it.id == id }
         if (index != -1) {
-            actionListData.actionList = actionListData.actionList.toMutableList().apply {
-                removeAt(index)
-                add(index, action)
+            actionsData.actions = actionsData.actions.copyOf().apply {
+                set(index, action)
             }
         } else {
-            actionListData.actionList += action
+            actionsData.actions += action
         }
     }
 
-    fun getList(): List<Action> {
-        return actionListData.actionList
+    fun getActions(): Array<Action> {
+        return actionsData.actions
     }
 
     fun clearList() {
-        actionListData.actionList = emptyList()
+        actionsData.actions = emptyArray()
     }
 }
 
@@ -99,7 +110,6 @@ fun ChooseActionsScreen(
 
     // Add all actions to a list, or else they would only be added when first shown on the screen.
     // I.e. when the user scrolls though the lazy column
-    ActionList.clearList()
     documents.forEach {
         val state = it.get("state") as MutableMap<String, Boolean>
         val keys = remember { mutableListOf<String>() }
@@ -113,7 +123,7 @@ fun ChooseActionsScreen(
         if (keys.size == 2) {
             state[keys[1]] = false // I want reverse and locked to be false initially
         }
-        ActionList.addAction(it.id, it.get("type") as String, state)
+        Actions.addAction(it.id, it.get("type") as String, state)
     }
 
     Scaffold(
@@ -212,7 +222,7 @@ private fun ActionCards(
     if (keys.size == 2) {
         state[keys[1]] = !secondaryCheck.value // I want reverse and locked to be false initially
     }
-    ActionList.addAction(id, type, state)
+    Actions.addAction(id, type, state)
 
     val name = deviceItem.get("name") as String
 
