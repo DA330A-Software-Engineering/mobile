@@ -184,13 +184,15 @@ private fun EditGroup(
             mutableStateOf("")
         }
 
-        getDocument("devices", deviceList.first() as String) { doc ->
-            if (doc != null) {
-                firstDevice = doc
-                groupType = doc.get("type") as String
+
+        if (deviceList.size != 0){
+            getDocument("devices", deviceList.first() as String) { doc ->
+                if (doc != null) {
+                    firstDevice = doc
+                    groupType = doc.get("type") as String
+                }
             }
         }
-
         Row(
             modifier = Modifier
                 .padding(top = 10.dp),
@@ -198,6 +200,7 @@ private fun EditGroup(
             Text(text = "Devices", modifier = Modifier.weight(2f))
             Spacer(modifier = Modifier.weight(0.1f))
             Column(modifier = Modifier.weight(5f)) {
+
                 for (item in deviceList) {
                     DeviceItem(item = item as String, groupItem = groupItem, isInGroup = true)
                 }
@@ -209,7 +212,9 @@ private fun EditGroup(
             LazyColumn(modifier = Modifier.weight(5f)) {
                 items(items = realTimeData!!.devices, key = { item -> item.id }) { item ->
                     val isInGroup = deviceList.any { it == item.id }
-                    val isSameType = item.get("type") == groupType
+                    var isSameType = item.get("type") == groupType
+                    if (deviceList.size == 0) isSameType = true
+
                     /**Log.d(
                         "THIS IS THE STUFF",
                         "Item type: ${item.get("type")} ---- groupType : $groupType"
