@@ -1,5 +1,7 @@
 package com.HomeApp.ui.composables
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,9 +27,11 @@ import com.HomeApp.realTimeData
 import com.HomeApp.ui.theme.RaminGrey
 import com.HomeApp.util.*
 import com.google.firebase.firestore.DocumentSnapshot
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 
 data class GroupsClass(
@@ -46,7 +50,7 @@ fun GroupComposable(
     //groupState: String
 ) {
     var editGroup by remember { mutableStateOf(false) }
-    val deviceList = groupItem.get("devices") as ArrayList<*>
+    val deviceList = groupItem.get("devices") as ArrayList<String>
     val state: Map<String, Any> = emptyMap()
     var groupStateBool by remember {
         mutableStateOf(true)
@@ -54,7 +58,8 @@ fun GroupComposable(
     var groupType by remember {
         mutableStateOf("")
     }
-
+    val context = LocalContext.current
+    val coroutine = rememberCoroutineScope()
     LaunchedEffect(groupStateBool){
         for (device in deviceList) {
             getDocument("devices", device as String) { doc ->
@@ -90,7 +95,14 @@ fun GroupComposable(
     }
 
     Button(
-        onClick = { }, modifier = Modifier
+        onClick = {
+            coroutine.launch(Dispatchers.IO) {
+                changeGroupState(context = context, newState = !groupStateBool, deviceList = deviceList, groupType= groupType)
+                groupStateBool = !groupStateBool
+            }
+
+
+                  }, modifier = Modifier
             .border(
                 width = 1.dp,
                 shape = RoundedCornerShape(10.dp),
@@ -132,7 +144,7 @@ fun GroupComposable(
         }
 
         if (editGroup) {
-            AlertDialog( // use Dismissbutton to have a composable with two buttons, for dismiss and delete
+            AlertDialog(
                 onDismissRequest = { editGroup = false },
                 title = { Text(groupItem.get("name") as String) },
                 text = { EditGroup(groupItem = groupItem, onDelEdit = {newState -> editGroup = newState}) },
@@ -149,7 +161,53 @@ fun GroupComposable(
     }
 }
 
-private fun changeGroupState() {
+private fun changeGroupState(
+    context:Context,
+    newState: Boolean,
+    deviceList: ArrayList<String>,
+    groupType: String
+) {
+    val onUpdateState: (ApiResult) -> Unit = {
+        //val data: JSONObject = it.data()
+//        val msg: String = data.get("msg") as String
+        when (it.status()) {
+            HttpStatus.SUCCESS -> {
+
+            }
+            HttpStatus.UNAUTHORIZED -> {
+
+            }
+            HttpStatus.FAILED -> {
+
+            }
+        }
+    }
+
+    if (deviceList.size != 0){
+        for (device in deviceList) {
+            val updateState = JSONObject()
+            if (groupType == "toggle" || groupType == "fan") {
+                //updateState = mutableMapOf("on" to !state["on"]!!)
+                updateState.put("on", newState)
+            } else if (groupType == "openLock") {
+                updateState.put("open", newState)
+
+                //updateState = mutableMapOf("locked" to state["locked"] as Boolean, "open" to !state["open"]!!
+            }
+            Log.d("LOOKIE HERE", updateState.toString())
+            ApiConnector.deviceAction(
+                token = LocalStorage.getToken(context),
+                id = device,
+                type= groupType,
+                onRespond = onUpdateState,
+                state = updateState
+
+            )
+        }
+    }
+
+
+
 
 }
 
