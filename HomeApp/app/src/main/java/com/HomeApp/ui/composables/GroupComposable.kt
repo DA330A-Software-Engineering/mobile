@@ -131,7 +131,7 @@ fun GroupComposable(
                     Button(
                         onClick = { editGroup = false },
                     ) {
-                        Text("Done")
+                        Text("Close")
                     }
                 }
             )
