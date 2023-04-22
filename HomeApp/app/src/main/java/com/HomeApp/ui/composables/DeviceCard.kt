@@ -51,6 +51,7 @@ fun DeviceCard(
         "openLock" -> if (deviceItem.get("tag") == "window") Icons.Outlined.Window else Icons.Filled.DoorFront
         "screen" -> Icons.Outlined.SmartScreen
         "buzzer" -> Icons.Outlined.SurroundSound
+        "sensor" -> Icons.Outlined.Sensors
         else -> Icons.Filled.BrokenImage
     }
 
