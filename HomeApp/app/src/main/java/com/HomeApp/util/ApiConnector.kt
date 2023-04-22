@@ -1,14 +1,12 @@
 package com.HomeApp.util
 
 import android.util.Log
-import com.HomeApp.screens.Action
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.Serializable
 
 /** The Api Connector has all the functions for talking to the API,
  *  each function will return an onRespond Callback that has an parameter of
@@ -318,7 +316,7 @@ object ApiConnector {
         schedule: String,
         enabled: Boolean,
         repeatable: Boolean,
-        actions: Array<Action>,
+        actions: JSONArray,
         onRespond: (result: ApiResult) -> Unit
     ) {
         val obj = JSONObject()
@@ -331,6 +329,8 @@ object ApiConnector {
         val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
+
+        Log.d("Request Body", requestForm)
 
         val urlPath = "/routines"
 

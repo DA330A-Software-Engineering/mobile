@@ -1,6 +1,5 @@
 package com.HomeApp.screens
 
-import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,54 +47,44 @@ import com.HomeApp.ui.navigation.ChooseSchedule
 import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.LightSteelBlue
 import com.google.firebase.firestore.DocumentSnapshot
-import kotlin.reflect.typeOf
-
-data class Action(
-    val id: String,
-    val type: String,
-    val state: Map<String, Boolean>
-)
+import com.google.gson.JsonArray
+import org.json.JSONArray
+import org.json.JSONObject
 
 data class ActionsData(
-    var actions: Array<Action> = emptyArray()
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as ActionsData
-
-        if (!actions.contentEquals(other.actions)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return actions.contentHashCode()
-    }
-}
-
+    var actions: JSONArray = JSONArray()
+)
 object Actions {
     private var actionsData: ActionsData = ActionsData()
 
     fun addAction(id: String, type: String, state: Map<String, Boolean>) {
-        val action = Action(id, type, state)
-        val index = actionsData.actions.indexOfFirst { it.id == id }
-        if (index != -1) {
-            actionsData.actions = actionsData.actions.copyOf().apply {
-                set(index, action)
+        val action = JSONObject()
+            .put("id", id)
+            .put("type", type)
+            .put("state", JSONObject(state))
+
+        var index = -1
+        for (i in 0 until actionsData.actions.length()) {
+            val existingAction = actionsData.actions.getJSONObject(i)
+            if (existingAction.getString("id") == id) {
+                index = i
+                break
             }
+        }
+
+        if (index != -1) {
+            actionsData.actions.put(index, action)
         } else {
-            actionsData.actions += action
+            actionsData.actions.put(action)
         }
     }
 
-    fun getActions(): Array<Action> {
+    fun getActions(): JSONArray {
         return actionsData.actions
     }
 
     fun clearList() {
-        actionsData.actions = emptyArray()
+        actionsData.actions = JSONArray()
     }
 }
 

@@ -43,6 +43,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import org.json.JSONArray
 
 fun <T> rememberFirestoreCollection(
     collectionPath: String,
@@ -82,7 +83,7 @@ data class Routines(
     val schedule: String = "",
     val enabled: Boolean = false,
     val repeatable: Boolean = false,
-    val actionList: List<Action> = emptyList()
+    val actionList: JSONArray = JSONArray()
 )
 
 @Composable

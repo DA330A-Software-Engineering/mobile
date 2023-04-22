@@ -54,6 +54,7 @@ import com.HomeApp.util.ApiResult
 import com.HomeApp.util.LocalStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Arrays
 
 @Composable
 fun RoutineFinishScreen(
@@ -130,9 +131,6 @@ fun RoutineFinishScreen(
             RoutinesFAB(
                 icon = Icons.Rounded.Done,
                 onClick = {
-                    Log.d("Actions", Actions.getActions().toString())
-                    val type1 = Actions.getActions()::class
-                    println("The type of myVariable is ${type1.simpleName}")
                     coroutine.launch(Dispatchers.IO) {
                         ApiConnector.createRoutine(
                             token = token,
