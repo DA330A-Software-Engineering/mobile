@@ -11,7 +11,6 @@ private fun decryptToken(token: String): Map<String, String> {
     val tokenParts = token.split(".")  // Will split token in header [0] and payload [1]
     val charset = charset("UTF-8")
     return try {
-        val gson = Gson()
         val header = String(
             Base64.getUrlDecoder().decode(tokenParts[0].toByteArray(charset)),
             charset

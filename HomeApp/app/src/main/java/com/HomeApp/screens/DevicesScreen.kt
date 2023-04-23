@@ -1,19 +1,13 @@
 package com.HomeApp.screens
 
-import android.content.ContentValues.TAG
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -25,12 +19,8 @@ import com.HomeApp.realTimeData
 import com.HomeApp.ui.composables.*
 import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.util.microphoneIcon
-import com.HomeApp.util.rememberFirestoreCollection
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-
 
 data class Devices(
     var id: String = "",
@@ -42,7 +32,6 @@ data class Devices(
 )
 
 
-
 @Composable
 fun DevicesScreen(
     navController: NavController,
@@ -51,7 +40,6 @@ fun DevicesScreen(
     OnSelfClick: () -> Unit = {},
     getSpeechInput: (Context) -> Unit = {}
 ) {
-    val coroutine = rememberCoroutineScope()
     val listHeight = LocalConfiguration.current.screenHeightDp
     val db = Firebase.firestore
     //val documents = rememberFirestoreCollection("devices", Devices::class.java, "devices")
@@ -59,7 +47,11 @@ fun DevicesScreen(
     val context = LocalContext.current
     Scaffold(
         topBar = {
-            TitleBar(screenTitle = "Devices", navController = navController, isDevices = true)
+            TitleBar(
+                screenTitle = "Devices",
+                navController = navController,
+                isDevices = true,
+            )
         },
         content = {
             LazyColumn(

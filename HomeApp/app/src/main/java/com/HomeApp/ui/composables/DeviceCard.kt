@@ -51,7 +51,6 @@ fun DeviceCard(
         "fan" -> Icons.Outlined.RestartAlt
         else -> Icons.Filled.BrokenImage
     }
-
     val deviceState: String = when (deviceItem.get("type")) {
         "toggle", "fan", "screen" -> if (state["on"] == true) "On" else "Off"
         "openLock" -> if (state["open"] == true) "Open" else "Close"
@@ -59,14 +58,12 @@ fun DeviceCard(
             ""
         }
     }
-
     val actionIcon: ImageVector? = when (deviceItem.get("type")) {
         "openLock" -> if (state["locked"] == true) Icons.Outlined.Lock else Icons.Outlined.LockOpen
         "fan" -> Icons.Outlined.CompareArrows
         "screen" -> Icons.Outlined.TextIncrease
         "buzzer" -> Icons.Outlined.MusicNote
         else -> null
-
     }
     val stateList = listOf("fan", "openLock", "toggle")
     var button1type = ""
@@ -80,7 +77,7 @@ fun DeviceCard(
         )
     }
 
-    Row(modifier = Modifier.height(60.dp)) {
+    Row(modifier = Modifier.height(45.dp)) {
         Button(
             onClick = {
                 when (deviceItem.get("type") as String){
@@ -149,7 +146,7 @@ fun DeviceCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 3.dp),
+                    .padding(end = 3.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -164,7 +161,7 @@ fun DeviceCard(
                     Spacer(modifier = Modifier.width(7.dp))
                     Text(
                         text = deviceItem.get("name") as String,
-                        fontSize = 25.sp,
+                        fontSize = 21.sp,
                         modifier = Modifier
                             .fillMaxHeight()
                             .wrapContentHeight(align = Alignment.CenterVertically)
@@ -172,7 +169,7 @@ fun DeviceCard(
                 }
                 Text(
                     text = deviceState,
-                    fontSize = 18.sp,
+                    fontSize = 14.sp,
                     modifier = Modifier
                         .fillMaxHeight()
                         .fillMaxWidth()
@@ -215,8 +212,6 @@ private fun changeState(
         }
     }
     val changeDeviceState: (ApiResult) -> Unit = {
-        //val data: JSONObject = it.data()
-//        val msg: String = data.get("msg") as String
         when (it.status()) {
             HttpStatus.SUCCESS -> {
 
@@ -227,6 +222,7 @@ private fun changeState(
             HttpStatus.FAILED -> {
 
             }
+            else -> {}
         }
     }
 

@@ -176,6 +176,7 @@ object ApiConnector {
 
         val urlPath = "/devices/actions"
 
+        Log.d("ACTION", "$obj")
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
@@ -310,8 +311,7 @@ object ApiConnector {
     }
 
     data class Action(
-        val deviceId: String?,
-        val groupId: String?,
+        val deviceId: String,
         val state: JSONObject,
         val type: String
     ) : Serializable
