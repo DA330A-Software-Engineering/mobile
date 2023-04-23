@@ -10,16 +10,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.LightMode
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -30,53 +26,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.HomeApp.ui.composables.AppFooter
-import com.HomeApp.ui.composables.DeviceCard
-import com.HomeApp.ui.composables.GroupComposable
-import com.HomeApp.ui.composables.TitledDivider
-import com.HomeApp.ui.navigation.Groups
+import com.HomeApp.realTimeData
+import com.HomeApp.ui.composables.*
 import com.HomeApp.ui.navigation.Routines
 import com.HomeApp.ui.navigation.Settings
 import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.ui.theme.LightSteelBlue
 import com.HomeApp.ui.theme.montserrat
-import com.HomeApp.util.microphoneIcon
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
+import com.HomeApp.util.*
 import kotlinx.coroutines.launch
 
-fun <T> rememberFirestoreCollections(
-    collectionPath: String,
-    clazz: Class<T>
-): SnapshotStateList<DocumentSnapshot> {
-    val collectionRef = FirebaseFirestore.getInstance().collection(collectionPath)
-    val documents = mutableStateListOf<DocumentSnapshot>()  //mutableStateOf(MutableList<T>())
-    var counter = 0
-
-    collectionRef.addSnapshotListener { snapshot, error ->
-        if (error != null) {
-            // Handle the error
-            return@addSnapshotListener
-        }
-        if (snapshot != null) {
-            documents.clear()
-            snapshot.documents.forEach { item ->
-                documents.add(item)
-            }
-
-            //Log.d(TAG, "Look here ${snapshot.documents}")
-            //Log.d(TAG, "Look here 2 ${documents}")
-        }
-
-    }
-    return documents
-}
 
 @SuppressLint("ShowToast")
 @Composable
@@ -137,46 +101,6 @@ fun HomeScreen(
     )
 }
 
-data class Groupss(
-    var id: String = "",
-    var name: String = "",
-    var description: String = "",
-    var state: String = "",
-    var devices: List<String> = emptyList()
-)
-
-private fun getDummyItems(): List<Groupss> {
-
-    val group1: Groupss = Groupss(
-        id = "123",
-        name = "Lights 1",
-        description = "group1des",
-        devices = listOf("1233", "234"),
-        state = "On"
-    )
-    val group2: Groupss = Groupss(
-        id = "123",
-        name = "Doors",
-        description = "group1des",
-        devices = listOf("1233", "234"),
-        state = "Open"
-    )
-    val group3: Groupss = Groupss(
-        id = "123",
-        name = "Windows",
-        description = "group1des",
-        devices = listOf("1233", "234"),
-        state = "Closed"
-    )
-    val group4: Groupss = Groupss(
-        id = "123",
-        name = "Lights 2",
-        description = "group1des",
-        devices = listOf("1233", "234"),
-        state = "Off"
-    )
-    return listOf(group1, group2, group3, group4)
-}
 
 @Composable
 private fun MakeGroups(
@@ -184,9 +108,15 @@ private fun MakeGroups(
     modifier: Modifier = Modifier,
     scale: Float = 1f
 ) {
+    val coroutine = rememberCoroutineScope()
+    val context = LocalContext.current
+    val groups = realTimeData!!.groups
+
+
+
     Spacer(modifier = Modifier.height(28.dp))
     TitledDivider(navController, "Groups", "Groups Divider", showIcon = true)
-    val items = getDummyItems()
+
     Column(
         modifier = modifier
     ) {
@@ -197,19 +127,17 @@ private fun MakeGroups(
                 .padding(horizontal = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            items(items = items) { item ->
-                GroupComposable(groupName = item.name, groupState = item.state)
+            items(items = groups) { item ->
+                GroupComposable(groupItem = item)
             }
             /**
             itemsIndexed(items = items) { index, item ->
-                GroupComposable(groupName = item.name, groupState = )
+            GroupComposable(groupName = item.name, groupState = )
             }*/
         }
 
     }
 }
-
-
 
 
 @Composable
@@ -252,6 +180,7 @@ private fun MenuIcons(
 ) {
     val coroutine = rememberCoroutineScope()
     val screenWidth = LocalConfiguration.current.screenWidthDp
+
     // Routines
     Spacer(modifier = Modifier.width((screenWidth / 4).dp))
 
@@ -296,6 +225,7 @@ private fun MenuIcons(
         }
         Spacer(modifier = Modifier.weight(1f))
     }
+
 }
 
 

@@ -4,17 +4,13 @@ import android.content.Context
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.DoorFront
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -42,40 +38,67 @@ fun DeviceCard(
     deviceItem: DocumentSnapshot
 ) {
     val context: Context = LocalContext.current
-    val state = deviceItem.get("state") as Map<String, Boolean>
+    val state = deviceItem.get("state") as Map<*, *>
     val coroutine = rememberCoroutineScope()
+    var editDialog by remember { mutableStateOf(false) }
+
     val cardIcon: ImageVector = when (deviceItem.get("type")) {
         "toggle" -> Icons.Filled.Lightbulb
-        "door" -> Icons.Filled.DoorFront
-        "window" -> Icons.Outlined.Window
+        "openLock" -> if (deviceItem.get("tag") == "window") Icons.Outlined.Window else Icons.Filled.DoorFront
         "screen" -> Icons.Outlined.SmartScreen
         "buzzer" -> Icons.Outlined.SurroundSound
+        "sensor" -> Icons.Outlined.Sensors
+        "fan" -> Icons.Outlined.RestartAlt
         else -> Icons.Filled.BrokenImage
     }
     val deviceState: String = when (deviceItem.get("type")) {
         "toggle", "fan", "screen" -> if (state["on"] == true) "On" else "Off"
-        "door", "window" -> if (state["open"] == true) "Open" else "Closed"
+        "openLock" -> if (state["open"] == true) "Open" else "Close"
         else -> {
-            "No State"
+            ""
         }
     }
     val actionIcon: ImageVector? = when (deviceItem.get("type")) {
-        "door", "window" -> if (state["locked"] == true) Icons.Outlined.Lock else Icons.Outlined.LockOpen
+        "openLock" -> if (state["locked"] == true) Icons.Outlined.Lock else Icons.Outlined.LockOpen
         "fan" -> Icons.Outlined.CompareArrows
+        "screen" -> Icons.Outlined.TextIncrease
+        "buzzer" -> Icons.Outlined.MusicNote
         else -> null
+    }
+    val stateList = listOf("fan", "openLock", "toggle")
+    var button1type = ""
+    if (editDialog) {
+        AlertDialog(
+            onDismissRequest = { editDialog = false },
+            title = { Text(deviceItem.get("name") as String) },
+            text = { EditDeviceState(deviceItem = deviceItem, type = deviceItem.get("type") as String) },
+            confirmButton = {
+            }
+        )
     }
 
     Row(modifier = Modifier.height(45.dp)) {
         Button(
             onClick = {
-                changeState(
-                    context = context,
-                    id = deviceItem.id,
-                    state = deviceItem.get("state") as Map<String, Boolean>,
-                    type = deviceItem.get("type") as String,
-                    coroutine = coroutine,
-                    changedState = if (deviceItem.get("type") == "door" || deviceItem.get("type") == "window") "locked" else "reverse"
-                )
+                when (deviceItem.get("type") as String){
+                    in stateList -> {
+                        changeState(
+                            context = context,
+                            id = deviceItem.id,
+                            state = deviceItem.get("state") as Map<String, Boolean>,
+                            type = deviceItem.get("type") as String,
+                            coroutine = coroutine,
+                            changedState = if (deviceItem.get("type") == "openLock") "locked" else "reverse"
+                        )
+                    }
+                    else -> {
+                        editDialog = true
+                    }
+
+
+                }
+
+
             },
             modifier = modifier.then(
                 Modifier
@@ -173,7 +196,7 @@ private fun changeState(
     if (type == "toggle") {
         //updateState = mutableMapOf("on" to !state["on"]!!)
         updateState.put("on", !state["on"]!!)
-    } else if (type == "door" || type == "window") {
+    } else if (type == "openLock") {
         if (changedState == "locked") {
             updateState.put("locked", !state["locked"]!!)
         } else {
