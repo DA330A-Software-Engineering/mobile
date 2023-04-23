@@ -52,6 +52,7 @@ fun DeviceCard(
         "screen" -> Icons.Outlined.SmartScreen
         "buzzer" -> Icons.Outlined.SurroundSound
         "sensor" -> Icons.Outlined.Sensors
+        "fan" -> Icons.Outlined.RestartAlt
         else -> Icons.Filled.BrokenImage
     }
 
