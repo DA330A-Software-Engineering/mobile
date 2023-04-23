@@ -17,13 +17,13 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import kotlin.coroutines.coroutineContext
 
-fun <T> rememberFirestoreCollection(
+fun rememberFirestoreCollection(
     collectionPath: String,
-    clazz: Class<T>,
     collectionType: String,
-    userEmail: String = "",
+    userEmail: String,
 ): SnapshotStateList<DocumentSnapshot> {
-    val collectionRef = if (collectionType == "groups" || collectionType == "routine") FirebaseFirestore.getInstance().collection("profiles").document("raminkhareji@gmail.com").collection(collectionType)
+    val email = userEmail.replace("\"", "")
+    val collectionRef = if (collectionType == "groups" || collectionType == "routine") FirebaseFirestore.getInstance().collection("profiles").document(email).collection(collectionType)
     else FirebaseFirestore.getInstance().collection(collectionPath)
     val documents = mutableStateListOf<DocumentSnapshot>()  //mutableStateOf(MutableList<T>())
     var counter = 0
@@ -37,9 +37,6 @@ fun <T> rememberFirestoreCollection(
             snapshot.documents.forEach { item ->
                 documents.add(item)
             }
-
-            //Log.d(TAG, "Look here ${snapshot.documents}")
-            //Log.d(TAG, "Look here 2 ${documents}")
         }
 
     }
@@ -70,14 +67,10 @@ fun getDocument(collectionPath: String, documentPath: String, callback: (documen
     }
 }
 
-
-
-
-
 class RealTimeData(context: Context) {
     var email = getEmailFromToken(context)
-    val devices = rememberFirestoreCollection("devices", Devices::class.java, "devices")
-    val groups = rememberFirestoreCollection("", GroupsClass::class.java, "groups", userEmail = email)
+    val devices = rememberFirestoreCollection(collectionPath = "devices",  collectionType = "devices", userEmail = email)
+    val groups = rememberFirestoreCollection(collectionPath = "", collectionType = "groups", userEmail = email)
 
 }
 
