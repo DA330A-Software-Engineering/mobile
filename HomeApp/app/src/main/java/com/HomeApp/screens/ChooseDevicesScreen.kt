@@ -71,7 +71,7 @@ fun ChooseDevicesScreen(
     OnSelfClick: () -> Unit = {}
 ) {
     val listHeight = LocalConfiguration.current.screenHeightDp
-    val documents = rememberFirestoreCollection("devices", Devices::class.java, "devices")
+    val documents = rememberFirestoreCollection("devices", Devices::class.java)
 
     Scaffold(
         topBar = {

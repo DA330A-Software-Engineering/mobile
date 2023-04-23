@@ -20,7 +20,7 @@ fun ChooseGroupsScreen(
     OnSelfClick: () -> Unit = {}
 ) {
     val listHeight = LocalConfiguration.current.screenHeightDp
-    val documents = rememberFirestoreCollection("groups", Groupss::class.java, "groups")
+    val documents = rememberFirestoreCollection("groups", Groupss::class.java)
 
     Scaffold(
         topBar = {

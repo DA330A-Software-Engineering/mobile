@@ -90,7 +90,6 @@ class MainActivity : ComponentActivity() {
                             Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
                             Log.d("ACTION", "$data")
                         }
-                        HttpStatus.INVALID_PARAMETER -> {}
                     }
                 }
             }
