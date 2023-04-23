@@ -4,6 +4,7 @@ import android.Manifest.permission.RECORD_AUDIO
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -12,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -36,33 +38,82 @@ import com.HomeApp.ui.theme.HomeAppTheme
 import com.HomeApp.util.*
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.firebase.FirebaseApp
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
 
-private val onRespond: (ApiResult) -> Unit = {
-    Log.d("RESPOND", it.toString())
-//    val data: JSONObject = it.data()
-//    val msg: String = data.get("msg") as String
-    when (it.status()) {
-        HttpStatus.SUCCESS -> {
-
-        }
-        HttpStatus.UNAUTHORIZED -> {
-            Log.d("RESPOND", it.data().toString())
-        }
-        HttpStatus.FAILED -> {
-
-        }
-    }
-}
-
 class MainActivity : ComponentActivity() {
-    var contextContainer: Context? = null
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun onResume() {
+        super.onResume()
+        window.decorView.windowInsetsController!!.hide(android.view.WindowInsets.Type.navigationBars())
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun onStart() {
+        super.onStart()
+        window.decorView.windowInsetsController!!.hide(android.view.WindowInsets.Type.navigationBars())
+    }
+
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val onRespond: (ApiResult) -> Unit = {
+                Log.d("RESPOND", it.toString())
+                val coroutine = CoroutineScope(Dispatchers.Main)
+                val data: JSONObject? = try {
+                    it.data()
+                } catch (e: JSONException) {
+                    null
+                }
+                val msg: String = data?.get("msg").toString()
+                val context = this.baseContext
+                Log.d("ACTION", "onRespond got called with object $it")
+                coroutine.launch {
+                    when (it.status()) {
+                        HttpStatus.SUCCESS -> {
+                            Toast.makeText(
+                                context,
+                                "Successfully updated your device or group",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            Log.d("ACTION", "msg: $msg | Action successful")
+                        }
+                        HttpStatus.UNAUTHORIZED -> {
+                            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                            Log.d("ACTION", "$data")
+                        }
+                        HttpStatus.FAILED -> {
+                            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                            Log.d("ACTION", "$data")
+                        }
+                        HttpStatus.INVALID_PARAMETER -> {}
+                    }
+                }
+            }
+
+            val actionCall: (
+                context: Context,
+                jsonObj: JSONObject,
+                documentSnapShot: DocumentSnapshot
+            ) -> Unit = { context, jsonObj, it ->
+                val coroutine = CoroutineScope(Dispatchers.Main)
+                coroutine.launch(Dispatchers.IO) {
+                    if (jsonObj.length() == 1) {
+                        ApiConnector.deviceAction(
+                            token = LocalStorage.getToken(context),
+                            id = it.id,
+                            state = jsonObj,
+                            type = it.get("type") as String,
+                            onRespond = onRespond
+                        )
+                    }
+                }
+            }
+
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: ArrayList<String> =
                     result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
@@ -90,7 +141,11 @@ class MainActivity : ComponentActivity() {
                                         if (primaryAction != null) {
                                             jsonObj.put("on", primaryAction)
                                         }
-
+                                        Log.d(
+                                            "ACTION",
+                                            "obj = $jsonObj \naction=$primaryAction\nobjLength: ${jsonObj.length()}"
+                                        )
+                                        actionCall(context, jsonObj, it)
                                     }
                                     "door", "window" -> {
                                         primaryAction = when {
@@ -110,15 +165,7 @@ class MainActivity : ComponentActivity() {
                                         if (secondaryAction != null) {
                                             jsonObj.put("locked", secondaryAction)
                                         }
-                                        if (jsonObj.length() == 1) {
-                                            ApiConnector.deviceAction(
-                                                token = LocalStorage.getToken(context),
-                                                id = it.id,
-                                                state = jsonObj,
-                                                type = it.get("type") as String,
-                                                onRespond = onRespond
-                                            )
-                                        }
+                                        actionCall(context, jsonObj, it)
                                     }
                                     "fan" -> {
                                         val isReversed: Boolean =
@@ -139,15 +186,7 @@ class MainActivity : ComponentActivity() {
                                         if (secondaryAction != null) {
                                             jsonObj.put("reverse", secondaryAction)
                                         }
-                                        if (jsonObj.length() == 1) {
-                                            ApiConnector.deviceAction(
-                                                token = LocalStorage.getToken(context),
-                                                id = it.id,
-                                                state = jsonObj,
-                                                type = it.get("type") as String,
-                                                onRespond = onRespond
-                                            )
-                                        }
+                                        actionCall(context, jsonObj, it)
                                     }
                                     "screen" -> {
                                         val value = input.substring(
@@ -170,13 +209,7 @@ class MainActivity : ComponentActivity() {
                                         if (secondaryAction != null) {
                                             jsonObj.put("reverse", secondaryAction)
                                         }
-                                        ApiConnector.deviceAction(
-                                            token = LocalStorage.getToken(context),
-                                            id = it.id,
-                                            state = jsonObj,
-                                            type = it.get("type") as String,
-                                            onRespond = onRespond
-                                        )
+                                        actionCall(context, jsonObj, it)
                                     }
                                 }
                             }
@@ -210,7 +243,6 @@ class MainActivity : ComponentActivity() {
 
             // at last we are calling start activity
             // for result to start our activity.
-            contextContainer = context
             resultLauncher.launch(intent)
         }
     }
