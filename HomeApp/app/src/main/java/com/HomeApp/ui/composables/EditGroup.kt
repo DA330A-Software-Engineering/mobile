@@ -92,45 +92,6 @@ fun EditGroup(
                     var isSameType = item.get("type") == groupType
                     if (deviceList.size == 0) isSameType = true
 
-                    /**Log.d(
-                    "THIS IS THE STUFF",
-                    "Item type: ${item.get("type")} ---- groupType : $groupType"
-                    )*/
-
-                    /**Log.d(
-                    "THIS IS THE STUFF",
-                    "Item type: ${item.get("type")} ---- groupType : $groupType"
-                    )*/
-
-                    /**Log.d(
-                    "THIS IS THE STUFF",
-                    "Item type: ${item.get("type")} ---- groupType : $groupType"
-                    )*/
-
-                    /**Log.d(
-                    "THIS IS THE STUFF",
-                    "Item type: ${item.get("type")} ---- groupType : $groupType"
-                    )*/
-
-                    /**Log.d(
-                    "THIS IS THE STUFF",
-                    "Item type: ${item.get("type")} ---- groupType : $groupType"
-                    )*/
-
-                    /**Log.d(
-                    "THIS IS THE STUFF",
-                    "Item type: ${item.get("type")} ---- groupType : $groupType"
-                    )*/
-
-                    /**Log.d(
-                    "THIS IS THE STUFF",
-                    "Item type: ${item.get("type")} ---- groupType : $groupType"
-                    )*/
-
-                    /**Log.d(
-                    "THIS IS THE STUFF",
-                    "Item type: ${item.get("type")} ---- groupType : $groupType"
-                    )*/
                     if (!isInGroup && isSameType) {
                         DeviceItem(item = item.id, groupItem = groupItem , isInGroup = false)
                     }

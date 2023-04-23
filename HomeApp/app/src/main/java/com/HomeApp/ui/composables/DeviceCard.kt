@@ -10,8 +10,7 @@ import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.DoorFront
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -39,9 +38,9 @@ fun DeviceCard(
     deviceItem: DocumentSnapshot
 ) {
     val context: Context = LocalContext.current
-    val state = deviceItem.get("state") as Map<String, Boolean>
+    val state = deviceItem.get("state") as Map<*, *>
     val coroutine = rememberCoroutineScope()
-    var editDialog = false
+    var editDialog by remember { mutableStateOf(false) }
 
     val cardIcon: ImageVector = when (deviceItem.get("type")) {
         "toggle" -> Icons.Filled.Lightbulb
@@ -75,13 +74,8 @@ fun DeviceCard(
         AlertDialog(
             onDismissRequest = { editDialog = false },
             title = { Text(deviceItem.get("name") as String) },
-            text = {  },
+            text = { EditDeviceState(deviceItem = deviceItem, type = deviceItem.get("type") as String) },
             confirmButton = {
-                Button(
-                    onClick = { editDialog = false },
-                ) {
-                    Text("Close")
-                }
             }
         )
     }
