@@ -4,10 +4,7 @@ import android.content.Context
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.DoorFront
@@ -42,9 +39,9 @@ fun DeviceCard(
     deviceItem: DocumentSnapshot
 ) {
     val context: Context = LocalContext.current
-    val item = deviceItem
     val state = deviceItem.get("state") as Map<String, Boolean>
     val coroutine = rememberCoroutineScope()
+    var editDialog = false
 
     val cardIcon: ImageVector = when (deviceItem.get("type")) {
         "toggle" -> Icons.Filled.Lightbulb
@@ -67,21 +64,50 @@ fun DeviceCard(
     val actionIcon: ImageVector? = when (deviceItem.get("type")) {
         "openLock" -> if (state["locked"] == true) Icons.Outlined.Lock else Icons.Outlined.LockOpen
         "fan" -> Icons.Outlined.CompareArrows
+        "screen" -> Icons.Outlined.TextIncrease
+        "buzzer" -> Icons.Outlined.MusicNote
         else -> null
 
+    }
+    val stateList = listOf("fan", "openLock", "toggle")
+    var button1type = ""
+    if (editDialog) {
+        AlertDialog(
+            onDismissRequest = { editDialog = false },
+            title = { Text(deviceItem.get("name") as String) },
+            text = {  },
+            confirmButton = {
+                Button(
+                    onClick = { editDialog = false },
+                ) {
+                    Text("Close")
+                }
+            }
+        )
     }
 
     Row(modifier = Modifier.height(60.dp)) {
         Button(
             onClick = {
-                changeState(
-                    context = context,
-                    id = deviceItem.id,
-                    state = deviceItem.get("state") as Map<String, Boolean>,
-                    type = deviceItem.get("type") as String,
-                    coroutine = coroutine,
-                    changedState = if (deviceItem.get("type") == "openLock") "locked" else "reverse"
-                )
+                when (deviceItem.get("type") as String){
+                    in stateList -> {
+                        changeState(
+                            context = context,
+                            id = deviceItem.id,
+                            state = deviceItem.get("state") as Map<String, Boolean>,
+                            type = deviceItem.get("type") as String,
+                            coroutine = coroutine,
+                            changedState = if (deviceItem.get("type") == "openLock") "locked" else "reverse"
+                        )
+                    }
+                    else -> {
+                        editDialog = true
+                    }
+
+
+                }
+
+
             },
             modifier = modifier.then(
                 Modifier
