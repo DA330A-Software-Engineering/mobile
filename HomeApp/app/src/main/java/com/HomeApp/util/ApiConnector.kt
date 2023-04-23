@@ -247,7 +247,7 @@ object ApiConnector {
         val obj = JSONObject()
         obj.put("name", name)
         obj.put("description", description)
-        obj.put("devices", devices)
+        obj.put("devices", JSONArray(devices))
         val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
@@ -268,13 +268,13 @@ object ApiConnector {
         id: String,
         name: String,
         description: String,
-        devices: List<String>,
+        devices: ArrayList<String>,
         onRespond: (result: ApiResult) -> Unit
     ) {
         val obj = JSONObject()
         obj.put("name", name)
         obj.put("description", description)
-        obj.put("devices", devices)
+        obj.put("devices", JSONArray(devices))
         val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)

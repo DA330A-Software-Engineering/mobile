@@ -8,8 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -17,13 +15,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.HomeApp.ui.composables.AppFooter
-import com.HomeApp.ui.composables.DeviceCard
-import com.HomeApp.ui.composables.TitleBar
+import com.HomeApp.realTimeData
+import com.HomeApp.ui.composables.*
 import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.util.microphoneIcon
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 data class Devices(
     var id: String = "",
@@ -34,26 +31,6 @@ data class Devices(
     var available: Boolean = true
 )
 
-fun <T> rememberFirestoreCollection(
-    collectionPath: String,
-    clazz: Class<T>
-): SnapshotStateList<DocumentSnapshot> {
-    val collectionRef = FirebaseFirestore.getInstance().collection(collectionPath)
-    val documents = mutableStateListOf<DocumentSnapshot>()  //mutableStateOf(MutableList<T>())
-    collectionRef.addSnapshotListener { snapshot, error ->
-        if (error != null) {
-            // Handle the error
-            return@addSnapshotListener
-        }
-        if (snapshot != null) {
-            documents.clear()
-            snapshot.documents.forEach { item ->
-                documents.add(item)
-            }
-        }
-    }
-    return documents
-}
 
 @Composable
 fun DevicesScreen(
@@ -64,7 +41,9 @@ fun DevicesScreen(
     getSpeechInput: (Context) -> Unit = {}
 ) {
     val listHeight = LocalConfiguration.current.screenHeightDp
-    val documents = rememberFirestoreCollection("devices", Devices::class.java)
+    val db = Firebase.firestore
+    //val documents = rememberFirestoreCollection("devices", Devices::class.java, "devices")
+    val documents = realTimeData!!.devices
     val context = LocalContext.current
     Scaffold(
         topBar = {

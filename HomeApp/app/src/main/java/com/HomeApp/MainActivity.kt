@@ -45,7 +45,10 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
 
+var realTimeData: RealTimeData? = null
+
 class MainActivity : ComponentActivity() {
+
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onResume() {
@@ -257,6 +260,7 @@ class MainActivity : ComponentActivity() {
                     color = GhostWhite
                 ) {
                     ActivityCompat.requestPermissions(this, arrayOf(RECORD_AUDIO), 0)
+                    realTimeData = RealTimeData(this.baseContext)
                     RunApp(getSpeechInput = { getSpeechInput(it) })
                 }
             }
