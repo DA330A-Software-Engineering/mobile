@@ -50,15 +50,15 @@ val DB_ADDR = "http://10.0.2.2:3000"
 
 enum class DayFilters(
     val letter: String,
-    val cron: Int
+    val cron: String
 ) {
-    MONDAY("M", 1),
-    TUESDAY("T", 2),
-    WEDNESDAY("W", 3),
-    THURSDAY("T", 4),
-    FRIDAY("F", 5),
-    SATURDAY("S", 6),
-    SUNDAY("S", 0)
+    MONDAY("M", "1"),
+    TUESDAY("T", "2"),
+    WEDNESDAY("W", "3"),
+    THURSDAY("T", "4"),
+    FRIDAY("F", "5"),
+    SATURDAY("S", "6"),
+    SUNDAY("S", "0")
 }
 
 val months = listOf("Any", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")

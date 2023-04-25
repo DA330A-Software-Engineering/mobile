@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.HomeApp.realTimeData
 import com.HomeApp.ui.composables.DeviceCard
 import com.HomeApp.ui.composables.RoutinesTitleBar
 import com.HomeApp.ui.composables.RoutinesTitleBarItem
@@ -20,7 +21,7 @@ fun ChooseGroupsScreen(
     OnSelfClick: () -> Unit = {}
 ) {
     val listHeight = LocalConfiguration.current.screenHeightDp
-    val documents = rememberFirestoreCollection("groups", Groupss::class.java)
+    val documents = realTimeData!!.groups
 
     Scaffold(
         topBar = {

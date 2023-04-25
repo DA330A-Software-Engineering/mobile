@@ -79,12 +79,8 @@ fun ChooseScheduleScreen(
 
     val selectedMinute = remember { mutableStateOf(0) }
     val selectedHour = remember { mutableStateOf(0) }
-    val selectedDates = remember { mutableStateOf("*") }
-    val selectedMonths = remember { mutableStateOf("*") }
-    val selectedDays = remember { mutableStateOf("") }
-
-
-    val cronString = remember { mutableStateOf("") }
+    val selectedDays = remember { mutableStateOf("*") }
+    val cronString = remember { mutableStateOf("0 0 0 * * *") }
 
     val selectionState = remember {
         mutableStateMapOf<DayFilters, Boolean>().apply {
@@ -159,8 +155,8 @@ fun ChooseScheduleScreen(
                 icon = Icons.Rounded.ArrowForward,
                 onClick = {
                     if (selectedDays.value == "") selectedDays.value = "*"
-                    cronString.value =
-                        "${selectedMinute.value} ${selectedHour.value} ${selectedDates.value} ${selectedMonths.value} ${selectedDays.value}"
+                    val fields = cronString.value.split(" ")
+                    cronString.value = "${fields[0]} ${selectedMinute.value} ${selectedHour.value} ${fields[3]} ${fields[4]} ${selectedDays.value}"
                     Schedule.setCronString(cronString = cronString.value)
                     navController.navigate(FinishRoutine.route)
                 }

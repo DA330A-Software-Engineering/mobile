@@ -331,8 +331,6 @@ object ApiConnector {
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
 
-        Log.d("Request Body", requestForm)
-
         val urlPath = "/routines"
 
         val request: Request = Request.Builder()

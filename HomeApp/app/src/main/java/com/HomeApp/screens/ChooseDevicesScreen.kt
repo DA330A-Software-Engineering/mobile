@@ -34,11 +34,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.HomeApp.realTimeData
 import com.HomeApp.ui.composables.RoutinesFAB
 import com.HomeApp.ui.composables.RoutinesTitleBar
 import com.HomeApp.ui.composables.RoutinesTitleBarItem
 import com.HomeApp.ui.navigation.ChooseActions
 import com.HomeApp.ui.theme.LightSteelBlue
+import com.HomeApp.util.rememberFirestoreCollection
 import com.google.firebase.firestore.DocumentSnapshot
 
 data class SelectedItemsData(
@@ -71,7 +73,7 @@ fun ChooseDevicesScreen(
     OnSelfClick: () -> Unit = {}
 ) {
     val listHeight = LocalConfiguration.current.screenHeightDp
-    val documents = rememberFirestoreCollection("devices", Devices::class.java)
+    val documents = realTimeData!!.devices
 
     Scaffold(
         topBar = {
