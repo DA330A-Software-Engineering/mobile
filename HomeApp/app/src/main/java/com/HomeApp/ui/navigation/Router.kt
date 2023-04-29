@@ -102,5 +102,10 @@ object ChooseSchedule : NavPath {
 
 object FinishRoutine : NavPath {
     override val icon = Icons.Rounded.Schedule
-    override val route = "finish.routine"
+    override val route = "finish-routine"
+}
+
+object Sensor : NavPath {
+    override val icon = Icons.Rounded.Sensors
+    override val route = "sensor"
 }

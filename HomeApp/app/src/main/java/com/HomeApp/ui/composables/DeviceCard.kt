@@ -1,6 +1,7 @@
 package com.HomeApp.ui.composables
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.HomeApp.ui.navigation.Sensor
 import com.HomeApp.ui.theme.RaminGrey
 import com.HomeApp.util.ApiConnector
 import com.HomeApp.util.ApiResult
@@ -80,7 +82,8 @@ fun DeviceCard(
     Row(modifier = Modifier.height(45.dp)) {
         Button(
             onClick = {
-                when (deviceItem.get("type") as String){
+                when (deviceItem.get("type") as String) {
+                    "sensor" -> navController.navigate(Sensor.route)
                     in stateList -> {
                         changeState(
                             context = context,
@@ -94,11 +97,7 @@ fun DeviceCard(
                     else -> {
                         editDialog = true
                     }
-
-
                 }
-
-
             },
             modifier = modifier.then(
                 Modifier
@@ -123,13 +122,17 @@ fun DeviceCard(
         }
         Button(
             onClick = {
-                changeState(
-                    context = context,
-                    id = deviceItem.id,
-                    state = deviceItem.get("state") as Map<String, Boolean>,
-                    type = deviceItem.get("type") as String,
-                    coroutine = coroutine
-                )
+                if (deviceItem.get("type") as String == "sensor") {
+                    navController.navigate(Sensor.route)
+                } else {
+                    changeState(
+                        context = context,
+                        id = deviceItem.id,
+                        state = deviceItem.get("state") as Map<String, Boolean>,
+                        type = deviceItem.get("type") as String,
+                        coroutine = coroutine
+                    )
+                }
             },
             modifier = modifier.then(
                 Modifier

@@ -95,7 +95,7 @@ fun AnimatedAppNavHost(
                 getSpeechInput = { getSpeechInput(it) }
             )
         }
-        111
+
         // GROUPS
         composable(
             route = Groups.route,
@@ -290,6 +290,20 @@ fun AnimatedAppNavHost(
             RoutineFinishScreen(
                 navController = navController,
                 OnSelfClick = { navController.navigateSingleTopTo(FinishRoutine.route) }
+            )
+        }
+
+        // SENSOR
+        composable(
+            route = Sensor.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            SensorScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(Sensor.route) }
             )
         }
     }
