@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -268,8 +269,6 @@ private fun ActionCards(
     }
     val id = document.id
     Actions.addAction(id, type.value, state)
-    Log.d("SECONDARY ON", secondaryOn.value)
-    Log.d("SECONDARY OFF", secondaryOff.value)
 
     Column(
         Modifier
@@ -280,7 +279,10 @@ private fun ActionCards(
             )
             .padding(10.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Icon(
                 modifier = Modifier
                     .weight(1f)
@@ -296,7 +298,7 @@ private fun ActionCards(
                 contentDescription = "$name-icon"
             )
             Text(
-                modifier = Modifier.weight(8f),
+                modifier = Modifier.weight(5f),
                 text = name,
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold

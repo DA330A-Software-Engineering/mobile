@@ -313,7 +313,10 @@ private fun SelectDays(
                 // modify the IconButton to change background based on the selection state
                 val selected = selectionState[it] ?: false
                 IconButton(
-                    modifier = Modifier.background(
+                    modifier = Modifier
+                        .weight(1f)
+                        .scale(0.8f)
+                        .background(
                         if (selected) selectedColor else notSelectedColor,
                         CircleShape
                     ),
@@ -323,7 +326,7 @@ private fun SelectDays(
                     }
                 ) {
                     Text(
-                        modifier = Modifier.scale(1.6f),
+                        modifier = Modifier.scale(1.5f),
                         text = it.letter,
                         fontWeight = FontWeight.Bold
                     )

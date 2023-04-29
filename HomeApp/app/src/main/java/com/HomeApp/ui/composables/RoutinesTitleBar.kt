@@ -66,7 +66,7 @@ fun RoutinesTitleBar(
                     item.title
                 },
                 modifier = Modifier.weight(2f),
-                fontSize = 40.sp,
+                fontSize = 35.sp,
                 textAlign = TextAlign.Center
             )
             IconButton(
@@ -168,7 +168,7 @@ sealed class RoutinesTitleBarItem(
     )
 
     object FinishRoutine : RoutinesTitleBarItem(
-        title = "Summary",
+        title = "Finish",
         iconLeft = Icons.Rounded.ArrowBack,
         routeLeftButton = com.HomeApp.ui.navigation.ChooseSchedule.route,
         iconRight = Icons.Rounded.Close,
