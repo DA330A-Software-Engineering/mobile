@@ -102,18 +102,24 @@ fun ChooseActionsScreen(
     val isDevices = SelectedItems.getType()
 
     fun getState(state: MutableMap<String, Boolean>): Map<String, Boolean> {
-        val keys = mutableListOf<String>()
-        keys.clear()
-        for (key in state.keys) {
-            keys.add(key)
-            keys.add(keys.removeAt(0)) // This makes the keys for door [open, locked] instead of [locked, open]
+        val keys = state.keys.toMutableList()
+        Log.d("KEYS", keys.toString())
+        Log.d("STATE BEFORE", state.toString())
+
+        // Keys should be "on, reverse" instead of "reverse, on"
+        // And secondary actions should be omitted for groups
+        if (keys.size == 2) {
+            keys.add(keys.removeAt(0))
+            val newState = mutableMapOf<String, Boolean>()
+            newState[keys[0]] = true
+            newState[keys[1]] = false
+            if (!isDevices) {
+                newState.remove(keys[1])
+            }
+            return newState
         }
 
         state[keys[0]] = true
-        if (keys.size == 2) {
-            state[keys[1]] = false // I want reverse and locked to be false initially
-        }
-        Log.d("STATE", state.toString())
         return state
     }
 
@@ -365,7 +371,7 @@ private fun ActionCards(
                     }
                 }
             }
-            if (secondaryOn.value != "" && secondaryOff.value != "") {
+            if (secondaryOn.value != "" && secondaryOff.value != "" && isDevices) {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Card(
                         modifier = Modifier
