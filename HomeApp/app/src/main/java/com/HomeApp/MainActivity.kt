@@ -135,7 +135,6 @@ class MainActivity : ComponentActivity() {
                                 var secondaryAction: Any? = null
                                 val it = it
                                 inputOptions.forEach { str ->
-                                    Log.d("ACTION", "$str")
                                     if (str.lowercase()
                                             .contains((it.get("name") as String).lowercase())
                                     ) {
