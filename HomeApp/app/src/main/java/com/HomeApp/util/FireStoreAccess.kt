@@ -23,23 +23,27 @@ fun rememberFirestoreCollection(
     userEmail: String,
 ): SnapshotStateList<DocumentSnapshot> {
     val email = userEmail.replace("\"", "")
-    val collectionRef = if (collectionType == "groups" || collectionType == "routine") FirebaseFirestore.getInstance().collection("profiles").document(email).collection(collectionType)
-    else FirebaseFirestore.getInstance().collection(collectionPath)
     val documents = mutableStateListOf<DocumentSnapshot>()  //mutableStateOf(MutableList<T>())
-    var counter = 0
-    collectionRef.addSnapshotListener { snapshot, error ->
-        if (error != null) {
-            // Handle the error
-            return@addSnapshotListener
-        }
-        if (snapshot != null) {
-            documents.clear()
-            snapshot.documents.forEach { item ->
-                documents.add(item)
+    if (email != "") {
+        val collectionRef =
+            if (collectionType == "groups" || collectionType == "routine") FirebaseFirestore.getInstance()
+                .collection("profiles").document(email).collection(collectionType)
+            else FirebaseFirestore.getInstance().collection(collectionPath)
+        collectionRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                // Handle the error
+                return@addSnapshotListener
             }
-        }
+            if (snapshot != null) {
+                documents.clear()
+                snapshot.documents.forEach { item ->
+                    documents.add(item)
+                }
+            }
 
+        }
     }
+    var counter = 0
     return documents
 }
 
@@ -71,8 +75,4 @@ class RealTimeData(context: Context) {
     var email = getEmailFromToken(context)
     val devices = rememberFirestoreCollection(collectionPath = "devices",  collectionType = "devices", userEmail = email)
     val groups = rememberFirestoreCollection(collectionPath = "", collectionType = "groups", userEmail = email)
-
 }
-
-
-

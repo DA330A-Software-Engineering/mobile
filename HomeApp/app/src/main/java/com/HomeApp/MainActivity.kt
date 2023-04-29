@@ -49,7 +49,6 @@ var realTimeData: RealTimeData? = null
 
 class MainActivity : ComponentActivity() {
 
-
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onResume() {
         super.onResume()
@@ -130,89 +129,98 @@ class MainActivity : ComponentActivity() {
                             if (input.lowercase()
                                     .contains((it.get("name") as String).lowercase())
                             ) {
+                                val inputOptions = input.split("and")
                                 val context = this.baseContext
                                 var primaryAction: Boolean? = null
                                 var secondaryAction: Any? = null
-                                when (it.get("type")) {
-                                    "toggle" -> {
-                                        primaryAction = when {
-                                            input.lowercase().contains("on") -> true
-                                            input.lowercase().contains("off") -> false
-                                            else -> null
+                                val it = it
+                                inputOptions.forEach { str ->
+                                    Log.d("ACTION", "$str")
+                                    if (str.lowercase()
+                                            .contains((it.get("name") as String).lowercase())
+                                    ) {
+                                        when (it.get("type")) {
+                                            "toggle" -> {
+                                                primaryAction = when {
+                                                    str.lowercase().contains("on") -> true
+                                                    str.lowercase().contains("off") -> false
+                                                    else -> null
+                                                }
+                                                val jsonObj = JSONObject()
+                                                if (primaryAction != null) {
+                                                    jsonObj.put("on", primaryAction)
+                                                }
+                                                Log.d(
+                                                    "ACTION",
+                                                    "obj = $jsonObj \naction=$primaryAction\nobjLength: ${jsonObj.length()}"
+                                                )
+                                                actionCall(context, jsonObj, it)
+                                            }
+                                            "door", "window" -> {
+                                                primaryAction = when {
+                                                    str.lowercase().contains("open") -> true
+                                                    str.lowercase().contains("close") -> false
+                                                    else -> null
+                                                }
+                                                secondaryAction = when {
+                                                    str.lowercase().contains("unlock") -> false
+                                                    str.lowercase().contains("lock") -> true
+                                                    else -> null
+                                                }
+                                                val jsonObj = JSONObject()
+                                                if (primaryAction != null) {
+                                                    jsonObj.put("open", primaryAction)
+                                                }
+                                                if (secondaryAction != null) {
+                                                    jsonObj.put("locked", secondaryAction)
+                                                }
+                                                actionCall(context, jsonObj, it)
+                                            }
+                                            "fan" -> {
+                                                val isReversed: Boolean =
+                                                    (it.get("state") as Map<String, Boolean>)["reverse"] as Boolean
+                                                primaryAction = when {
+                                                    str.lowercase().contains("on") -> true
+                                                    str.lowercase().contains("off") -> false
+                                                    else -> null
+                                                }
+                                                secondaryAction = when {
+                                                    str.contains("reverse") -> !isReversed
+                                                    else -> null
+                                                }
+                                                val jsonObj = JSONObject()
+                                                if (primaryAction != null) {
+                                                    jsonObj.put("on", primaryAction)
+                                                }
+                                                if (secondaryAction != null) {
+                                                    jsonObj.put("reverse", secondaryAction)
+                                                }
+                                                actionCall(context, jsonObj, it)
+                                            }
+                                            "screen" -> {
+                                                val value = str.substring(
+                                                    str.lowercase().indexOf("add") + 3,
+                                                    str.lowercase().indexOf("to")
+                                                ).trim()
+                                                primaryAction = when {
+                                                    str.lowercase().contains("on") -> true
+                                                    str.lowercase().contains("off") -> false
+                                                    else -> null
+                                                }
+                                                secondaryAction = when {
+                                                    str.lowercase().contains("add") -> value
+                                                    else -> null
+                                                }
+                                                val jsonObj = JSONObject()
+                                                if (primaryAction != null) {
+                                                    jsonObj.put("on", primaryAction)
+                                                }
+                                                if (secondaryAction != null) {
+                                                    jsonObj.put("reverse", secondaryAction)
+                                                }
+                                                actionCall(context, jsonObj, it)
+                                            }
                                         }
-                                        val jsonObj = JSONObject()
-                                        if (primaryAction != null) {
-                                            jsonObj.put("on", primaryAction)
-                                        }
-                                        Log.d(
-                                            "ACTION",
-                                            "obj = $jsonObj \naction=$primaryAction\nobjLength: ${jsonObj.length()}"
-                                        )
-                                        actionCall(context, jsonObj, it)
-                                    }
-                                    "door", "window" -> {
-                                        primaryAction = when {
-                                            input.lowercase().contains("open") -> true
-                                            input.lowercase().contains("close") -> false
-                                            else -> null
-                                        }
-                                        secondaryAction = when {
-                                            input.lowercase().contains("unlock") -> false
-                                            input.lowercase().contains("lock") -> true
-                                            else -> null
-                                        }
-                                        val jsonObj = JSONObject()
-                                        if (primaryAction != null) {
-                                            jsonObj.put("open", primaryAction)
-                                        }
-                                        if (secondaryAction != null) {
-                                            jsonObj.put("locked", secondaryAction)
-                                        }
-                                        actionCall(context, jsonObj, it)
-                                    }
-                                    "fan" -> {
-                                        val isReversed: Boolean =
-                                            (it.get("state") as Map<String, Boolean>)["reverse"] as Boolean
-                                        primaryAction = when {
-                                            input.lowercase().contains("on") -> true
-                                            input.lowercase().contains("off") -> false
-                                            else -> null
-                                        }
-                                        secondaryAction = when {
-                                            input.contains("reverse") -> !isReversed
-                                            else -> null
-                                        }
-                                        val jsonObj = JSONObject()
-                                        if (primaryAction != null) {
-                                            jsonObj.put("on", primaryAction)
-                                        }
-                                        if (secondaryAction != null) {
-                                            jsonObj.put("reverse", secondaryAction)
-                                        }
-                                        actionCall(context, jsonObj, it)
-                                    }
-                                    "screen" -> {
-                                        val value = input.substring(
-                                            input.lowercase().indexOf("add") + 3,
-                                            input.lowercase().indexOf("to")
-                                        ).trim()
-                                        primaryAction = when {
-                                            input.lowercase().contains("on") -> true
-                                            input.lowercase().contains("off") -> false
-                                            else -> null
-                                        }
-                                        secondaryAction = when {
-                                            input.lowercase().contains("add") -> value
-                                            else -> null
-                                        }
-                                        val jsonObj = JSONObject()
-                                        if (primaryAction != null) {
-                                            jsonObj.put("on", primaryAction)
-                                        }
-                                        if (secondaryAction != null) {
-                                            jsonObj.put("reverse", secondaryAction)
-                                        }
-                                        actionCall(context, jsonObj, it)
                                     }
                                 }
                             }

@@ -28,5 +28,11 @@ private fun decryptToken(token: String): Map<String, String> {
 
 fun getEmailFromToken(context: Context): String {
     val decryptedToken = decryptToken(LocalStorage.getToken(context))
-    return decryptedToken["payload"]!!.split(",")[0].split(":")[1]
+    var token = ""
+    try {
+        token = decryptedToken["payload"]!!.split(",")[0].split(":")[1]
+    } catch (e: java.lang.NullPointerException){
+        // Token on local storage has expired
+    }
+    return token
 }

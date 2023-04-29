@@ -45,4 +45,4 @@ enum class DevicesFilters(
 }
 
 val AUTH_TOKEN_NAME = "x-auth-header"
-val DB_ADDR = "http://10.0.2.2:3000"
+val DB_ADDR = "http://192.168.1.232:3000"
