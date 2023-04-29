@@ -2,7 +2,6 @@ package com.HomeApp.util
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import com.google.gson.Gson
 import java.util.*
 
@@ -29,10 +28,11 @@ private fun decryptToken(token: String): Map<String, String> {
 
 fun getEmailFromToken(context: Context): String {
     val decryptedToken = decryptToken(LocalStorage.getToken(context))
-    var check = ""
-
-    if (LocalStorage.getToken(context) != ""){
-        check = decryptedToken["payload"]!!.split(",")[0].split(":")[1]
+    var token = ""
+    try {
+        token = decryptedToken["payload"]!!.split(",")[0].split(":")[1]
+    } catch (e: java.lang.NullPointerException){
+        // Token on local storage has expired
     }
-    return check
+    return token
 }
