@@ -20,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.DoorFront
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.outlined.RestartAlt
+import androidx.compose.material.icons.outlined.Sensors
 import androidx.compose.material.icons.outlined.SmartScreen
 import androidx.compose.material.icons.outlined.SurroundSound
 import androidx.compose.material.icons.outlined.Window
@@ -110,7 +112,11 @@ fun ChooseItemsScreen(
         floatingActionButton = {
             RoutinesFAB(
                 icon = Icons.Rounded.ArrowForward,
-                onClick = { navController.navigate(ChooseActions.route) }
+                onClick = {
+                    if (SelectedItems.getItems().isNotEmpty()) {
+                        navController.navigate(ChooseActions.route)
+                    }
+                }
             )
         },
         isFloatingActionButtonDocked = true,
@@ -124,14 +130,15 @@ private fun SelectItemCard(
     isDevices: Boolean
 ) {
 
-    var cardIcon: ImageVector = Icons.Filled.BrokenImage
+    val cardIcon = remember { mutableStateOf(Icons.Filled.BrokenImage) }
     if (isDevices) {
-        cardIcon = when (document.get("type")) {
+        cardIcon.value = when (document.get("type")) {
             "toggle" -> Icons.Filled.Lightbulb
-            "door" -> Icons.Filled.DoorFront
-            "window" -> Icons.Outlined.Window
+            "openLock" -> if (document.get("tag") == "window") Icons.Outlined.Window else Icons.Filled.DoorFront
             "screen" -> Icons.Outlined.SmartScreen
             "buzzer" -> Icons.Outlined.SurroundSound
+            "sensor" -> Icons.Outlined.Sensors
+            "fan" -> Icons.Outlined.RestartAlt
             else -> Icons.Filled.BrokenImage
         }
     }
@@ -163,7 +170,7 @@ private fun SelectItemCard(
                     modifier = Modifier
                         .weight(1f)
                         .size(48.dp),
-                    imageVector = cardIcon,
+                    imageVector = cardIcon.value,
                     contentDescription = "$name-icon",
                 )
             }

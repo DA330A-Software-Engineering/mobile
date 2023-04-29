@@ -27,8 +27,11 @@ import androidx.compose.material.icons.filled.ModeFanOff
 import androidx.compose.material.icons.filled.Window
 import androidx.compose.material.icons.outlined.CompareArrows
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.RestartAlt
+import androidx.compose.material.icons.outlined.Sensors
 import androidx.compose.material.icons.outlined.SmartScreen
 import androidx.compose.material.icons.outlined.SurroundSound
+import androidx.compose.material.icons.outlined.Window
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Power
 import androidx.compose.runtime.Composable
@@ -37,6 +40,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -231,11 +235,13 @@ private fun ActionCards(
             else -> ""
         }
 
-        cardIcon.value = when (type) {
+        cardIcon.value = when (document.get("type")) {
             "toggle" -> Icons.Filled.Lightbulb
-            "fan" -> Icons.Filled.ModeFanOff
+            "openLock" -> if (document.get("tag") == "window") Icons.Outlined.Window else Icons.Filled.DoorFront
             "screen" -> Icons.Outlined.SmartScreen
             "buzzer" -> Icons.Outlined.SurroundSound
+            "sensor" -> Icons.Outlined.Sensors
+            "fan" -> Icons.Outlined.RestartAlt
             else -> Icons.Filled.BrokenImage
         }
 
@@ -293,14 +299,7 @@ private fun ActionCards(
                 modifier = Modifier
                     .weight(1f)
                     .size(48.dp),
-                imageVector =
-                if (document.get("tag") == "door") {
-                    Icons.Filled.DoorFront
-                } else if (document.get("tag") == "window") {
-                    Icons.Filled.Window
-                } else {
-                    cardIcon.value
-                },
+                imageVector = cardIcon.value,
                 contentDescription = "$name-icon"
             )
             Text(
