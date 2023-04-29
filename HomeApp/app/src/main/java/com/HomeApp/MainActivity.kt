@@ -32,6 +32,7 @@ import androidx.core.app.ActivityCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.HomeApp.drawers.SideDrawer
 import com.HomeApp.ui.navigation.AnimatedAppNavHost
+import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.navigation.Loading
 import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.ui.theme.HomeAppTheme
@@ -44,8 +45,6 @@ import kotlinx.coroutines.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
-
-var realTimeData: RealTimeData? = null
 
 class MainActivity : ComponentActivity() {
 
@@ -92,7 +91,6 @@ class MainActivity : ComponentActivity() {
                             Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
                             Log.d("ACTION", "$data")
                         }
-                        HttpStatus.INVALID_PARAMETER -> {}
                     }
                 }
             }
@@ -267,7 +265,6 @@ class MainActivity : ComponentActivity() {
                     color = GhostWhite
                 ) {
                     ActivityCompat.requestPermissions(this, arrayOf(RECORD_AUDIO), 0)
-                    realTimeData = RealTimeData(this.baseContext)
                     RunApp(getSpeechInput = { getSpeechInput(it) })
                 }
             }

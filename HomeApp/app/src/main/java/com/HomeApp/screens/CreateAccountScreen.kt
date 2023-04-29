@@ -34,6 +34,7 @@ fun CreateAccountScreen(
     modifier: Modifier = Modifier,
     OnSelfClick: () -> Unit = {}
 ) {
+    val emailFocusRequester = FocusRequester()
     val newPasswordFocusRequester = FocusRequester()
     val confirmPasswordFocusRequester = FocusRequester()
     val focusManager: FocusManager = LocalFocusManager.current
@@ -78,12 +79,13 @@ fun CreateAccountScreen(
 
         TextInput(
             InputType.Name,
-            keyboardActions = KeyboardActions(onNext = { newPasswordFocusRequester.requestFocus() }),
+            keyboardActions = KeyboardActions(onNext = { emailFocusRequester.requestFocus() }),
             updateValue = { name = it }
         )
         TextInput(
             InputType.Email,
             keyboardActions = KeyboardActions(onNext = { newPasswordFocusRequester.requestFocus() }),
+            focusRequester = emailFocusRequester,
             updateValue = { email = it }
         )
         TextInput(

@@ -79,3 +79,28 @@ object Profile : NavPath {
     override val icon = Icons.Rounded.People
     override val route = "profile"
 }
+
+object ChooseType : NavPath {
+    override val icon = Icons.Rounded.Devices
+    override val route = "choose-type"
+}
+
+object ChooseItems : NavPath {
+    override val icon = Icons.Rounded.Devices
+    override val route = "choose-devices"
+}
+
+object ChooseActions : NavPath {
+    override val icon = Icons.Rounded.Devices
+    override val route = "choose-actions"
+}
+
+object ChooseSchedule : NavPath {
+    override val icon = Icons.Rounded.Schedule
+    override val route = "choose-schedule"
+}
+
+object FinishRoutine : NavPath {
+    override val icon = Icons.Rounded.Schedule
+    override val route = "finish.routine"
+}

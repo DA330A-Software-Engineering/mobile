@@ -7,7 +7,6 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.Serializable
 
 /** The Api Connector has all the functions for talking to the API,
  *  each function will return an onRespond Callback that has an parameter of
@@ -310,12 +309,6 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
-    data class Action(
-        val deviceId: String,
-        val state: JSONObject,
-        val type: String
-    ) : Serializable
-
     /** Api call to create a routine */
     fun createRoutine(
         token: String,
@@ -324,22 +317,16 @@ object ApiConnector {
         schedule: String,
         enabled: Boolean,
         repeatable: Boolean,
-        actionList: List<Action>,
+        actions: JSONArray,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val cronRegex = "^\\s*(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-9]|[0-2][0-3])\\s+(\\*|[0-9]|[0-3][0-9])\\s+(\\*|[0-9]|1[0-2])\\s*$"
-        if (!schedule.matches(Regex(cronRegex))) {
-            onRespond(ApiResult("{\"error\": \"Invalid schedule parameter\"}", 422))
-            return
-        }
-
         val obj = JSONObject()
         obj.put("name", name)
         obj.put("description", description)
         obj.put("schedule", schedule)
         obj.put("enabled", enabled)
         obj.put("repeatable", repeatable)
-        obj.put("actionList", actionList)
+        obj.put("actions", actions)
         val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
@@ -365,12 +352,6 @@ object ApiConnector {
         repeatable: Boolean,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        val cronRegex = "^\\s*(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-5]?[0-9])\\s+(\\*|[0-9]|[0-2][0-3])\\s+(\\*|[0-9]|[0-3][0-9])\\s+(\\*|[0-9]|1[0-2])\\s*$"
-        if (!schedule.matches(Regex(cronRegex))) {
-            onRespond(ApiResult("{\"error\": \"Invalid schedule parameter\"}", 422))
-            return
-        }
-
         val obj = JSONObject()
         obj.put("name", name)
         obj.put("description", description)
@@ -442,9 +423,6 @@ data class ApiResult(
             in 400..499 -> {
                 HttpStatus.UNAUTHORIZED
             }
-            422 -> {
-                HttpStatus.INVALID_PARAMETER
-            }
             else -> {
                 HttpStatus.FAILED
             }
@@ -465,5 +443,4 @@ enum class HttpStatus {
     SUCCESS,
     UNAUTHORIZED,
     FAILED,
-    INVALID_PARAMETER
 }

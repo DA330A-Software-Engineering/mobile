@@ -15,7 +15,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.HomeApp.realTimeData
 import com.HomeApp.ui.composables.*
 import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.util.microphoneIcon

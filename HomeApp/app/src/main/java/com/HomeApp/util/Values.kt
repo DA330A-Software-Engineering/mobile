@@ -10,6 +10,7 @@ import androidx.compose.material.icons.rounded.People
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.HomeApp.ui.navigation.Loading
 import com.HomeApp.ui.navigation.Profile
+import com.google.firebase.firestore.DocumentSnapshot
 
 val firebaseConfig = mapOf(
     "apiKey" to "AIzaSyBe9OfClxqevJF_7X5v2Rk1lP9EQTWv458",
@@ -46,3 +47,19 @@ enum class DevicesFilters(
 
 val AUTH_TOKEN_NAME = "x-auth-header"
 val DB_ADDR = "http://192.168.1.232:3000"
+
+enum class DayFilters(
+    val letter: String,
+    val cron: String
+) {
+    MONDAY("M", "1"),
+    TUESDAY("T", "2"),
+    WEDNESDAY("W", "3"),
+    THURSDAY("T", "4"),
+    FRIDAY("F", "5"),
+    SATURDAY("S", "6"),
+    SUNDAY("S", "0")
+}
+
+val months = listOf("Any", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+val days = listOf("Any", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
