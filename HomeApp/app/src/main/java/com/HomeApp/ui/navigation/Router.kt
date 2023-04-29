@@ -85,14 +85,9 @@ object ChooseType : NavPath {
     override val route = "choose-type"
 }
 
-object ChooseDevices : NavPath {
+object ChooseItems : NavPath {
     override val icon = Icons.Rounded.Devices
     override val route = "choose-devices"
-}
-
-object ChooseGroups : NavPath {
-    override val icon = Icons.Rounded.Groups
-    override val route = "choose-groups"
 }
 
 object ChooseActions : NavPath {

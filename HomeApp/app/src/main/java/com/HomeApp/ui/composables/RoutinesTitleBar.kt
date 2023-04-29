@@ -10,7 +10,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.HomeApp.screens.SelectedItems
 import com.HomeApp.ui.navigation.Home
 
 @Composable
@@ -41,6 +42,7 @@ fun RoutinesTitleBar(
             route = item.routeRightButton
         )
     }
+
     Column(modifier = Modifier) {
         Spacer(modifier = Modifier.height(30.dp))
         Row(
@@ -58,7 +60,11 @@ fun RoutinesTitleBar(
                 )
             }
             Text(
-                text = item.title,
+                text = if (item == RoutinesTitleBarItem.ChooseItems) {
+                    if (SelectedItems.getType()) "Devices" else "Groups"
+                } else {
+                    item.title
+                },
                 modifier = Modifier.weight(2f),
                 fontSize = 40.sp,
                 textAlign = TextAlign.Center
@@ -125,7 +131,7 @@ sealed class RoutinesTitleBarItem(
         title = "Routines",
         iconLeft = Icons.Rounded.ArrowBack,
         routeLeftButton = Home.route,
-        iconRight = Icons.Filled.AddCircle,
+        iconRight = Icons.Rounded.Add,
         routeRightButton = com.HomeApp.ui.navigation.ChooseType.route
     )
 
@@ -137,16 +143,8 @@ sealed class RoutinesTitleBarItem(
         routeRightButton = com.HomeApp.ui.navigation.Routines.route
     )
 
-    object ChooseGroups : RoutinesTitleBarItem(
-        title = "Groups",
-        iconLeft = Icons.Rounded.ArrowBack,
-        routeLeftButton = com.HomeApp.ui.navigation.ChooseType.route,
-        iconRight = Icons.Rounded.Close,
-        routeRightButton = com.HomeApp.ui.navigation.Routines.route
-    )
-
-    object ChooseDevices : RoutinesTitleBarItem(
-        title = "Devices",
+    object ChooseItems : RoutinesTitleBarItem(
+        title = "Items",
         iconLeft = Icons.Rounded.ArrowBack,
         routeLeftButton = com.HomeApp.ui.navigation.ChooseType.route,
         iconRight = Icons.Rounded.Close,
@@ -156,7 +154,7 @@ sealed class RoutinesTitleBarItem(
     object ChooseActions : RoutinesTitleBarItem(
         title = "Actions",
         iconLeft = Icons.Rounded.ArrowBack,
-        routeLeftButton = com.HomeApp.ui.navigation.ChooseDevices.route,
+        routeLeftButton = com.HomeApp.ui.navigation.ChooseItems.route,
         iconRight = Icons.Rounded.Close,
         routeRightButton = com.HomeApp.ui.navigation.Routines.route
     )

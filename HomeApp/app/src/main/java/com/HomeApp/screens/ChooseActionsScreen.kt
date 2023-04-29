@@ -1,5 +1,6 @@
 package com.HomeApp.screens
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,11 +31,11 @@ import androidx.compose.material.icons.outlined.SurroundSound
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Power
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -46,8 +47,8 @@ import com.HomeApp.ui.composables.RoutinesTitleBarItem
 import com.HomeApp.ui.navigation.ChooseSchedule
 import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.LightSteelBlue
+import com.HomeApp.util.getDocument
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.gson.JsonArray
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -58,15 +59,16 @@ object Actions {
     private var actionsData: ActionsData = ActionsData()
 
     fun addAction(id: String, type: String, state: Map<String, Boolean>) {
+        val isDevices = SelectedItems.getType()
         val action = JSONObject()
-            .put("id", id)
+            .put(if (isDevices) "id" else "groupId", id)
             .put("type", type)
             .put("state", JSONObject(state))
 
         var index = -1
         for (i in 0 until actionsData.actions.length()) {
             val existingAction = actionsData.actions.getJSONObject(i)
-            if (existingAction.getString("id") == id) {
+            if (existingAction.getString(if (isDevices) "id" else "groupId") == id) {
                 index = i
                 break
             }
@@ -96,12 +98,10 @@ fun ChooseActionsScreen(
     Schedule.clearCronString()
     val listHeight = LocalConfiguration.current.screenHeightDp
     val documents = SelectedItems.getItems()
+    val isDevices = SelectedItems.getType()
 
-    // Add all actions to a list, or else they would only be added when first shown on the screen.
-    // I.e. when the user scrolls though the lazy column
-    documents.forEach {
-        val state = it.get("state") as MutableMap<String, Boolean>
-        val keys = remember { mutableListOf<String>() }
+    fun getState(state: MutableMap<String, Boolean>): Map<String, Boolean> {
+        val keys = mutableListOf<String>()
         keys.clear()
         for (key in state.keys) {
             keys.add(key)
@@ -112,7 +112,34 @@ fun ChooseActionsScreen(
         if (keys.size == 2) {
             state[keys[1]] = false // I want reverse and locked to be false initially
         }
-        Actions.addAction(it.id, it.get("type") as String, state)
+        Log.d("STATE", state.toString())
+        return state
+    }
+
+    // Add all actions to a list, or else they would only be added when first shown on the screen.
+    // I.e. when the user scrolls though the lazy column
+    documents.forEach {
+        if (isDevices) {
+            Actions.addAction(
+                it.id,
+                it.get("type") as String,
+                getState(it.get("state") as MutableMap<String, Boolean>)
+            )
+        }
+        else {
+            val deviceIds = it.get("devices") as List<String>
+            LaunchedEffect(deviceIds) {
+                getDocument("devices", deviceIds[0]) { document ->
+                    if (document != null) {
+                        Actions.addAction(
+                            it.id,
+                            document.get("type") as String,
+                            getState(document.get("state") as MutableMap<String, Boolean>)
+                        )
+                    }
+                }
+            }
+        }
     }
 
     Scaffold(
@@ -130,8 +157,8 @@ fun ChooseActionsScreen(
                     .padding(vertical = 10.dp, horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 content = {
-                    items(items = documents, key = { item -> item.id }) { item ->
-                        ActionCards(deviceItem = item)
+                    items(items = documents, key = { item -> item.id }) { document ->
+                        ActionCards(document = document, isDevices = isDevices)
                     }
                 }
             )
@@ -149,46 +176,12 @@ fun ChooseActionsScreen(
 
 @Composable
 private fun ActionCards(
-    deviceItem: DocumentSnapshot
+    document: DocumentSnapshot,
+    isDevices: Boolean
 ) {
-    val type = deviceItem.get("type") as String
-
-    val primaryOn: String = when (type) {
-        "openLock" -> "Open"
-        else -> "Turn On"
-    }
-
-    val primaryOff: String = when (type) {
-        "toggle" -> "Turn off"
-        "openLock" -> "Close"
-        else -> "Turn off"
-    }
-
-    val secondaryOn: String? = when (type) {
-        "openLock" -> "Unlock"
-        "fan" -> "Normal"
-        else -> null
-    }
-
-    val secondaryOff: String? = when (type) {
-        "openLock" -> "Lock"
-        "fan" -> "Reverse"
-        else -> null
-    }
-
-    val cardIcon: ImageVector = when (type) {
-        "toggle" -> Icons.Filled.Lightbulb
-        "fan" -> Icons.Filled.ModeFanOff
-        "screen" -> Icons.Outlined.SmartScreen
-        "buzzer" -> Icons.Outlined.SurroundSound
-        else -> Icons.Filled.BrokenImage
-    }
-
-    val actionIcon: ImageVector? = when (type) {
-        "door", "window" -> Icons.Outlined.Lock
-        "fan" -> Icons.Outlined.CompareArrows
-        else -> null
-    }
+    val type = remember { mutableStateOf("") }
+    var state = remember { mutableMapOf<String, Boolean>() }
+    val keys = remember { mutableListOf<String>() }
 
     val primaryCheck = remember { mutableStateOf(true) }
     val selectedPrimary = if (primaryCheck.value) LightSteelBlue else FadedLightGrey
@@ -198,22 +191,85 @@ private fun ActionCards(
     val selectedSecondary = if (secondaryCheck.value) LightSteelBlue else FadedLightGrey
     val notSelectedSecondary = if (!secondaryCheck.value) LightSteelBlue else FadedLightGrey
 
-    val id = deviceItem.id
-    val state = deviceItem.get("state") as MutableMap<String, Boolean>
-    val keys = remember { mutableListOf<String>() }
-    keys.clear()
-    for (key in state.keys) {
-        keys.add(key)
-        keys.add(keys.removeAt(0)) // This makes the keys for door [open, locked] instead of [locked, open]
+    val primaryOn = remember { mutableStateOf("Turn On") }
+    val primaryOff = remember { mutableStateOf("Turn Off") }
+    val secondaryOn = remember { mutableStateOf("") }
+    val secondaryOff = remember { mutableStateOf("") }
+    val cardIcon = remember { mutableStateOf(Icons.Filled.BrokenImage) }
+    val actionIcon = remember { mutableStateOf(Icons.Filled.BrokenImage) }
+    val name = document.get("name") as String
+
+    fun getData(type: String, state: MutableMap<String, Boolean>) {
+        primaryOn.value = when (type) {
+            "toggle" -> "Turn On"
+            "openLock" -> "Open"
+            else -> "Turn On"
+        }
+
+        primaryOff.value = when (type) {
+            "toggle" -> "Turn Off"
+            "openLock" -> "Close"
+            else -> "Turn Off"
+        }
+
+        secondaryOn.value = when (type) {
+            "openLock" -> "Unlock"
+            "fan" -> "Normal"
+            else -> ""
+        }
+
+        secondaryOff.value = when (type) {
+            "openLock" -> "Lock"
+            "fan" -> "Reverse"
+            else -> ""
+        }
+
+        cardIcon.value = when (type) {
+            "toggle" -> Icons.Filled.Lightbulb
+            "fan" -> Icons.Filled.ModeFanOff
+            "screen" -> Icons.Outlined.SmartScreen
+            "buzzer" -> Icons.Outlined.SurroundSound
+            else -> Icons.Filled.BrokenImage
+        }
+
+        actionIcon.value = when (type) {
+            "door", "window" -> Icons.Outlined.Lock
+            "fan" -> Icons.Outlined.CompareArrows
+            else -> Icons.Filled.BrokenImage
+        }
+
+        keys.clear()
+        for (key in state.keys) {
+            keys.add(key)
+            keys.add(keys.removeAt(0)) // This makes the keys for door [open, locked] instead of [locked, open]
+        }
+        state[keys[0]] = primaryCheck.value
+        state[keys[0]] = primaryCheck.value
+        if (keys.size == 2) {
+            state[keys[1]] = !secondaryCheck.value // I want reverse and locked to be false initially
+        }
     }
 
-    state[keys[0]] = primaryCheck.value
-    if (keys.size == 2) {
-        state[keys[1]] = !secondaryCheck.value // I want reverse and locked to be false initially
+    if (isDevices) {
+        type.value = document.get("type") as String
+        state = document.get("state") as MutableMap<String, Boolean>
+        getData(type.value, state)
+    } else {
+        val deviceIds = document.get("devices") as List<String>
+        LaunchedEffect(state) {
+            getDocument("devices", deviceIds[0]) {
+                if (it != null) {
+                    type.value = it.get("type") as String
+                    state = it.get("state") as MutableMap<String, Boolean>
+                    getData(type.value, state)
+                }
+            }
+        }
     }
-    Actions.addAction(id, type, state)
-
-    val name = deviceItem.get("name") as String
+    val id = document.id
+    Actions.addAction(id, type.value, state)
+    Log.d("SECONDARY ON", secondaryOn.value)
+    Log.d("SECONDARY OFF", secondaryOff.value)
 
     Column(
         Modifier
@@ -230,12 +286,12 @@ private fun ActionCards(
                     .weight(1f)
                     .size(48.dp),
                 imageVector =
-                if (deviceItem.get("tag") == "door") {
+                if (document.get("tag") == "door") {
                     Icons.Filled.DoorFront
-                } else if (deviceItem.get("tag") == "window") {
+                } else if (document.get("tag") == "window") {
                     Icons.Filled.Window
                 } else {
-                    cardIcon
+                    cardIcon.value
                 },
                 contentDescription = "$name-icon"
             )
@@ -271,7 +327,7 @@ private fun ActionCards(
                     ) {
                         Text(
                             modifier = Modifier.weight(1f),
-                            text = primaryOff,
+                            text = primaryOff.value,
                             fontSize = 25.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -295,7 +351,7 @@ private fun ActionCards(
                     ) {
                         Text(
                             modifier = Modifier.weight(1f),
-                            text = primaryOn,
+                            text = primaryOn.value,
                             fontSize = 25.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -307,7 +363,7 @@ private fun ActionCards(
                     }
                 }
             }
-            if (secondaryOn != null && secondaryOff != null) {
+            if (secondaryOn.value != "" && secondaryOff.value != "") {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Card(
                         modifier = Modifier
@@ -322,7 +378,7 @@ private fun ActionCards(
                         ) {
                             Text(
                                 modifier = Modifier.weight(1f),
-                                text = secondaryOff,
+                                text = secondaryOff.value,
                                 fontSize = 25.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -346,7 +402,7 @@ private fun ActionCards(
                         ) {
                             Text(
                                 modifier = Modifier.weight(1f),
-                                text = secondaryOn,
+                                text = secondaryOn.value,
                                 fontSize = 25.sp,
                                 fontWeight = FontWeight.Bold
                             )

@@ -39,14 +39,9 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Recycling
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -64,10 +59,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.HomeApp.realTimeData
 import com.HomeApp.ui.composables.RoutinesTitleBar
 import com.HomeApp.ui.composables.RoutinesTitleBarItem
-import com.HomeApp.ui.composables.TitledDivider
 import com.HomeApp.ui.theme.DarkRed
 import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.GhostWhite
@@ -80,17 +73,6 @@ import com.HomeApp.util.LocalStorage
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-
-data class Routines(
-    val id: String = "",
-    val name: String = "",
-    val description: String = "",
-    val schedule: String = "",
-    val enabled: Boolean = false,
-    val repeatable: Boolean = false,
-    val actionList: JSONArray = JSONArray()
-)
 
 @RequiresApi(Build.VERSION_CODES.N)
 @Composable

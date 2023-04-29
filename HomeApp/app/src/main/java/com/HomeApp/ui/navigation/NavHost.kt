@@ -1,6 +1,8 @@
 package com.HomeApp.ui.navigation
 
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -18,6 +20,7 @@ import com.google.accompanist.navigation.animation.composable
 /**
  * Docs: https://google.github.io/accompanist/navigation-animation/
  */
+@RequiresApi(Build.VERSION_CODES.N)
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AnimatedAppNavHost(
@@ -234,31 +237,17 @@ fun AnimatedAppNavHost(
             )
         }
 
-        // CHOOSE DEVICES
+        // CHOOSE ITEMS
         composable(
-            route = ChooseDevices.route,
+            route = ChooseItems.route,
             enterTransition = { fadeIn(tween(defaultTween)) },
             popEnterTransition = { fadeIn(tween(defaultTween)) },
             exitTransition = { fadeOut(tween(defaultTween)) },
             popExitTransition = { fadeOut(tween(defaultTween)) }
         ) {
-            ChooseDevicesScreen(
+            ChooseItemsScreen(
                 navController = navController,
-                OnSelfClick = { navController.navigateSingleTopTo(ChooseDevices.route) }
-            )
-        }
-
-        // CHOOSE GROUPS
-        composable(
-            route = ChooseGroups.route,
-            enterTransition = { fadeIn(tween(defaultTween)) },
-            popEnterTransition = { fadeIn(tween(defaultTween)) },
-            exitTransition = { fadeOut(tween(defaultTween)) },
-            popExitTransition = { fadeOut(tween(defaultTween)) }
-        ) {
-            ChooseGroupsScreen(
-                navController = navController,
-                OnSelfClick = { navController.navigateSingleTopTo(ChooseGroups.route) }
+                OnSelfClick = { navController.navigateSingleTopTo(ChooseItems.route) }
             )
         }
 

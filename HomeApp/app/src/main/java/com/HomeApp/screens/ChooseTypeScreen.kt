@@ -1,5 +1,6 @@
 package com.HomeApp.screens
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,8 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.RoutinesTitleBar
 import com.HomeApp.ui.composables.RoutinesTitleBarItem
-import com.HomeApp.ui.navigation.ChooseDevices
-import com.HomeApp.ui.navigation.ChooseGroups
+import com.HomeApp.ui.navigation.ChooseItems
 import com.HomeApp.ui.theme.LightSteelBlue
 
 @Composable
@@ -60,7 +60,10 @@ fun ChooseTypeScreen(
                             title = "Device",
                             text = "Choose from all devices",
                             icon = Icons.Rounded.Devices,
-                            onClick = { navController.navigate(ChooseDevices.route) }
+                            onClick = {
+                                SelectedItems.setType(isDevices = true)
+                                navController.navigate(ChooseItems.route)
+                            }
                         )
                     }
                     item {
@@ -68,7 +71,10 @@ fun ChooseTypeScreen(
                             title = "Group",
                             text = "Choose from all groups",
                             icon = Icons.Rounded.Groups,
-                            onClick = { navController.navigate(ChooseGroups.route) }
+                            onClick = {
+                                SelectedItems.setType(isDevices = false)
+                                navController.navigate(ChooseItems.route)
+                            }
                         )
                     }
                 }

@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.HomeApp.realTimeData
 import com.HomeApp.ui.composables.*
 import com.HomeApp.ui.navigation.Routines
 import com.HomeApp.ui.navigation.Settings
@@ -41,6 +40,7 @@ import com.HomeApp.ui.theme.montserrat
 import com.HomeApp.util.*
 import kotlinx.coroutines.launch
 
+var realTimeData: RealTimeData? = null
 
 @SuppressLint("ShowToast")
 @Composable
@@ -54,6 +54,7 @@ fun HomeScreen(
     val context = LocalContext.current
     val spacerHeight: Dp = 112.dp
     val currActivity = LocalContext.current as Activity // supposedly very unsafe/red flag code
+    realTimeData = RealTimeData(context)
 
     Scaffold(
         content = {

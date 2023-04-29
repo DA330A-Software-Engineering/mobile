@@ -2,6 +2,7 @@ package com.HomeApp.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,17 +35,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.HomeApp.realTimeData
 import com.HomeApp.ui.composables.RoutinesFAB
 import com.HomeApp.ui.composables.RoutinesTitleBar
 import com.HomeApp.ui.composables.RoutinesTitleBarItem
 import com.HomeApp.ui.navigation.ChooseActions
 import com.HomeApp.ui.theme.LightSteelBlue
-import com.HomeApp.util.rememberFirestoreCollection
 import com.google.firebase.firestore.DocumentSnapshot
 
 data class SelectedItemsData(
-    var selectedItems: List<DocumentSnapshot> = emptyList()
+    var selectedItems: List<DocumentSnapshot> = emptyList(),
+    var isDevice: Boolean = true
 )
 
 object SelectedItems {
@@ -62,23 +62,34 @@ object SelectedItems {
         return selectedItemsData.selectedItems
     }
 
+    fun setType(isDevices: Boolean) {
+        selectedItemsData.isDevice = isDevices
+    }
+
+    fun getType(): Boolean {
+        return selectedItemsData.isDevice
+    }
+
     fun clearItems() {
         selectedItemsData.selectedItems = emptyList()
     }
 }
 
 @Composable
-fun ChooseDevicesScreen(
+fun ChooseItemsScreen(
     navController: NavController,
     OnSelfClick: () -> Unit = {}
 ) {
+    Actions.clearList()
     val listHeight = LocalConfiguration.current.screenHeightDp
-    val documents = realTimeData!!.devices
+
+    val isDevices = SelectedItems.getType()
+    val documents = if (isDevices) realTimeData!!.devices else realTimeData!!.groups
 
     Scaffold(
         topBar = {
             RoutinesTitleBar(
-                item = RoutinesTitleBarItem.ChooseDevices,
+                item = RoutinesTitleBarItem.ChooseItems,
                 navController = navController
             )
         },
@@ -91,7 +102,7 @@ fun ChooseDevicesScreen(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 content = {
                     items(items = documents, key = { item -> item.id }) { item ->
-                        SelectDeviceCard(deviceItem = item)
+                        SelectItemCard(document = item, isDevices = isDevices)
                     }
                 }
             )
@@ -108,20 +119,25 @@ fun ChooseDevicesScreen(
 }
 
 @Composable
-private fun SelectDeviceCard(
-    deviceItem: DocumentSnapshot
+private fun SelectItemCard(
+    document: DocumentSnapshot,
+    isDevices: Boolean
 ) {
-    val cardIcon: ImageVector = when (deviceItem.get("type")) {
-        "toggle" -> Icons.Filled.Lightbulb
-        "door" -> Icons.Filled.DoorFront
-        "window" -> Icons.Outlined.Window
-        "screen" -> Icons.Outlined.SmartScreen
-        "buzzer" -> Icons.Outlined.SurroundSound
-        else -> Icons.Filled.BrokenImage
+
+    var cardIcon: ImageVector = Icons.Filled.BrokenImage
+    if (isDevices) {
+        cardIcon = when (document.get("type")) {
+            "toggle" -> Icons.Filled.Lightbulb
+            "door" -> Icons.Filled.DoorFront
+            "window" -> Icons.Outlined.Window
+            "screen" -> Icons.Outlined.SmartScreen
+            "buzzer" -> Icons.Outlined.SurroundSound
+            else -> Icons.Filled.BrokenImage
+        }
     }
 
-    val name = deviceItem.get("name") as String
-    val check = remember { mutableStateOf(SelectedItems.getItems().contains(deviceItem)) }
+    val name = document.get("name") as String
+    val check = remember { mutableStateOf(SelectedItems.getItems().contains(document)) }
 
     Card(
         modifier = Modifier
@@ -129,7 +145,7 @@ private fun SelectDeviceCard(
             .height(60.dp)
             .clickable(onClick = {
                 check.value = !check.value
-                SelectedItems.modifySelection(deviceItem)
+                SelectedItems.modifySelection(document)
             }),
         backgroundColor = LightSteelBlue
     ) {
@@ -139,15 +155,18 @@ private fun SelectDeviceCard(
                 checked = check.value,
                 onCheckedChange = {
                     check.value = !check.value
-                    SelectedItems.modifySelection(deviceItem)
-                })
-            Icon(
-                modifier = Modifier
-                    .weight(1f)
-                    .size(48.dp),
-                imageVector = cardIcon,
-                contentDescription = "$name-icon",
+                    SelectedItems.modifySelection(document)
+                }
             )
+            if (isDevices) {
+                Icon(
+                    modifier = Modifier
+                        .weight(1f)
+                        .size(48.dp),
+                    imageVector = cardIcon,
+                    contentDescription = "$name-icon",
+                )
+            }
             Text(
                 modifier = Modifier
                     .weight(7f)
