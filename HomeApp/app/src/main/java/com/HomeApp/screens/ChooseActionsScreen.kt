@@ -1,12 +1,12 @@
 package com.HomeApp.screens
 
-import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,14 +20,30 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
+import androidx.compose.material.icons.filled.CompareArrows
 import androidx.compose.material.icons.filled.DoorFront
+import androidx.compose.material.icons.filled.DoubleArrow
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
 import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material.icons.filled.ModeFanOff
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LockOpen
+import androidx.compose.material.icons.filled.Power
+import androidx.compose.material.icons.filled.PowerOff
 import androidx.compose.material.icons.filled.Window
-import androidx.compose.material.icons.outlined.CompareArrows
+import androidx.compose.material.icons.outlined.DoorFront
+import androidx.compose.material.icons.outlined.KeyboardDoubleArrowLeft
+import androidx.compose.material.icons.outlined.KeyboardDoubleArrowRight
+import androidx.compose.material.icons.outlined.Lightbulb
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.LockOpen
+import androidx.compose.material.icons.outlined.Power
+import androidx.compose.material.icons.outlined.PowerOff
+import androidx.compose.material.icons.outlined.RestartAlt
+import androidx.compose.material.icons.outlined.Sensors
 import androidx.compose.material.icons.outlined.SmartScreen
 import androidx.compose.material.icons.outlined.SurroundSound
+import androidx.compose.material.icons.outlined.Window
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Power
 import androidx.compose.runtime.Composable
@@ -104,18 +120,22 @@ fun ChooseActionsScreen(
     val isSensor = SelectedItems.getIsSensor()
 
     fun getState(state: MutableMap<String, Boolean>): Map<String, Boolean> {
-        val keys = mutableListOf<String>()
-        keys.clear()
-        for (key in state.keys) {
-            keys.add(key)
-            keys.add(keys.removeAt(0)) // This makes the keys for door [open, locked] instead of [locked, open]
+        val keys = state.keys.toMutableList()
+
+        // Keys should be "on, reverse" instead of "reverse, on"
+        // And secondary actions should be omitted for groups
+        if (keys.size == 2) {
+            keys.add(keys.removeAt(0))
+            val newState = mutableMapOf<String, Boolean>()
+            newState[keys[0]] = true
+            newState[keys[1]] = false
+            if (!isDevices) {
+                newState.remove(keys[1])
+            }
+            return newState
         }
 
         state[keys[0]] = true
-        if (keys.size == 2) {
-            state[keys[1]] = false // I want reverse and locked to be false initially
-        }
-        Log.d("STATE", state.toString())
         return state
     }
 
@@ -204,10 +224,17 @@ fun ActionCard(document: DocumentSnapshot) {
     val secondaryOn = remember { mutableStateOf("") }
     val secondaryOff = remember { mutableStateOf("") }
     val cardIcon = remember { mutableStateOf(Icons.Filled.BrokenImage) }
-    val actionIcon = remember { mutableStateOf(Icons.Filled.BrokenImage) }
+    val primaryActionOnIcon = remember { mutableStateOf(Icons.Filled.Power) }
+    val primaryActionOffIcon = remember { mutableStateOf(Icons.Filled.PowerOff) }
+    val secondaryActionOnIcon = remember { mutableStateOf(Icons.Filled.Power) }
+    val secondaryActionOffIcon = remember { mutableStateOf(Icons.Filled.PowerOff) }
     val name = document.get("name") as String
 
-    fun getData(type: String, state: MutableMap<String, Boolean>) {
+    fun getData(
+        tag: String,
+        type: String,
+        state: MutableMap<String, Boolean>
+    ) {
         primaryOn.value = when (type) {
             "toggle" -> "Turn On"
             "openLock" -> "Open"
@@ -233,17 +260,35 @@ fun ActionCard(document: DocumentSnapshot) {
         }
 
         cardIcon.value = when (type) {
-            "toggle" -> Icons.Filled.Lightbulb
-            "fan" -> Icons.Filled.ModeFanOff
+            "toggle" -> Icons.Outlined.Lightbulb
+            "openLock" -> if (tag == "door") Icons.Outlined.DoorFront else Icons.Outlined.Window
             "screen" -> Icons.Outlined.SmartScreen
             "buzzer" -> Icons.Outlined.SurroundSound
+            "sensor" -> Icons.Outlined.Sensors
+            "fan" -> Icons.Outlined.RestartAlt
             else -> Icons.Filled.BrokenImage
         }
 
-        actionIcon.value = when (type) {
-            "door", "window" -> Icons.Outlined.Lock
-            "fan" -> Icons.Outlined.CompareArrows
-            else -> Icons.Filled.BrokenImage
+        primaryActionOnIcon.value = when (type) {
+            "openLock" -> if (tag == "door") Icons.Outlined.DoorFront else Icons.Outlined.Window
+            else -> Icons.Outlined.Power
+        }
+
+        primaryActionOffIcon.value = when (type) {
+            "openLock" -> if (tag == "door") Icons.Outlined.DoorFront else Icons.Outlined.Window
+            else -> Icons.Outlined.PowerOff
+        }
+
+        secondaryActionOnIcon.value = when (type) {
+            "openLock" -> Icons.Outlined.LockOpen
+            "fan" -> Icons.Outlined.KeyboardDoubleArrowRight
+            else -> Icons.Outlined.Power
+        }
+
+        secondaryActionOffIcon.value = when (type) {
+            "openLock" -> Icons.Outlined.Lock
+            "fan" -> Icons.Outlined.KeyboardDoubleArrowLeft
+            else -> Icons.Outlined.PowerOff
         }
 
         keys.clear()
@@ -254,23 +299,28 @@ fun ActionCard(document: DocumentSnapshot) {
         state[keys[0]] = primaryCheck.value
         state[keys[0]] = primaryCheck.value
         if (keys.size == 2) {
-            state[keys[1]] =
-                !secondaryCheck.value // I want reverse and locked to be false initially
+            state[keys[1]] = !secondaryCheck.value // I want reverse and locked to be false initially
         }
     }
 
     if (isDevices) {
         type.value = document.get("type") as String
+        if (type.value == "openLock") {
+            tag.value = document.get("tag") as String
+        }
         state = document.get("state") as MutableMap<String, Boolean>
-        getData(type.value, state)
+        getData(tag.value, type.value, state)
     } else {
         val deviceIds = document.get("devices") as List<String>
         LaunchedEffect(state) {
             getDocument("devices", deviceIds[0]) {
                 if (it != null) {
                     type.value = it.get("type") as String
+                    if (type.value == "openLock") {
+                        tag.value = it.get("tag") as String
+                    }
                     state = it.get("state") as MutableMap<String, Boolean>
-                    getData(type.value, state)
+                    getData(tag.value, type.value, state)
                 }
             }
         }
@@ -287,23 +337,19 @@ fun ActionCard(document: DocumentSnapshot) {
             )
             .padding(10.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Icon(
                 modifier = Modifier
                     .weight(1f)
                     .size(48.dp),
-                imageVector =
-                if (document.get("tag") == "door") {
-                    Icons.Filled.DoorFront
-                } else if (document.get("tag") == "window") {
-                    Icons.Filled.Window
-                } else {
-                    cardIcon.value
-                },
+                imageVector = cardIcon.value,
                 contentDescription = "$name-icon"
             )
             Text(
-                modifier = Modifier.weight(8f),
+                modifier = Modifier.weight(5f),
                 text = name,
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold
@@ -340,8 +386,8 @@ fun ActionCard(document: DocumentSnapshot) {
                         )
                         Icon(
                             modifier = Modifier.weight(2f),
-                            imageVector = Icons.Rounded.Power,
-                            contentDescription = "on-icon"
+                            imageVector = primaryActionOffIcon.value,
+                            contentDescription = "off-icon"
                         )
                     }
                 }
@@ -364,13 +410,13 @@ fun ActionCard(document: DocumentSnapshot) {
                         )
                         Icon(
                             modifier = Modifier.weight(2f),
-                            imageVector = Icons.Rounded.Power,
-                            contentDescription = "off-icon"
+                            imageVector = primaryActionOnIcon.value,
+                            contentDescription = "on-icon"
                         )
                     }
                 }
             }
-            if (secondaryOn.value != "" && secondaryOff.value != "") {
+            if (secondaryOn.value != "" && secondaryOff.value != "" && isDevices) {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Card(
                         modifier = Modifier
@@ -391,7 +437,7 @@ fun ActionCard(document: DocumentSnapshot) {
                             )
                             Icon(
                                 modifier = Modifier.weight(2f),
-                                imageVector = Icons.Rounded.Power,
+                                imageVector = secondaryActionOffIcon.value,
                                 contentDescription = "off-icon"
                             )
                         }
@@ -415,7 +461,7 @@ fun ActionCard(document: DocumentSnapshot) {
                             )
                             Icon(
                                 modifier = Modifier.weight(2f),
-                                imageVector = Icons.Rounded.Power,
+                                imageVector = secondaryActionOnIcon.value,
                                 contentDescription = "off-icon"
                             )
                         }

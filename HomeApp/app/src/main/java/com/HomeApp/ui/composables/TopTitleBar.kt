@@ -85,7 +85,7 @@ fun TopTitleBar(
                     item.title
                 },
                 modifier = Modifier.weight(2f),
-                fontSize = 40.sp,
+                fontSize = 35.sp,
                 textAlign = TextAlign.Center
             )
             IconButton(
@@ -199,7 +199,7 @@ sealed class TopTitleBarItem(
     )
 
     object Finish : TopTitleBarItem(
-        title = "Summary",
+        title = "Finish",
         iconLeft = Icons.Rounded.ArrowBack,
         routeLeftButton = com.HomeApp.ui.navigation.ChooseSchedule.route,
         iconRight = Icons.Rounded.Close,

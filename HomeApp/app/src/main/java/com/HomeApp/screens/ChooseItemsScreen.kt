@@ -1,5 +1,6 @@
 package com.HomeApp.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,10 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
+import androidx.compose.material.icons.filled.DoorFront
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.outlined.RestartAlt
+import androidx.compose.material.icons.outlined.Sensors
 import androidx.compose.material.icons.outlined.DoorFront
 import androidx.compose.material.icons.outlined.Lightbulb
 import androidx.compose.material.icons.outlined.RestartAlt
@@ -33,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -153,7 +159,14 @@ fun ChooseItemsScreen(
         floatingActionButton = {
             RoutinesFAB(
                 icon = Icons.Rounded.ArrowForward,
-                onClick = { navController.navigate(ChooseActions.route) }
+                onClick = {
+                    if (SelectedItems.getItems().isNotEmpty()) {
+                        navController.navigate(ChooseActions.route)
+                    } else {
+                        val message = "Please make a selection"
+                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                    }
+                }
             )
         },
         isFloatingActionButtonDocked = true,
