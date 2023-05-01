@@ -1,5 +1,6 @@
 package com.HomeApp.screens
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -17,41 +18,45 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
-import androidx.compose.material.icons.filled.DoorFront
-import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.outlined.DoorFront
+import androidx.compose.material.icons.outlined.Lightbulb
+import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.SmartScreen
 import androidx.compose.material.icons.outlined.SurroundSound
 import androidx.compose.material.icons.outlined.Window
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.HomeApp.ui.composables.Actions
 import com.HomeApp.ui.composables.RoutinesFAB
 import com.HomeApp.ui.composables.RoutinesTitleBar
-import com.HomeApp.ui.composables.RoutinesTitleBarItem
+import com.HomeApp.ui.composables.TopTitleBarItem
 import com.HomeApp.ui.navigation.ChooseActions
 import com.HomeApp.ui.theme.LightSteelBlue
+import com.HomeApp.util.getDocument
 import com.google.firebase.firestore.DocumentSnapshot
 
 data class SelectedItemsData(
     var selectedItems: List<DocumentSnapshot> = emptyList(),
-    var isDevice: Boolean = true,
-    var isSensor: Boolean = false
+    var type: String = "",
+    var sensorId: String = ""
 )
 
 object SelectedItems {
     private var selectedItemsData: SelectedItemsData = SelectedItemsData()
 
-    fun modifySelection(item: DocumentSnapshot) {
+    fun setItems(item: DocumentSnapshot) {
         if (selectedItemsData.selectedItems.contains(item)) {
             selectedItemsData.selectedItems -= item
         } else {
@@ -63,13 +68,20 @@ object SelectedItems {
         return selectedItemsData.selectedItems
     }
 
-    fun setType(isDevices: Boolean, isSensor: Boolean) {
-        selectedItemsData.isDevice = isDevices
-        selectedItemsData.isSensor = isSensor
+    fun setType(type: String) {
+        selectedItemsData.type = type
     }
 
-    fun getType(): List<Boolean> {
-        return listOf(selectedItemsData.isDevice, selectedItemsData.isSensor)
+    fun getType(): String {
+        return selectedItemsData.type
+    }
+
+    fun setSensorId(id: String) {
+        selectedItemsData.sensorId = id
+    }
+
+    fun getSensorId(): String {
+        return selectedItemsData.sensorId
     }
 
     fun clear() {
@@ -84,14 +96,24 @@ fun ChooseItemsScreen(
 ) {
     Actions.clear()
     val listHeight = LocalConfiguration.current.screenHeightDp
-
-    val isDevices = SelectedItems.getType()[0]
-    val documents = if (isDevices) realTimeData!!.devices else realTimeData!!.groups
+    val type = SelectedItems.getType()
+    val documents = mutableListOf<DocumentSnapshot>()
+    if (type == "group") {
+        realTimeData!!.groups.forEach {
+            documents.add(it)
+        }
+    } else {
+        realTimeData!!.devices.forEach {
+            if (it.get("type") != "sensor") {
+                documents.add(it)
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
             RoutinesTitleBar(
-                item = RoutinesTitleBarItem.ChooseItems,
+                item = TopTitleBarItem.ChooseItems,
                 navController = navController
             )
         },
@@ -103,8 +125,18 @@ fun ChooseItemsScreen(
                     .padding(vertical = 10.dp, horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 content = {
+                    if (type == "sensor") {
+                        item {
+                            Text(
+                                text = "Choose devices to affect when the sensor is triggered",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                     items(items = documents, key = { item -> item.id }) { item ->
-                        SelectItemCard(document = item, isDevices = isDevices)
+                        SelectItemCard(document = item)
                     }
                 }
             )
@@ -121,19 +153,36 @@ fun ChooseItemsScreen(
 }
 
 @Composable
-private fun SelectItemCard(
-    document: DocumentSnapshot,
-    isDevices: Boolean
-) {
+private fun SelectItemCard(document: DocumentSnapshot) {
+    var type by remember { mutableStateOf("") }
+    var tag by remember { mutableStateOf("") }
 
-    var cardIcon: ImageVector = Icons.Filled.BrokenImage
-    if (isDevices) {
-        cardIcon = when (document.get("type")) {
-            "toggle" -> Icons.Filled.Lightbulb
-            "door" -> Icons.Filled.DoorFront
-            "window" -> Icons.Outlined.Window
+    val whichType = SelectedItems.getType()
+    if (whichType == "group") {
+        val deviceIds = document.get("devices") as List<String>
+        LaunchedEffect(deviceIds) {
+            getDocument("devices", deviceIds[0]) { document ->
+                if (document != null) {
+                    type = document.get("type") as String
+                    if (type == "openLock") tag = document.get("tag") as String
+                    Log.d("Type", type)
+                }
+            }
+        }
+    } else {
+        type = document.get("type") as String
+        if (type == "openLock") tag = document.get("tag") as String
+    }
+    Log.d("Type", type)
+
+    val cardIcon = remember { mutableStateOf(Icons.Filled.BrokenImage) }
+    LaunchedEffect(type, tag) {
+        cardIcon.value = when (type) {
+            "toggle" -> Icons.Outlined.Lightbulb
+            "openLock" -> if (tag == "door") Icons.Outlined.DoorFront else Icons.Outlined.Window
             "screen" -> Icons.Outlined.SmartScreen
             "buzzer" -> Icons.Outlined.SurroundSound
+            "fan" -> Icons.Outlined.RestartAlt
             else -> Icons.Filled.BrokenImage
         }
     }
@@ -147,7 +196,7 @@ private fun SelectItemCard(
             .height(60.dp)
             .clickable(onClick = {
                 check.value = !check.value
-                SelectedItems.modifySelection(document)
+                SelectedItems.setItems(document)
             }),
         backgroundColor = LightSteelBlue
     ) {
@@ -157,18 +206,16 @@ private fun SelectItemCard(
                 checked = check.value,
                 onCheckedChange = {
                     check.value = !check.value
-                    SelectedItems.modifySelection(document)
+                    SelectedItems.setItems(document)
                 }
             )
-            if (isDevices) {
-                Icon(
-                    modifier = Modifier
-                        .weight(1f)
-                        .size(48.dp),
-                    imageVector = cardIcon,
-                    contentDescription = "$name-icon",
-                )
-            }
+            Icon(
+                modifier = Modifier
+                    .weight(1f)
+                    .size(48.dp),
+                imageVector = cardIcon.value,
+                contentDescription = "$name-icon",
+            )
             Text(
                 modifier = Modifier
                     .weight(7f)

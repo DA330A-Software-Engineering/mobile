@@ -41,8 +41,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.RoutinesFAB
 import com.HomeApp.ui.composables.RoutinesTitleBar
-import com.HomeApp.ui.composables.RoutinesTitleBarItem
-import com.HomeApp.ui.navigation.FinishRoutine
+import com.HomeApp.ui.composables.TopTitleBarItem
+import com.HomeApp.ui.navigation.Finish
 import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.LightSteelBlue
 import com.HomeApp.util.DayFilters
@@ -91,7 +91,7 @@ fun ChooseScheduleScreen(
     Scaffold(
         topBar = {
             RoutinesTitleBar(
-                item = RoutinesTitleBarItem.ChooseSchedule,
+                item = TopTitleBarItem.ChooseSchedule,
                 navController = navController
             )
         },
@@ -158,7 +158,7 @@ fun ChooseScheduleScreen(
                     val fields = cronString.value.split(" ")
                     cronString.value = "${fields[0]} ${selectedMinute.value} ${selectedHour.value} ${fields[3]} ${fields[4]} ${selectedDays.value}"
                     Schedule.setCronString(cronString = cronString.value)
-                    navController.navigate(FinishRoutine.route)
+                    navController.navigate(Finish.route)
                 }
             )
         },

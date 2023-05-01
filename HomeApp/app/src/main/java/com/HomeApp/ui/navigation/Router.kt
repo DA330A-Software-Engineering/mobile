@@ -87,7 +87,7 @@ object ChooseType : NavPath {
 
 object ChooseItems : NavPath {
     override val icon = Icons.Rounded.Devices
-    override val route = "choose-devices"
+    override val route = "choose-items"
 }
 
 object ChooseActions : NavPath {
@@ -100,22 +100,7 @@ object ChooseSchedule : NavPath {
     override val route = "choose-schedule"
 }
 
-object FinishRoutine : NavPath {
+object Finish : NavPath {
     override val icon = Icons.Rounded.Schedule
-    override val route = "finish-routine"
-}
-
-object Sensor : NavPath {
-    override val icon = Icons.Rounded.Sensors
-    override val route = "sensor"
-}
-
-object SensorAction : NavPath {
-    override val icon = Icons.Rounded.Sensors
-    override val route = "sensor-action"
-}
-
-object SensorFinish : NavPath {
-    override val icon = Icons.Rounded.Sensors
-    override val route = "sensor-finish"
+    override val route = "finish"
 }
