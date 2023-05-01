@@ -1,5 +1,6 @@
 package com.HomeApp.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,8 +85,8 @@ fun ChooseItemsScreen(
     OnSelfClick: () -> Unit = {}
 ) {
     Actions.clearList()
+    val context = LocalContext.current
     val listHeight = LocalConfiguration.current.screenHeightDp
-
     val isDevices = SelectedItems.getType()
     val documents = if (isDevices) realTimeData!!.devices else realTimeData!!.groups
 
@@ -115,6 +117,9 @@ fun ChooseItemsScreen(
                 onClick = {
                     if (SelectedItems.getItems().isNotEmpty()) {
                         navController.navigate(ChooseActions.route)
+                    } else {
+                        val message = "Please make a selection"
+                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
                     }
                 }
             )

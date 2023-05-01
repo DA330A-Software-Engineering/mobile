@@ -1,6 +1,7 @@
 package com.HomeApp.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -131,6 +132,16 @@ fun RoutineFinishScreen(
             RoutinesFAB(
                 icon = Icons.Rounded.Done,
                 onClick = {
+                    if (routineName.value.isBlank() || routineName.value.isEmpty()) {
+                        val message = "Please enter a valid name"
+                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                        return@RoutinesFAB
+                    }
+                    if (routineDescription.value.isBlank() || routineDescription.value.isEmpty()) {
+                        val message = "Please enter a valid description"
+                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                        return@RoutinesFAB
+                    }
                     coroutine.launch(Dispatchers.IO) {
                         ApiConnector.createRoutine(
                             token = token,
