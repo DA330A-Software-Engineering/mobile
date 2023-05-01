@@ -47,8 +47,8 @@ import androidx.navigation.NavController
 import com.HomeApp.ui.composables.RoutinesFAB
 import com.HomeApp.ui.composables.TopTitleBar
 import com.HomeApp.ui.composables.TopTitleBarItem
-import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Routines
+import com.HomeApp.ui.navigation.Triggers
 import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.LightSteelBlue
 import com.HomeApp.util.ApiConnector
@@ -239,7 +239,7 @@ fun FinishScreen(
                                 onRespond = onRespond
                             )
                         }
-                        navController.navigate(Devices.route)
+                        navController.navigate(Triggers.route)
                     } else {
                         coroutine.launch(Dispatchers.IO) {
                             ApiConnector.createRoutine(

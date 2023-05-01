@@ -18,10 +18,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
-import androidx.compose.material.icons.filled.DoorFront
-import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material.icons.outlined.RestartAlt
-import androidx.compose.material.icons.outlined.Sensors
 import androidx.compose.material.icons.outlined.DoorFront
 import androidx.compose.material.icons.outlined.Lightbulb
 import androidx.compose.material.icons.outlined.RestartAlt
@@ -144,7 +140,11 @@ fun ChooseItemsScreen(
                     if (isSensor) {
                         item {
                             Text(
-                                text = "Choose devices to affect when the sensor is triggered",
+                                text = if (isDevices) {
+                                    "Choose devices to affect when the sensor is triggered"
+                                } else {
+                                    "Choose groups to affect when the sensor is triggered"
+                                },
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center

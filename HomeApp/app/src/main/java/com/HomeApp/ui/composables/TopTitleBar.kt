@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.screens.SelectedItems
-import com.HomeApp.ui.navigation.ChooseActions
 import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Home
 
@@ -56,21 +55,7 @@ fun TopTitleBar(
         ) {
             IconButton(
                 modifier = Modifier.weight(1f),
-                onClick = {
-                    if (item == TopTitleBarItem.ChooseItems) {
-                        if (isSensor) {
-                            navController.navigate(Devices.route)
-                            return@IconButton
-                        }
-                    }
-                    if (item == TopTitleBarItem.Finish) {
-                        if (isSensor) {
-                            navController.navigate(ChooseActions.route)
-                            return@IconButton
-                        }
-                    }
-                    navController.navigate(item.routeLeftButton)
-                }
+                onClick = { navController.navigate(item.routeLeftButton) }
             ) {
                 Icon(
                     modifier = Modifier.scale(2.2f),
@@ -157,7 +142,11 @@ sealed class TopTitleBarItem(
     object ChooseType : TopTitleBarItem(
         title = "Choose",
         iconLeft = Icons.Rounded.ArrowBack,
-        routeLeftButton = com.HomeApp.ui.navigation.Routines.route,
+        routeLeftButton = if (SelectedItems.getIsSensor()) {
+            com.HomeApp.ui.navigation.Triggers.route
+        } else {
+            com.HomeApp.ui.navigation.Routines.route
+        },
         iconRight = Icons.Rounded.Close,
         routeRightButton = if (SelectedItems.getIsSensor()) {
             com.HomeApp.ui.navigation.Triggers.route
@@ -201,7 +190,11 @@ sealed class TopTitleBarItem(
     object Finish : TopTitleBarItem(
         title = "Finish",
         iconLeft = Icons.Rounded.ArrowBack,
-        routeLeftButton = com.HomeApp.ui.navigation.ChooseSchedule.route,
+        routeLeftButton = if (SelectedItems.getIsSensor()) {
+            com.HomeApp.ui.navigation.ChooseActions.route
+        } else {
+            com.HomeApp.ui.navigation.ChooseSchedule.route
+        },
         iconRight = Icons.Rounded.Close,
         routeRightButton = if (SelectedItems.getIsSensor()) {
             com.HomeApp.ui.navigation.Triggers.route
