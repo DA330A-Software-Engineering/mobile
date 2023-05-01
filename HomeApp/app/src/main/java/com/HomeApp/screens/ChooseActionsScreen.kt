@@ -207,6 +207,7 @@ fun ActionCard(document: DocumentSnapshot) {
     val isDevices = SelectedItems.getIsDevices()
     val isSensor = SelectedItems.getIsSensor()
 
+    val tag = remember { mutableStateOf("") }
     val type = remember { mutableStateOf("") }
     var state = remember { mutableMapOf<String, Boolean>() }
     val keys = remember { mutableListOf<String>() }

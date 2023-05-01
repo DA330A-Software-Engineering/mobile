@@ -109,19 +109,20 @@ fun ChooseItemsScreen(
     OnSelfClick: () -> Unit = {}
 ) {
     Actions.clear()
+    val context = LocalContext.current
     val listHeight = LocalConfiguration.current.screenHeightDp
     val isDevices = SelectedItems.getIsDevices()
     val isSensor = SelectedItems.getIsSensor()
     val documents = mutableListOf<DocumentSnapshot>()
-    if (isDevices == false) {
-        realTimeData!!.groups.forEach {
-            documents.add(it)
-        }
-    } else {
+    if (isDevices) {
         realTimeData!!.devices.forEach {
             if (it.get("type") != "sensor") {
                 documents.add(it)
             }
+        }
+    } else {
+        realTimeData!!.groups.forEach {
+            documents.add(it)
         }
     }
 
@@ -140,7 +141,7 @@ fun ChooseItemsScreen(
                     .padding(vertical = 10.dp, horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 content = {
-                    if (isSensor == true) {
+                    if (isSensor) {
                         item {
                             Text(
                                 text = "Choose devices to affect when the sensor is triggered",
