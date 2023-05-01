@@ -10,7 +10,6 @@ import androidx.compose.material.icons.rounded.People
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.HomeApp.ui.navigation.Loading
 import com.HomeApp.ui.navigation.Profile
-import com.google.firebase.firestore.DocumentSnapshot
 
 val firebaseConfig = mapOf(
     "apiKey" to "AIzaSyBe9OfClxqevJF_7X5v2Rk1lP9EQTWv458",
