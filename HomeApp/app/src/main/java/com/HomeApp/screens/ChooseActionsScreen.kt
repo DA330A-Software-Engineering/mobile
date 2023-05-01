@@ -1,6 +1,5 @@
 package com.HomeApp.screens
 
-import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,10 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.DoorFront
 import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material.icons.filled.ModeFanOff
-import androidx.compose.material.icons.filled.Window
-import androidx.compose.material.icons.outlined.CompareArrows
-import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.Sensors
 import androidx.compose.material.icons.outlined.SmartScreen
@@ -40,7 +35,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -107,8 +101,6 @@ fun ChooseActionsScreen(
 
     fun getState(state: MutableMap<String, Boolean>): Map<String, Boolean> {
         val keys = state.keys.toMutableList()
-        Log.d("KEYS", keys.toString())
-        Log.d("STATE BEFORE", state.toString())
 
         // Keys should be "on, reverse" instead of "reverse, on"
         // And secondary actions should be omitted for groups
@@ -235,19 +227,13 @@ private fun ActionCards(
             else -> ""
         }
 
-        cardIcon.value = when (document.get("type")) {
+        cardIcon.value = when (type) {
             "toggle" -> Icons.Filled.Lightbulb
             "openLock" -> if (document.get("tag") == "window") Icons.Outlined.Window else Icons.Filled.DoorFront
             "screen" -> Icons.Outlined.SmartScreen
             "buzzer" -> Icons.Outlined.SurroundSound
             "sensor" -> Icons.Outlined.Sensors
             "fan" -> Icons.Outlined.RestartAlt
-            else -> Icons.Filled.BrokenImage
-        }
-
-        actionIcon.value = when (type) {
-            "door", "window" -> Icons.Outlined.Lock
-            "fan" -> Icons.Outlined.CompareArrows
             else -> Icons.Filled.BrokenImage
         }
 
