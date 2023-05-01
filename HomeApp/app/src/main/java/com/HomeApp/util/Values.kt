@@ -59,21 +59,3 @@ enum class DayFilters(
     SATURDAY("S", "6"),
     SUNDAY("S", "0")
 }
-
-val months = listOf(
-    "Any",
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-)
-val days =
-    listOf("Any", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")

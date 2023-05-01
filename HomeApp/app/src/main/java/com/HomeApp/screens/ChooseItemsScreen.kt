@@ -1,5 +1,6 @@
 package com.HomeApp.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.DoorFront
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.outlined.RestartAlt
+import androidx.compose.material.icons.outlined.Sensors
 import androidx.compose.material.icons.outlined.SmartScreen
 import androidx.compose.material.icons.outlined.SurroundSound
 import androidx.compose.material.icons.outlined.Window
@@ -31,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -81,8 +85,8 @@ fun ChooseItemsScreen(
     OnSelfClick: () -> Unit = {}
 ) {
     Actions.clearList()
+    val context = LocalContext.current
     val listHeight = LocalConfiguration.current.screenHeightDp
-
     val isDevices = SelectedItems.getType()
     val documents = if (isDevices) realTimeData!!.devices else realTimeData!!.groups
 
@@ -110,7 +114,14 @@ fun ChooseItemsScreen(
         floatingActionButton = {
             RoutinesFAB(
                 icon = Icons.Rounded.ArrowForward,
-                onClick = { navController.navigate(ChooseActions.route) }
+                onClick = {
+                    if (SelectedItems.getItems().isNotEmpty()) {
+                        navController.navigate(ChooseActions.route)
+                    } else {
+                        val message = "Please make a selection"
+                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                    }
+                }
             )
         },
         isFloatingActionButtonDocked = true,
@@ -124,14 +135,15 @@ private fun SelectItemCard(
     isDevices: Boolean
 ) {
 
-    var cardIcon: ImageVector = Icons.Filled.BrokenImage
+    val cardIcon = remember { mutableStateOf(Icons.Filled.BrokenImage) }
     if (isDevices) {
-        cardIcon = when (document.get("type")) {
+        cardIcon.value = when (document.get("type")) {
             "toggle" -> Icons.Filled.Lightbulb
-            "door" -> Icons.Filled.DoorFront
-            "window" -> Icons.Outlined.Window
+            "openLock" -> if (document.get("tag") == "window") Icons.Outlined.Window else Icons.Filled.DoorFront
             "screen" -> Icons.Outlined.SmartScreen
             "buzzer" -> Icons.Outlined.SurroundSound
+            "sensor" -> Icons.Outlined.Sensors
+            "fan" -> Icons.Outlined.RestartAlt
             else -> Icons.Filled.BrokenImage
         }
     }
@@ -163,7 +175,7 @@ private fun SelectItemCard(
                     modifier = Modifier
                         .weight(1f)
                         .size(48.dp),
-                    imageVector = cardIcon,
+                    imageVector = cardIcon.value,
                     contentDescription = "$name-icon",
                 )
             }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -174,6 +175,8 @@ private fun RoutineCard(routineItem: DocumentSnapshot) {
             DayFilters.values().forEach {
                 IconButton(
                     modifier = Modifier
+                        .weight(1f)
+                        .scale(0.8f)
                         .background(
                             if (days.value.contains(it.cron)) {
                                 LightSteelBlue
@@ -198,7 +201,7 @@ private fun RoutineCard(routineItem: DocumentSnapshot) {
                     }
                 ) {
                     Text(
-                        modifier = Modifier.scale(1.6f),
+                        modifier = Modifier.scale(1.5f),
                         text = it.letter,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black

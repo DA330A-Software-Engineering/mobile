@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -11,7 +13,14 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.HomeApp.screens.realTimeData
 import com.HomeApp.util.*
@@ -29,6 +38,9 @@ fun AddGroup(
     val context = LocalContext.current
     val coroutine = rememberCoroutineScope()
 
+    val descriptionFocusRequester = FocusRequester()
+    val focusManager: FocusManager = LocalFocusManager.current
+
     Column(modifier = Modifier, verticalArrangement = Arrangement.spacedBy(5.dp)) {
         Row(
             modifier = Modifier
@@ -38,9 +50,17 @@ fun AddGroup(
             Text(text = "Name", modifier = Modifier.weight(2f))
             Spacer(modifier = Modifier.weight(0.1f))
             TextField(
-                value = groupName, onValueChange = { groupName = it }, modifier = Modifier
+                value = groupName,
+                onValueChange = { groupName = it },
+                modifier = Modifier
                     .width(100.dp)
-                    .weight(5f)
+                    .weight(5f),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(onNext = { descriptionFocusRequester.requestFocus() })
             )
         }
         Row(
@@ -51,9 +71,18 @@ fun AddGroup(
             Text(text = "Description", modifier = Modifier.weight(2f))
             Spacer(modifier = Modifier.weight(0.1f))
             TextField(
-                value = groupDesc, onValueChange = { groupDesc = it }, modifier = Modifier
+                value = groupDesc,
+                onValueChange = { groupDesc = it },
+                modifier = Modifier
                     .width(100.dp)
                     .weight(5f)
+                    .focusRequester(descriptionFocusRequester),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
             )
         }
         var deviceList by remember {
