@@ -467,6 +467,23 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
+    /** Api call to update trigger */
+    fun deleteTrigger(
+        token: String,
+        triggerId: String,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+        
+        val urlPath = "/triggers/$triggerId"
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .delete()
+            .build()
+        onRespond(callAPI(request))
+    }
+
     private fun callAPI(request: Request): ApiResult {
         return try {
             Log.d("callAPI", request.url.toString())
