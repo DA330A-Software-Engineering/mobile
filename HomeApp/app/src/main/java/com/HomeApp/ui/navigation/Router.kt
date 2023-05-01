@@ -109,3 +109,13 @@ object Sensor : NavPath {
     override val icon = Icons.Rounded.Sensors
     override val route = "sensor"
 }
+
+object SensorAction : NavPath {
+    override val icon = Icons.Rounded.Sensors
+    override val route = "sensor-action"
+}
+
+object SensorFinish : NavPath {
+    override val icon = Icons.Rounded.Sensors
+    override val route = "sensor-finish"
+}

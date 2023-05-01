@@ -1,6 +1,5 @@
 package com.HomeApp.screens
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,7 +36,7 @@ fun ChooseTypeScreen(
     navController: NavController,
     OnSelfClick: () -> Unit = {}
 ) {
-    SelectedItems.clearItems()
+    SelectedItems.clear()
     val listHeight = LocalConfiguration.current.screenHeightDp
 
     Scaffold(
@@ -61,7 +60,7 @@ fun ChooseTypeScreen(
                             text = "Choose from all devices",
                             icon = Icons.Rounded.Devices,
                             onClick = {
-                                SelectedItems.setType(isDevices = true)
+                                SelectedItems.setType(isDevices = true, isSensor = false)
                                 navController.navigate(ChooseItems.route)
                             }
                         )
@@ -72,7 +71,7 @@ fun ChooseTypeScreen(
                             text = "Choose from all groups",
                             icon = Icons.Rounded.Groups,
                             onClick = {
-                                SelectedItems.setType(isDevices = false)
+                                SelectedItems.setType(isDevices = false, isSensor = false)
                                 navController.navigate(ChooseItems.route)
                             }
                         )

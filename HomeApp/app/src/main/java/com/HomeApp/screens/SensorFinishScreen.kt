@@ -47,6 +47,7 @@ import com.HomeApp.ui.composables.Actions
 import com.HomeApp.ui.composables.RoutinesFAB
 import com.HomeApp.ui.composables.RoutinesTitleBar
 import com.HomeApp.ui.composables.RoutinesTitleBarItem
+import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Routines
 import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.LightSteelBlue
@@ -57,7 +58,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun RoutineFinishScreen(
+fun SensorFinishScreen(
     navController: NavController,
     OnSelfClick: () -> Unit = {}
 ) {
@@ -67,11 +68,10 @@ fun RoutineFinishScreen(
     val listHeight = LocalConfiguration.current.screenHeightDp
     val cronString = Schedule.getCronString()
 
-    val routineName = remember { mutableStateOf("") }
-    val routineDescription = remember { mutableStateOf("") }
+    val sensorActionName = remember { mutableStateOf("") }
+    val sensorActionDescription = remember { mutableStateOf("") }
 
     val enabled = remember { mutableStateOf(true) }
-    val repeatable = remember { mutableStateOf(true) }
 
     val onRespond: (ApiResult) -> Unit = {
         Log.d("RESPOND", it.toString())
@@ -83,7 +83,7 @@ fun RoutineFinishScreen(
     Scaffold(
         topBar = {
             RoutinesTitleBar(
-                item = RoutinesTitleBarItem.FinishRoutine,
+                item = RoutinesTitleBarItem.SensorFinish,
                 navController = navController
             )
         },
@@ -107,7 +107,7 @@ fun RoutineFinishScreen(
                     item {
                         InputText(
                             label = "Name",
-                            text = routineName,
+                            text = sensorActionName,
                             focusRequester = null,
                             imeAction = ImeAction.Next,
                             keyboardActions = KeyboardActions(onNext = { focusRequester.requestFocus() })
@@ -116,14 +116,13 @@ fun RoutineFinishScreen(
                     item {
                         InputText(
                             label = "Description",
-                            text = routineDescription,
+                            text = sensorActionDescription,
                             focusRequester = focusRequester,
                             imeAction = ImeAction.Done,
                             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
                         )
                     }
-                    item { SwitchCard(title = "Enabled", check = enabled) }
-                    item { SwitchCard(title = "Repeatable", check = repeatable) }
+                    item { SwitchCard(check = enabled) }
                 }
             )
         },
@@ -132,18 +131,9 @@ fun RoutineFinishScreen(
                 icon = Icons.Rounded.Done,
                 onClick = {
                     coroutine.launch(Dispatchers.IO) {
-                        ApiConnector.createRoutine(
-                            token = token,
-                            name = routineName.value,
-                            description = routineDescription.value,
-                            schedule = cronString,
-                            enabled = enabled.value,
-                            repeatable = repeatable.value,
-                            actions = Actions.getActions(),
-                            onRespond = onRespond
-                        )
+
                     }
-                    navController.navigate(Routines.route)
+                    navController.navigate(Devices.route)
                 }
             )
         },
@@ -179,10 +169,7 @@ private fun InputText(
 }
 
 @Composable
-private fun SwitchCard(
-    title: String,
-    check: MutableState<Boolean>
-) {
+private fun SwitchCard(check: MutableState<Boolean>) {
     val selectedColor = if (check.value) LightSteelBlue else FadedLightGrey
     val notSelectedColor = if (!check.value) LightSteelBlue else FadedLightGrey
 
@@ -198,7 +185,7 @@ private fun SwitchCard(
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = title,
+            text = "Enabled",
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center

@@ -306,6 +306,34 @@ fun AnimatedAppNavHost(
                 OnSelfClick = { navController.navigateSingleTopTo(Sensor.route) }
             )
         }
+
+        // SENSOR ACTION
+        composable(
+            route = SensorAction.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            SensorActionScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(SensorAction.route) }
+            )
+        }
+
+        // FINISH SENSOR
+        composable(
+            route = SensorFinish.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            SensorFinishScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(SensorFinish.route) }
+            )
+        }
     }
 }
 

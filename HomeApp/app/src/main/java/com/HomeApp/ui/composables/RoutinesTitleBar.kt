@@ -27,7 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.screens.SelectedItems
+import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Home
+import com.HomeApp.ui.navigation.Sensor
 
 @Composable
 fun RoutinesTitleBar(
@@ -61,7 +63,7 @@ fun RoutinesTitleBar(
             }
             Text(
                 text = if (item == RoutinesTitleBarItem.ChooseItems) {
-                    if (SelectedItems.getType()) "Devices" else "Groups"
+                    if (SelectedItems.getType()[0]) "Devices" else "Groups"
                 } else {
                     item.title
                 },
@@ -173,5 +175,29 @@ sealed class RoutinesTitleBarItem(
         routeLeftButton = com.HomeApp.ui.navigation.ChooseSchedule.route,
         iconRight = Icons.Rounded.Close,
         routeRightButton = com.HomeApp.ui.navigation.Routines.route
+    )
+
+    object Sensor : RoutinesTitleBarItem(
+        title = "Sensor",
+        iconLeft = Icons.Rounded.ArrowBack,
+        routeLeftButton = Devices.route,
+        iconRight = Icons.Rounded.Close,
+        routeRightButton = Devices.route
+    )
+
+    object SensorActions : RoutinesTitleBarItem(
+        title = "Actions",
+        iconLeft = Icons.Rounded.ArrowBack,
+        routeLeftButton = com.HomeApp.ui.navigation.Sensor.route,
+        iconRight = Icons.Rounded.Close,
+        routeRightButton = Devices.route
+    )
+
+    object SensorFinish : RoutinesTitleBarItem(
+        title = "Finish",
+        iconLeft = Icons.Rounded.ArrowBack,
+        routeLeftButton = com.HomeApp.ui.navigation.SensorAction.route,
+        iconRight = Icons.Rounded.Close,
+        routeRightButton = Devices.route
     )
 }

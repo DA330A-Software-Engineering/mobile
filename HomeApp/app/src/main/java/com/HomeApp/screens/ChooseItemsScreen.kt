@@ -2,7 +2,6 @@ package com.HomeApp.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.HomeApp.ui.composables.Actions
 import com.HomeApp.ui.composables.RoutinesFAB
 import com.HomeApp.ui.composables.RoutinesTitleBar
 import com.HomeApp.ui.composables.RoutinesTitleBarItem
@@ -44,7 +44,8 @@ import com.google.firebase.firestore.DocumentSnapshot
 
 data class SelectedItemsData(
     var selectedItems: List<DocumentSnapshot> = emptyList(),
-    var isDevice: Boolean = true
+    var isDevice: Boolean = true,
+    var isSensor: Boolean = false
 )
 
 object SelectedItems {
@@ -62,15 +63,16 @@ object SelectedItems {
         return selectedItemsData.selectedItems
     }
 
-    fun setType(isDevices: Boolean) {
+    fun setType(isDevices: Boolean, isSensor: Boolean) {
         selectedItemsData.isDevice = isDevices
+        selectedItemsData.isSensor = isSensor
     }
 
-    fun getType(): Boolean {
-        return selectedItemsData.isDevice
+    fun getType(): List<Boolean> {
+        return listOf(selectedItemsData.isDevice, selectedItemsData.isSensor)
     }
 
-    fun clearItems() {
+    fun clear() {
         selectedItemsData.selectedItems = emptyList()
     }
 }
@@ -80,10 +82,10 @@ fun ChooseItemsScreen(
     navController: NavController,
     OnSelfClick: () -> Unit = {}
 ) {
-    Actions.clearList()
+    Actions.clear()
     val listHeight = LocalConfiguration.current.screenHeightDp
 
-    val isDevices = SelectedItems.getType()
+    val isDevices = SelectedItems.getType()[0]
     val documents = if (isDevices) realTimeData!!.devices else realTimeData!!.groups
 
     Scaffold(
