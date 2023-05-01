@@ -71,7 +71,7 @@ fun DeviceCard(
         AlertDialog(
             onDismissRequest = { editDialog = false },
             title = { Text(deviceItem.get("name") as String) },
-            text = { EditDeviceState(deviceItem = deviceItem, type = deviceItem.get("type") as String) },
+            text = { EditDeviceState(deviceItem = deviceItem, type = deviceItem.get("type") as String, onDelEdit = {newState -> editDialog = newState}) },
             confirmButton = {
             }
         )
