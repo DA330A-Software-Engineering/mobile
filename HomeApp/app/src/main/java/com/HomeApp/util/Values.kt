@@ -10,7 +10,6 @@ import androidx.compose.material.icons.rounded.People
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.HomeApp.ui.navigation.Loading
 import com.HomeApp.ui.navigation.Profile
-import com.google.firebase.firestore.DocumentSnapshot
 
 val firebaseConfig = mapOf(
     "apiKey" to "AIzaSyBe9OfClxqevJF_7X5v2Rk1lP9EQTWv458",
@@ -61,5 +60,20 @@ enum class DayFilters(
     SUNDAY("S", "0")
 }
 
-val months = listOf("Any", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
-val days = listOf("Any", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+val months = listOf(
+    "Any",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+)
+val days =
+    listOf("Any", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")

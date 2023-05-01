@@ -77,8 +77,14 @@ fun AddGroup(
             Spacer(modifier = Modifier.weight(0.1f))
             LazyColumn(modifier = Modifier.weight(5f)) {
                 items(items = realTimeData!!.devices, key = { item -> item.id }) { item ->
-                    if (groupType == "all") AddDevice(deviceItem = item, deviceList = deviceList, onItemSelect = {newType -> groupType = newType})
-                    else if(groupType == item.get("type") as String) AddDevice(deviceItem = item, deviceList = deviceList, onItemSelect = {newType -> groupType = newType})
+                    if (groupType == "all") AddDevice(
+                        deviceItem = item,
+                        deviceList = deviceList,
+                        onItemSelect = { newType -> groupType = newType })
+                    else if (groupType == item.get("type") as String) AddDevice(
+                        deviceItem = item,
+                        deviceList = deviceList,
+                        onItemSelect = { newType -> groupType = newType })
 
                 }
             }
@@ -101,15 +107,17 @@ fun AddGroup(
         Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
             Spacer(modifier = Modifier.weight(1f))
             Button(onClick = {
-                onCreate(false)
-                coroutine.launch(Dispatchers.IO) {
-                    ApiConnector.createGroup(
-                        token = LocalStorage.getToken(context),
-                        onRespond = onCreateGroup,
-                        name = groupName,
-                        description = groupDesc,
-                        devices = deviceList
-                    )
+                if (groupName != "") {
+                    onCreate(false)
+                    coroutine.launch(Dispatchers.IO) {
+                        ApiConnector.createGroup(
+                            token = LocalStorage.getToken(context),
+                            onRespond = onCreateGroup,
+                            name = groupName,
+                            description = groupDesc,
+                            devices = deviceList
+                        )
+                    }
                 }
             }) {
                 Text(text = "Create")
@@ -126,7 +134,7 @@ private fun AddDevice(
     deviceItem: DocumentSnapshot,
     deviceList: MutableList<String>,
     onItemSelect: (String) -> Unit
-){
+) {
     var isAdded by remember {
         mutableStateOf(false)
     }
