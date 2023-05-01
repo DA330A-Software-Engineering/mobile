@@ -59,7 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.HomeApp.ui.composables.RoutinesTitleBar
+import com.HomeApp.ui.composables.TopTitleBar
 import com.HomeApp.ui.composables.TopTitleBarItem
 import com.HomeApp.ui.theme.DarkRed
 import com.HomeApp.ui.theme.FadedLightGrey
@@ -81,12 +81,14 @@ fun RoutinesScreen(
     modifier: Modifier = Modifier,
     OnSelfClick: () -> Unit = {}
 ) {
+    SelectedItems.setIsSensor(false)
+
     val listHeight = LocalConfiguration.current.screenHeightDp
     val documents = realTimeData!!.routines
 
     Scaffold(
         topBar = {
-            RoutinesTitleBar(item = TopTitleBarItem.Routines, navController = navController)
+            TopTitleBar(item = TopTitleBarItem.Routines, navController = navController)
         },
         content = {
             LazyColumn(

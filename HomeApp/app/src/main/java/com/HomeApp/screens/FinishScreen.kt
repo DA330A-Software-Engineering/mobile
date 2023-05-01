@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.RoutinesFAB
-import com.HomeApp.ui.composables.RoutinesTitleBar
+import com.HomeApp.ui.composables.TopTitleBar
 import com.HomeApp.ui.composables.TopTitleBarItem
 import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Routines
@@ -68,7 +68,8 @@ fun FinishScreen(
     val listHeight = LocalConfiguration.current.screenHeightDp
     val cronString = Schedule.getCronString()
 
-    val type = SelectedItems.getType()
+    val isDevices = SelectedItems.getIsDevices()
+    val isSensor = SelectedItems.getIsSensor()
 
     val routineName = remember { mutableStateOf("") }
     val routineDescription = remember { mutableStateOf("") }
@@ -90,7 +91,7 @@ fun FinishScreen(
 
     Scaffold(
         topBar = {
-            RoutinesTitleBar(
+            TopTitleBar(
                 item = TopTitleBarItem.Finish,
                 navController = navController
             )
@@ -143,7 +144,7 @@ fun FinishScreen(
                             )
                         )
                     }
-                    if (type == "sensor") {
+                    if (isSensor) {
                         item {
                             Divider(
                                 modifier = Modifier
@@ -208,7 +209,7 @@ fun FinishScreen(
                         item { SwitchCard(title = "Condition", check = condition) }
                     }
                     item { SwitchCard(title = "Enabled", check = enabled) }
-                    if (type != "sensor") {
+                    if (!isSensor) {
                         item {
                             SwitchCard(
                                 title = "Repeatable",
@@ -223,7 +224,7 @@ fun FinishScreen(
             RoutinesFAB(
                 icon = Icons.Rounded.Done,
                 onClick = {
-                    if (type == "sensor") {
+                    if (isSensor) {
                         coroutine.launch(Dispatchers.IO) {
                             ApiConnector.createTrigger(
                                 token = token,

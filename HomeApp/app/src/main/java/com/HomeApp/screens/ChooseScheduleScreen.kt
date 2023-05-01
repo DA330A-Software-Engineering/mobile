@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.RoutinesFAB
-import com.HomeApp.ui.composables.RoutinesTitleBar
+import com.HomeApp.ui.composables.TopTitleBar
 import com.HomeApp.ui.composables.TopTitleBarItem
 import com.HomeApp.ui.navigation.Finish
 import com.HomeApp.ui.theme.FadedLightGrey
@@ -90,7 +90,7 @@ fun ChooseScheduleScreen(
 
     Scaffold(
         topBar = {
-            RoutinesTitleBar(
+            TopTitleBar(
                 item = TopTitleBarItem.ChooseSchedule,
                 navController = navController
             )

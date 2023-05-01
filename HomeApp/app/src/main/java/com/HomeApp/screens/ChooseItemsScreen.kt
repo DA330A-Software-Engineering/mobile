@@ -1,6 +1,5 @@
 package com.HomeApp.screens
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -40,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.RoutinesFAB
-import com.HomeApp.ui.composables.RoutinesTitleBar
+import com.HomeApp.ui.composables.TopTitleBar
 import com.HomeApp.ui.composables.TopTitleBarItem
 import com.HomeApp.ui.navigation.ChooseActions
 import com.HomeApp.ui.theme.LightSteelBlue
@@ -49,7 +48,8 @@ import com.google.firebase.firestore.DocumentSnapshot
 
 data class SelectedItemsData(
     var selectedItems: List<DocumentSnapshot> = emptyList(),
-    var type: String = "",
+    var isDevices: Boolean = true,
+    var isSensor: Boolean = true,
     var sensorId: String = ""
 )
 
@@ -68,12 +68,20 @@ object SelectedItems {
         return selectedItemsData.selectedItems
     }
 
-    fun setType(type: String) {
-        selectedItemsData.type = type
+    fun setIsDevices(isDevices: Boolean) {
+        selectedItemsData.isDevices = isDevices
     }
 
-    fun getType(): String {
-        return selectedItemsData.type
+    fun getIsDevices(): Boolean {
+        return selectedItemsData.isDevices
+    }
+
+    fun setIsSensor(isSensor: Boolean) {
+        selectedItemsData.isSensor = isSensor
+    }
+
+    fun getIsSensor(): Boolean {
+        return selectedItemsData.isSensor
     }
 
     fun setSensorId(id: String) {
@@ -96,9 +104,10 @@ fun ChooseItemsScreen(
 ) {
     Actions.clear()
     val listHeight = LocalConfiguration.current.screenHeightDp
-    val type = SelectedItems.getType()
+    val isDevices = SelectedItems.getIsDevices()
+    val isSensor = SelectedItems.getIsSensor()
     val documents = mutableListOf<DocumentSnapshot>()
-    if (type == "group") {
+    if (isDevices == false) {
         realTimeData!!.groups.forEach {
             documents.add(it)
         }
@@ -112,7 +121,7 @@ fun ChooseItemsScreen(
 
     Scaffold(
         topBar = {
-            RoutinesTitleBar(
+            TopTitleBar(
                 item = TopTitleBarItem.ChooseItems,
                 navController = navController
             )
@@ -125,7 +134,7 @@ fun ChooseItemsScreen(
                     .padding(vertical = 10.dp, horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 content = {
-                    if (type == "sensor") {
+                    if (isSensor == true) {
                         item {
                             Text(
                                 text = "Choose devices to affect when the sensor is triggered",
@@ -157,23 +166,21 @@ private fun SelectItemCard(document: DocumentSnapshot) {
     var type by remember { mutableStateOf("") }
     var tag by remember { mutableStateOf("") }
 
-    val whichType = SelectedItems.getType()
-    if (whichType == "group") {
+    val isDevices = SelectedItems.getIsDevices()
+    if (isDevices) {
+        type = document.get("type") as String
+        if (type == "openLock") tag = document.get("tag") as String
+    } else {
         val deviceIds = document.get("devices") as List<String>
         LaunchedEffect(deviceIds) {
             getDocument("devices", deviceIds[0]) { document ->
                 if (document != null) {
                     type = document.get("type") as String
                     if (type == "openLock") tag = document.get("tag") as String
-                    Log.d("Type", type)
                 }
             }
         }
-    } else {
-        type = document.get("type") as String
-        if (type == "openLock") tag = document.get("tag") as String
     }
-    Log.d("Type", type)
 
     val cardIcon = remember { mutableStateOf(Icons.Filled.BrokenImage) }
     LaunchedEffect(type, tag) {

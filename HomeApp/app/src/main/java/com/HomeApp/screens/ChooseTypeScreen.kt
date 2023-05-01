@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.HomeApp.ui.composables.RoutinesTitleBar
+import com.HomeApp.ui.composables.TopTitleBar
 import com.HomeApp.ui.composables.TopTitleBarItem
 import com.HomeApp.ui.navigation.ChooseItems
 import com.HomeApp.ui.theme.LightSteelBlue
@@ -41,7 +41,7 @@ fun ChooseTypeScreen(
 
     Scaffold(
         topBar = {
-            RoutinesTitleBar(
+            TopTitleBar(
                 item = TopTitleBarItem.ChooseType,
                 navController = navController
             )
@@ -60,7 +60,7 @@ fun ChooseTypeScreen(
                             text = "Choose from all devices",
                             icon = Icons.Rounded.Devices,
                             onClick = {
-                                SelectedItems.setType(type = "device")
+                                SelectedItems.setIsDevices(true)
                                 navController.navigate(ChooseItems.route)
                             }
                         )
@@ -71,7 +71,7 @@ fun ChooseTypeScreen(
                             text = "Choose from all groups",
                             icon = Icons.Rounded.Groups,
                             onClick = {
-                                SelectedItems.setType(type = "group")
+                                SelectedItems.setIsDevices(false)
                                 navController.navigate(ChooseItems.route)
                             }
                         )

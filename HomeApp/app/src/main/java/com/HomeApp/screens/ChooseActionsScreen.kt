@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.RoutinesFAB
-import com.HomeApp.ui.composables.RoutinesTitleBar
+import com.HomeApp.ui.composables.TopTitleBar
 import com.HomeApp.ui.composables.TopTitleBarItem
 import com.HomeApp.ui.navigation.ChooseSchedule
 import com.HomeApp.ui.navigation.Finish
@@ -61,17 +61,16 @@ object Actions {
     private var actionsData: ActionsData = ActionsData()
 
     fun addAction(id: String, type: String, state: Map<String, Boolean>) {
-        val isDevices = SelectedItems.getType()[0]
-        val whichType = SelectedItems.getType()
+        val isDevices = SelectedItems.getIsDevices()
         val action = JSONObject()
-            .put(if (whichType == "group") "groupId" else "id", id)
+            .put(if (isDevices) "id" else "groupId", id)
             .put("type", type)
             .put("state", JSONObject(state))
 
         var index = -1
         for (i in 0 until actionsData.actions.length()) {
             val existingAction = actionsData.actions.getJSONObject(i)
-            if (existingAction.getString(if (whichType == "group") "groupId" else "id") == id) {
+            if (existingAction.getString(if (isDevices) "id" else "groupId") == id) {
                 index = i
                 break
             }
@@ -101,7 +100,8 @@ fun ChooseActionsScreen(
     Schedule.clearCronString()
     val listHeight = LocalConfiguration.current.screenHeightDp
     val documents = SelectedItems.getItems()
-    val type = SelectedItems.getType()
+    val isDevices = SelectedItems.getIsDevices()
+    val isSensor = SelectedItems.getIsSensor()
 
     fun getState(state: MutableMap<String, Boolean>): Map<String, Boolean> {
         val keys = mutableListOf<String>()
@@ -122,7 +122,13 @@ fun ChooseActionsScreen(
     // Add all actions to a list, or else they would only be added when first shown on the screen.
     // I.e. when the user scrolls though the lazy column
     documents.forEach {
-        if (type == "group") {
+        if (isDevices) {
+            Actions.addAction(
+                it.id,
+                it.get("type") as String,
+                getState(it.get("state") as MutableMap<String, Boolean>)
+            )
+        } else {
             val deviceIds = it.get("devices") as List<String>
             LaunchedEffect(deviceIds) {
                 getDocument("devices", deviceIds[0]) { document ->
@@ -135,18 +141,12 @@ fun ChooseActionsScreen(
                     }
                 }
             }
-        } else {
-            Actions.addAction(
-                it.id,
-                it.get("type") as String,
-                getState(it.get("state") as MutableMap<String, Boolean>)
-            )
         }
     }
 
     Scaffold(
         topBar = {
-            RoutinesTitleBar(
+            TopTitleBar(
                 item = TopTitleBarItem.ChooseActions,
                 navController = navController
             )
@@ -169,7 +169,7 @@ fun ChooseActionsScreen(
             RoutinesFAB(
                 icon = Icons.Rounded.ArrowForward,
                 onClick = {
-                    if (type == "sensor") {
+                    if (isSensor) {
                         navController.navigate(Finish.route)
                     } else {
                         navController.navigate(ChooseSchedule.route)
@@ -184,7 +184,9 @@ fun ChooseActionsScreen(
 
 @Composable
 fun ActionCard(document: DocumentSnapshot) {
-    val whichType = SelectedItems.getType()
+    val isDevices = SelectedItems.getIsDevices()
+    val isSensor = SelectedItems.getIsSensor()
+
     val type = remember { mutableStateOf("") }
     var state = remember { mutableMapOf<String, Boolean>() }
     val keys = remember { mutableListOf<String>() }
@@ -257,7 +259,11 @@ fun ActionCard(document: DocumentSnapshot) {
         }
     }
 
-    if (whichType == "group") {
+    if (isDevices) {
+        type.value = document.get("type") as String
+        state = document.get("state") as MutableMap<String, Boolean>
+        getData(type.value, state)
+    } else {
         val deviceIds = document.get("devices") as List<String>
         LaunchedEffect(state) {
             getDocument("devices", deviceIds[0]) {
@@ -268,10 +274,6 @@ fun ActionCard(document: DocumentSnapshot) {
                 }
             }
         }
-    } else {
-        type.value = document.get("type") as String
-        state = document.get("state") as MutableMap<String, Boolean>
-        getData(type.value, state)
     }
     val id = document.id
     Actions.addAction(id, type.value, state)

@@ -292,6 +292,20 @@ fun AnimatedAppNavHost(
                 OnSelfClick = { navController.navigateSingleTopTo(Finish.route) }
             )
         }
+
+        // TRIGGERS
+        composable(
+            route = Triggers.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            TriggersScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(Triggers.route) }
+            )
+        }
     }
 }
 

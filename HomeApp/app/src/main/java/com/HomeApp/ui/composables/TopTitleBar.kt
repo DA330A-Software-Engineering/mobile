@@ -32,11 +32,13 @@ import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Home
 
 @Composable
-fun RoutinesTitleBar(
+fun TopTitleBar(
     item: TopTitleBarItem,
     navController: NavController
 ) {
-    val type = SelectedItems.getType()
+    val isDevices = SelectedItems.getIsDevices()
+    val isSensor = SelectedItems.getIsSensor()
+
     val showDialog = remember { mutableStateOf(false) }
     if (showDialog.value) {
         Dialog(
@@ -56,13 +58,13 @@ fun RoutinesTitleBar(
                 modifier = Modifier.weight(1f),
                 onClick = {
                     if (item == TopTitleBarItem.ChooseItems) {
-                        if (type == "sensor") {
+                        if (isSensor) {
                             navController.navigate(Devices.route)
                             return@IconButton
                         }
                     }
                     if (item == TopTitleBarItem.Finish) {
-                        if (type == "sensor") {
+                        if (isSensor) {
                             navController.navigate(ChooseActions.route)
                             return@IconButton
                         }
@@ -78,7 +80,7 @@ fun RoutinesTitleBar(
             }
             Text(
                 text = if (item == TopTitleBarItem.ChooseItems) {
-                    if (type == "group") "Groups" else "Devices"
+                    if (isDevices) "Devices" else "Groups"
                 } else {
                     item.title
                 },
@@ -157,7 +159,11 @@ sealed class TopTitleBarItem(
         iconLeft = Icons.Rounded.ArrowBack,
         routeLeftButton = com.HomeApp.ui.navigation.Routines.route,
         iconRight = Icons.Rounded.Close,
-        routeRightButton = com.HomeApp.ui.navigation.Routines.route
+        routeRightButton = if (SelectedItems.getIsSensor()) {
+            com.HomeApp.ui.navigation.Triggers.route
+        } else {
+            com.HomeApp.ui.navigation.Routines.route
+        }
     )
 
     object ChooseItems : TopTitleBarItem(
@@ -165,7 +171,11 @@ sealed class TopTitleBarItem(
         iconLeft = Icons.Rounded.ArrowBack,
         routeLeftButton = com.HomeApp.ui.navigation.ChooseType.route,
         iconRight = Icons.Rounded.Close,
-        routeRightButton = com.HomeApp.ui.navigation.Routines.route
+        routeRightButton = if (SelectedItems.getIsSensor()) {
+            com.HomeApp.ui.navigation.Triggers.route
+        } else {
+            com.HomeApp.ui.navigation.Routines.route
+        }
     )
 
     object ChooseActions : TopTitleBarItem(
@@ -173,7 +183,11 @@ sealed class TopTitleBarItem(
         iconLeft = Icons.Rounded.ArrowBack,
         routeLeftButton = com.HomeApp.ui.navigation.ChooseItems.route,
         iconRight = Icons.Rounded.Close,
-        routeRightButton = com.HomeApp.ui.navigation.Routines.route
+        routeRightButton = if (SelectedItems.getIsSensor()) {
+            com.HomeApp.ui.navigation.Triggers.route
+        } else {
+            com.HomeApp.ui.navigation.Routines.route
+        }
     )
 
     object ChooseSchedule : TopTitleBarItem(
@@ -189,6 +203,18 @@ sealed class TopTitleBarItem(
         iconLeft = Icons.Rounded.ArrowBack,
         routeLeftButton = com.HomeApp.ui.navigation.ChooseSchedule.route,
         iconRight = Icons.Rounded.Close,
-        routeRightButton = com.HomeApp.ui.navigation.Routines.route
+        routeRightButton = if (SelectedItems.getIsSensor()) {
+            com.HomeApp.ui.navigation.Triggers.route
+        } else {
+            com.HomeApp.ui.navigation.Routines.route
+        }
+    )
+
+    object Triggers : TopTitleBarItem(
+        title = "Triggers",
+        iconLeft = Icons.Rounded.ArrowBack,
+        routeLeftButton = Devices.route,
+        iconRight = Icons.Rounded.Add,
+        routeRightButton = com.HomeApp.ui.navigation.ChooseType.route
     )
 }

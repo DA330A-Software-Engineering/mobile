@@ -15,9 +15,15 @@ fun rememberFirestoreCollection(
     val documents = mutableStateListOf<DocumentSnapshot>()  //mutableStateOf(MutableList<T>())
     if (email != "") {
         val collectionRef =
-            if (collectionType == "groups" || collectionType == "routines") FirebaseFirestore.getInstance()
-                .collection("profiles").document(email).collection(collectionType)
-            else FirebaseFirestore.getInstance().collection(collectionPath)
+            if (collectionType == "groups" || collectionType == "routines" || collectionType == "triggers") {
+                FirebaseFirestore
+                    .getInstance()
+                    .collection("profiles")
+                    .document(email)
+                    .collection(collectionType)
+            } else {
+                FirebaseFirestore.getInstance().collection(collectionPath)
+            }
         collectionRef.addSnapshotListener { snapshot, error ->
             if (error != null) {
                 // Handle the error
@@ -75,6 +81,11 @@ class RealTimeData(context: Context) {
     val routines = rememberFirestoreCollection(
         collectionPath = "",
         collectionType = "routines",
+        userEmail = email
+    )
+    val triggers = rememberFirestoreCollection(
+        collectionPath = "",
+        collectionType = "triggers",
         userEmail = email
     )
 }

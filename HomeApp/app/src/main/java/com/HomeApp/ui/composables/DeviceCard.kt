@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.screens.SelectedItems
-import com.HomeApp.ui.navigation.ChooseItems
+import com.HomeApp.ui.navigation.Triggers
 import com.HomeApp.ui.theme.RaminGrey
 import com.HomeApp.util.ApiConnector
 import com.HomeApp.util.ApiResult
@@ -112,8 +112,7 @@ fun DeviceCard(
                 when (deviceItem.get("type") as String) {
                     "sensor" -> {
                         SelectedItems.setSensorId(deviceItem.id)
-                        SelectedItems.setType("sensor")
-                        navController.navigate(ChooseItems.route)
+                        navController.navigate(Triggers.route)
                     }
                     in stateList -> {
                         changeState(
@@ -155,8 +154,7 @@ fun DeviceCard(
             onClick = {
                 if (deviceItem.get("type") as String == "sensor") {
                     SelectedItems.setSensorId(deviceItem.id)
-                    SelectedItems.setType("sensor")
-                    navController.navigate(ChooseItems.route)
+                    navController.navigate(Triggers.route)
                 } else {
                     changeState(
                         context = context,
