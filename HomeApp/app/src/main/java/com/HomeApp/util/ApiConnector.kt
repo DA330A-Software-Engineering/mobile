@@ -116,6 +116,7 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
+
     /** Retrieves the information about the users **/
     fun getUsersData(token: String, onRespond: (result: ApiResult) -> Unit) {
         val urlPath = "/users"
@@ -392,6 +393,43 @@ object ApiConnector {
             .build()
         onRespond(callAPI(request))
     }
+
+
+    /** Api call to add trigger */
+    fun createTrigger(
+        token: String,
+        deviceId: String,
+        description: String,
+        condition: String,
+        value: Number,
+        resetValue: Number,
+        enabled: Boolean,
+        actions: JSONArray,
+        onRespond: (result: ApiResult) -> Unit
+    ) {
+
+        val obj = JSONObject()
+        obj.put("deviceId", deviceId)
+        obj.put("description", description)
+        obj.put("condition", condition)
+        obj.put("enabled", enabled)
+        obj.put("value", value)
+        obj.put("resetValue", resetValue)
+        obj.put("actions", actions)
+        val requestForm = obj.toString()
+        val mediaType = "application/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
+        val urlPath = "/triggers"
+
+        val request: Request = Request.Builder()
+            .header(AUTH_TOKEN_NAME, token)
+            .url(DB_ADDR + urlPath)
+            .post(requestBody)
+            .build()
+        onRespond(callAPI(request))
+    }
+
 
     private fun callAPI(request: Request): ApiResult {
         return try {
