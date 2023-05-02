@@ -1,14 +1,14 @@
 package com.HomeApp.ui.composables
 
 import android.content.Context
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import android.util.Log
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
+import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -34,8 +34,10 @@ fun EditDeviceState(
     val context: Context = LocalContext.current
     val coroutine = rememberCoroutineScope()
 
-    var screenText by remember { mutableStateOf(state["text"] as String) }
+    var screenText by remember { mutableStateOf(if (type == "screen") state["text"] as String else "") }
     var tune by remember { mutableStateOf("") }
+    val radioOptions = listOf("pirate", "alarm")
+    var selectedOptionIndex by remember { mutableStateOf(-1) }
     //if (type == "screen") screenText = state["text"] as String
     //Log.d("LOOOOOOOOOK", state["text"] as String)
 
@@ -59,25 +61,50 @@ fun EditDeviceState(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
+            Column {
+                radioOptions.forEachIndexed { index, option ->
+                    //tune = option
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        RadioButton(
+                            selected = selectedOptionIndex == index,
+                            onClick = {
+                                if (selectedOptionIndex in radioOptions.indices)
+                                    selectedOptionIndex = index
+                                tune = option
+                            }
+                        )
+                        Text(
+                            text = option,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
+            }
         }
+        Spacer(modifier = Modifier.height(50.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(40.dp)
+                .height(40.dp),
         ) {
-            Button(onClick = {
-                onDelEdit(false)
-                updateState(
-                    context = context,
-                    coroutine = coroutine,
-                    newState = if (type == "screen") screenText else tune,
-                    type = type,
-                    deviceItem = deviceItem
-                )
-            }) {
+            Spacer(modifier = Modifier.weight(0.2f))
+            Button(
+                onClick = {
+                    onDelEdit(false)
+                    updateState(
+                        context = context,
+                        coroutine = coroutine,
+                        newState = if (type == "screen") screenText else tune,
+                        type = type,
+                        deviceItem = deviceItem
+                    )
+                },
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(text = if (type == "screen") "Update text" else "Play tune")
             }
-            Button(onClick = { onDelEdit(false) }) {
+            Spacer(modifier = Modifier.width(5.dp))
+            Button(onClick = { onDelEdit(false) }, modifier = Modifier.weight(1f)) {
                 Text(text = "close")
             }
         }
@@ -94,7 +121,7 @@ private fun updateState(
     deviceItem: DocumentSnapshot
 ) {
     val updateState = JSONObject()
-
+    Log.d("LOOOOOOOK", newState)
 
     if (type == "buzzer") updateState.put("tune", newState)
     else if (type == "screen") updateState.put("text", newState)
