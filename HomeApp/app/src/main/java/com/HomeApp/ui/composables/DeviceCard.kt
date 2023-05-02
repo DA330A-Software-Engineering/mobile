@@ -100,7 +100,12 @@ fun DeviceCard(
         AlertDialog(
             onDismissRequest = { editDialog = false },
             title = { Text(deviceItem.get("name") as String) },
-            text = { EditDeviceState(deviceItem = deviceItem, type = deviceItem.get("type") as String) },
+            text = {
+                EditDeviceState(
+                    deviceItem = deviceItem,
+                    type = deviceItem.get("type") as String,
+                    onDelEdit = { newState -> editDialog = newState })
+            },
             confirmButton = {
             }
         )
@@ -124,6 +129,7 @@ fun DeviceCard(
                             changedState = if (deviceItem.get("type") == "openLock") "locked" else "reverse"
                         )
                     }
+                    "sensor" -> {}
                     else -> {
                         editDialog = true
                     }
@@ -227,7 +233,7 @@ private fun changeState(
     changedState: String? = null
 ) {
     val updateState = JSONObject()
-    if (type == "toggle") {
+    if (type == "toggle" || type == "screen") {
         //updateState = mutableMapOf("on" to !state["on"]!!)
         updateState.put("on", !state["on"]!!)
     } else if (type == "openLock") {

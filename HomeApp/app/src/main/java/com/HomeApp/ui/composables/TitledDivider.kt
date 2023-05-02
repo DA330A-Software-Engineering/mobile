@@ -66,14 +66,8 @@ fun TitledDivider(
             AlertDialog(
                 onDismissRequest = { addGroupState = false },
                 title = { Text(text = "Add new group") },
-                text = { AddGroup(onCreate = {newState -> addGroupState = newState}) },
-                confirmButton = {
-                    Button(
-                        onClick = { addGroupState = false },
-                    ) {
-                        Text("Close")
-                    }
-                }
+                text = { AddGroup(onCreate = { newState -> addGroupState = newState }) },
+                confirmButton = { }
             )
         }
     }

@@ -106,11 +106,7 @@ fun AddGroup(
             Spacer(modifier = Modifier.weight(0.1f))
             LazyColumn(modifier = Modifier.weight(5f)) {
                 items(items = realTimeData!!.devices, key = { item -> item.id }) { item ->
-                    if (groupType == "all") AddDevice(
-                        deviceItem = item,
-                        deviceList = deviceList,
-                        onItemSelect = { newType -> groupType = newType })
-                    else if (groupType == item.get("type") as String) AddDevice(
+                    if (groupType == "all" || groupType == item.get("type") as String) AddDevice(
                         deviceItem = item,
                         deviceList = deviceList,
                         onItemSelect = { newType -> groupType = newType })
@@ -150,6 +146,10 @@ fun AddGroup(
                 }
             }) {
                 Text(text = "Create")
+            }
+            Spacer(modifier = Modifier.width(5.dp))
+            Button(onClick = { onCreate(false) }) {
+                Text(text = "Close")
             }
         }
 

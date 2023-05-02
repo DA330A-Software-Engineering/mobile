@@ -4,16 +4,11 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -26,9 +21,7 @@ import androidx.compose.ui.unit.sp
 import com.HomeApp.ui.theme.RaminGrey
 import com.HomeApp.util.*
 import com.google.firebase.firestore.DocumentSnapshot
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -59,9 +52,9 @@ fun GroupComposable(
     }
     val context = LocalContext.current
     val coroutine = rememberCoroutineScope()
-    LaunchedEffect(groupStateBool){
+    LaunchedEffect(context) {
         for (device in deviceList) {
-            getDocument("devices", device as String) { doc ->
+            getDocument("devices", device) { doc ->
                 if (doc != null) {
                     groupType = doc.get("type") as String
                     val deviceState = doc.get("state") as Map<*, *>
@@ -71,8 +64,7 @@ fun GroupComposable(
                     } else if (groupType == "toggle" && !(deviceState["on"] as Boolean)) {
                         groupStateBool = false
                         groupType = "toggle"
-                    }
-                    else if (groupType == "fan" && !(deviceState["on"] as Boolean)) {
+                    } else if (groupType == "fan" && !(deviceState["on"] as Boolean)) {
                         groupStateBool = false
                         groupType = "toggle"
                     }
@@ -96,12 +88,17 @@ fun GroupComposable(
     Button(
         onClick = {
             coroutine.launch(Dispatchers.IO) {
-                changeGroupState(context = context, newState = !groupStateBool, deviceList = deviceList, groupType= groupType)
+                changeGroupState(
+                    context = context,
+                    newState = !groupStateBool,
+                    deviceList = deviceList,
+                    groupType = groupType
+                )
                 groupStateBool = !groupStateBool
             }
 
 
-                  }, modifier = Modifier
+        }, modifier = Modifier
             .border(
                 width = 1.dp,
                 shape = RoundedCornerShape(10.dp),
@@ -146,14 +143,12 @@ fun GroupComposable(
             AlertDialog(
                 onDismissRequest = { editGroup = false },
                 title = { Text(groupItem.get("name") as String) },
-                text = { EditGroup(groupItem = groupItem, onDelEdit = {newState -> editGroup = newState}) },
-                confirmButton = {
-                    Button(
-                        onClick = { editGroup = false },
-                    ) {
-                        Text("Close")
-                    }
-                }
+                text = {
+                    EditGroup(
+                        groupItem = groupItem,
+                        onDelEdit = { newState -> editGroup = newState })
+                },
+                confirmButton = {}
             )
         }
 
@@ -161,7 +156,7 @@ fun GroupComposable(
 }
 
 private fun changeGroupState(
-    context:Context,
+    context: Context,
     newState: Boolean,
     deviceList: ArrayList<String>,
     groupType: String
@@ -182,7 +177,7 @@ private fun changeGroupState(
         }
     }
 
-    if (deviceList.size != 0){
+    if (deviceList.size != 0) {
         for (device in deviceList) {
             val updateState = JSONObject()
             if (groupType == "toggle" || groupType == "fan") {
@@ -197,15 +192,13 @@ private fun changeGroupState(
             ApiConnector.deviceAction(
                 token = LocalStorage.getToken(context),
                 id = device,
-                type= groupType,
+                type = groupType,
                 onRespond = onUpdateState,
                 state = updateState
 
             )
         }
     }
-
-
 
 
 }
