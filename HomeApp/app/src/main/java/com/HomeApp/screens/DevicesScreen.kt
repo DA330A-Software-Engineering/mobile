@@ -37,6 +37,7 @@ fun DevicesScreen(
     val listHeight = LocalConfiguration.current.screenHeightDp
     val documents = realTimeData!!.devices
     val context = LocalContext.current
+
     Scaffold(
         topBar = {
             TitleBar(
