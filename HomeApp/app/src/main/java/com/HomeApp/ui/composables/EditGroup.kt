@@ -62,8 +62,8 @@ fun EditGroup(
         }
 
 
-        if (deviceList.size != 0){
-            getDocument("devices", deviceList.first() as String) { doc ->
+        if (deviceList.size != 0) {
+            getDocument("devices", deviceList.first()) { doc ->
                 if (doc != null) {
                     firstDevice = doc
                     groupType = doc.get("type") as String
@@ -79,7 +79,7 @@ fun EditGroup(
             Column(modifier = Modifier.weight(5f)) {
 
                 for (item in deviceList) {
-                    DeviceItem(item = item as String, groupItem = groupItem, isInGroup = true)
+                    DeviceItem(item = item, groupItem = groupItem, isInGroup = true)
                 }
             }
 
@@ -93,7 +93,7 @@ fun EditGroup(
                     if (deviceList.size == 0) isSameType = true
 
                     if (!isInGroup && isSameType) {
-                        DeviceItem(item = item.id, groupItem = groupItem , isInGroup = false)
+                        DeviceItem(item = item.id, groupItem = groupItem, isInGroup = false)
                     }
                 }
             }
@@ -139,8 +139,13 @@ fun EditGroup(
                         devices = deviceList,
                         onRespond = onDeleteGroup
                     )
-                } }) {
+                }
+            }) {
                 Text(text = "Update")
+            }
+            Spacer(modifier = Modifier.width(5.dp))
+            Button(onClick = { onDelEdit(false) }) {
+                Text(text = "Close")
             }
         }
 
