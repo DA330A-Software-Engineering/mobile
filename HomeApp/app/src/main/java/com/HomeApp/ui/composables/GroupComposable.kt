@@ -52,7 +52,7 @@ fun GroupComposable(
     }
     val context = LocalContext.current
     val coroutine = rememberCoroutineScope()
-    LaunchedEffect(groupStateBool) {
+    LaunchedEffect(context) {
         for (device in deviceList) {
             getDocument("devices", device) { doc ->
                 if (doc != null) {
