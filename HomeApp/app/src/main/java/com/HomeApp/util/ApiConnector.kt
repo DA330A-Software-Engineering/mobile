@@ -399,6 +399,7 @@ object ApiConnector {
     fun createTrigger(
         token: String,
         deviceId: String,
+        name: String,
         description: String,
         condition: String,
         value: Number,
@@ -407,9 +408,9 @@ object ApiConnector {
         actions: JSONArray,
         onRespond: (result: ApiResult) -> Unit
     ) {
-
         val obj = JSONObject()
         obj.put("deviceId", deviceId)
+        obj.put("name", name)
         obj.put("description", description)
         obj.put("condition", condition)
         obj.put("enabled", enabled)
@@ -436,6 +437,7 @@ object ApiConnector {
         token: String,
         triggerId: String,
         deviceId: String,
+        name: String,
         description: String,
         condition: String,
         value: Number,
@@ -444,14 +446,14 @@ object ApiConnector {
         actions: JSONArray,
         onRespond: (result: ApiResult) -> Unit
     ) {
-
         val obj = JSONObject()
         obj.put("deviceId", deviceId)
+        obj.put("name", name)
         obj.put("description", description)
         obj.put("condition", condition)
-        obj.put("enabled", enabled)
         obj.put("value", value)
         obj.put("resetValue", resetValue)
+        obj.put("enabled", enabled)
         obj.put("actions", actions)
         val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
@@ -473,7 +475,6 @@ object ApiConnector {
         triggerId: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
-        
         val urlPath = "/triggers/$triggerId"
 
         val request: Request = Request.Builder()
