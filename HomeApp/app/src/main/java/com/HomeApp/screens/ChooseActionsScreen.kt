@@ -58,9 +58,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.RoutinesFAB
-import com.HomeApp.ui.composables.RoutinesTitleBar
-import com.HomeApp.ui.composables.RoutinesTitleBarItem
+import com.HomeApp.ui.composables.TopTitleBar
+import com.HomeApp.ui.composables.TopTitleBarItem
 import com.HomeApp.ui.navigation.ChooseSchedule
+import com.HomeApp.ui.navigation.Finish
 import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.LightSteelBlue
 import com.HomeApp.util.getDocument
@@ -71,11 +72,12 @@ import org.json.JSONObject
 data class ActionsData(
     var actions: JSONArray = JSONArray()
 )
+
 object Actions {
     private var actionsData: ActionsData = ActionsData()
 
     fun addAction(id: String, type: String, state: Map<String, Boolean>) {
-        val isDevices = SelectedItems.getType()
+        val isDevices = SelectedItems.getIsDevices()
         val action = JSONObject()
             .put(if (isDevices) "id" else "groupId", id)
             .put("type", type)
@@ -101,7 +103,7 @@ object Actions {
         return actionsData.actions
     }
 
-    fun clearList() {
+    fun clear() {
         actionsData.actions = JSONArray()
     }
 }
@@ -114,7 +116,8 @@ fun ChooseActionsScreen(
     Schedule.clearCronString()
     val listHeight = LocalConfiguration.current.screenHeightDp
     val documents = SelectedItems.getItems()
-    val isDevices = SelectedItems.getType()
+    val isDevices = SelectedItems.getIsDevices()
+    val isSensor = SelectedItems.getIsSensor()
 
     fun getState(state: MutableMap<String, Boolean>): Map<String, Boolean> {
         val keys = state.keys.toMutableList()
@@ -145,8 +148,7 @@ fun ChooseActionsScreen(
                 it.get("type") as String,
                 getState(it.get("state") as MutableMap<String, Boolean>)
             )
-        }
-        else {
+        } else {
             val deviceIds = it.get("devices") as List<String>
             LaunchedEffect(deviceIds) {
                 getDocument("devices", deviceIds[0]) { document ->
@@ -164,8 +166,8 @@ fun ChooseActionsScreen(
 
     Scaffold(
         topBar = {
-            RoutinesTitleBar(
-                item = RoutinesTitleBarItem.ChooseActions,
+            TopTitleBar(
+                item = TopTitleBarItem.ChooseActions,
                 navController = navController
             )
         },
@@ -178,7 +180,7 @@ fun ChooseActionsScreen(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 content = {
                     items(items = documents, key = { item -> item.id }) { document ->
-                        ActionCards(document = document, isDevices = isDevices)
+                        ActionCard(document = document)
                     }
                 }
             )
@@ -186,7 +188,13 @@ fun ChooseActionsScreen(
         floatingActionButton = {
             RoutinesFAB(
                 icon = Icons.Rounded.ArrowForward,
-                onClick = { navController.navigate(ChooseSchedule.route) }
+                onClick = {
+                    if (isSensor) {
+                        navController.navigate(Finish.route)
+                    } else {
+                        navController.navigate(ChooseSchedule.route)
+                    }
+                }
             )
         },
         isFloatingActionButtonDocked = true,
@@ -195,10 +203,10 @@ fun ChooseActionsScreen(
 }
 
 @Composable
-private fun ActionCards(
-    document: DocumentSnapshot,
-    isDevices: Boolean
-) {
+fun ActionCard(document: DocumentSnapshot) {
+    val isDevices = SelectedItems.getIsDevices()
+    val isSensor = SelectedItems.getIsSensor()
+
     val tag = remember { mutableStateOf("") }
     val type = remember { mutableStateOf("") }
     var state = remember { mutableMapOf<String, Boolean>() }
