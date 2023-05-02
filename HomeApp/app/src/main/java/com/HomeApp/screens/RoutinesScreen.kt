@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,7 +25,6 @@ import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -34,7 +32,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Recycling
@@ -60,6 +57,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.HomeApp.ui.composables.DeleteDialog
 import com.HomeApp.ui.composables.TopTitleBar
 import com.HomeApp.ui.composables.TopTitleBarItem
 import com.HomeApp.ui.theme.DarkRed
@@ -313,44 +311,6 @@ private fun RoutineCard(routineItem: DocumentSnapshot) {
             }
         }
     }
-}
-
-@Composable
-private fun DeleteDialog(
-    deleteDialog: MutableState<Boolean>,
-    name: String,
-    token: String,
-    id: String,
-    onRespond: (result: ApiResult) -> Unit
-) {
-    val coroutine = rememberCoroutineScope()
-
-    AlertDialog(
-        title = { Text(text = "Delete $name") },
-        text = { Text(text = "Are you sure you want to delete $name?") },
-        onDismissRequest = { deleteDialog.value = false },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    deleteDialog.value = false
-                    coroutine.launch(Dispatchers.IO) {
-                        ApiConnector.deleteRoutine(
-                            token = token,
-                            id = id,
-                            onRespond = onRespond
-                        )
-                    }
-                }
-            ) {
-                Text(text = "Delete", color = DarkRed)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = { deleteDialog.value = false }) {
-                Text(text = "Cancel")
-            }
-        }
-    )
 }
 
 @Composable

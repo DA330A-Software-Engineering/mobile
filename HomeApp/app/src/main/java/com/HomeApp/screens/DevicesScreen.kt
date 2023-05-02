@@ -6,7 +6,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material.FabPosition
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -15,21 +20,11 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.HomeApp.ui.composables.*
+import com.HomeApp.ui.composables.AppFooter
+import com.HomeApp.ui.composables.DeviceCard
+import com.HomeApp.ui.composables.TitleBar
 import com.HomeApp.ui.theme.GhostWhite
 import com.HomeApp.util.microphoneIcon
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-
-data class Devices(
-    var id: String = "",
-    var type: String = "",
-    var name: String = "",
-    var description: String = "",
-    var state: Map<String, Any> = emptyMap(), // This should be <String, Boolean> once database structure is updated
-    var available: Boolean = true
-)
-
 
 @Composable
 fun DevicesScreen(
@@ -40,8 +35,6 @@ fun DevicesScreen(
     getSpeechInput: (Context) -> Unit = {}
 ) {
     val listHeight = LocalConfiguration.current.screenHeightDp
-    val db = Firebase.firestore
-    //val documents = rememberFirestoreCollection("devices", Devices::class.java, "devices")
     val documents = realTimeData!!.devices
     val context = LocalContext.current
     Scaffold(
