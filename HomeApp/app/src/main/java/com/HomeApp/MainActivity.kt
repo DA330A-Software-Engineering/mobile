@@ -44,6 +44,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.*
 import org.json.JSONException
 import org.json.JSONObject
+import java.lang.Integer.max
+import java.lang.Integer.min
+import kotlin.text.Regex
 import java.util.*
 
 class MainActivity : ComponentActivity() {
@@ -132,6 +135,8 @@ class MainActivity : ComponentActivity() {
                                 var primaryAction: Boolean? = null
                                 var secondaryAction: Any? = null
                                 val it = it
+
+
                                 inputOptions.forEach { str ->
                                     if (str.lowercase()
                                             .contains((it.get("name") as String).lowercase())
@@ -153,7 +158,7 @@ class MainActivity : ComponentActivity() {
                                                 )
                                                 actionCall(context, jsonObj, it)
                                             }
-                                            "door", "window" -> {
+                                            "openLock" -> {
                                                 primaryAction = when {
                                                     str.lowercase().contains("open") -> true
                                                     str.lowercase().contains("close") -> false
@@ -195,27 +200,49 @@ class MainActivity : ComponentActivity() {
                                                 actionCall(context, jsonObj, it)
                                             }
                                             "screen" -> {
-                                                val value = str.substring(
-                                                    str.lowercase().indexOf("add") + 3,
-                                                    str.lowercase().indexOf("to")
-                                                ).trim()
-                                                primaryAction = when {
-                                                    str.lowercase().contains("on") -> true
-                                                    str.lowercase().contains("off") -> false
-                                                    else -> null
+                                                val re = "\\b(write|right|ride|rite|rice)\\b".toRegex()
+                                                val delimiter = str.split("\\b(to|on)\\b".toRegex())
+                                                val triggerWordFound = delimiter[0].contains(re)
+                                                var value = ""
+                                                if (triggerWordFound){
+                                                    // "Write arabic nights on the screen" -> "arabic nights"
+                                                    value = delimiter[0].lowercase().split(re)[1].trim()
+                                                    value = value.substring(0, min(15, value.length))
                                                 }
-                                                secondaryAction = when {
-                                                    str.lowercase().contains("add") -> value
+                                                primaryAction = when {
+                                                    str.lowercase().contains("write") -> true
+                                                    str.lowercase().contains("right") -> true // incase of mispronounciation
+                                                    str.lowercase().contains("rides") -> true // incase of mispronounciation
+                                                    str.lowercase().contains("rice") -> true // incase of mispronounciation
+                                                    str.lowercase().contains("set") -> true
                                                     else -> null
                                                 }
                                                 val jsonObj = JSONObject()
-                                                if (primaryAction != null) {
-                                                    jsonObj.put("on", primaryAction)
+                                                if (primaryAction != null && value.isNotEmpty()) {
+                                                    jsonObj.put("text", value)
                                                 }
-                                                if (secondaryAction != null) {
-                                                    jsonObj.put("reverse", secondaryAction)
-                                                }
+                                                Log.d(
+                                                    "ACTION",
+                                                    "obj = $jsonObj \nval=$value\nobjLength: ${jsonObj.length()}"
+                                                )
                                                 actionCall(context, jsonObj, it)
+                                            }
+                                            "buzzer" -> {
+                                                val tunes = listOf("pokemon", "pirates")
+                                                primaryAction = when {
+                                                    str.lowercase().contains("play") -> true
+                                                    else -> null
+                                                }
+                                                val song = when {
+                                                    str.lowercase().contains("alarm") -> "alarm"
+                                                    str.lowercase().contains("pirate") -> "pirate"
+                                                    else -> null
+                                                }
+                                                val jsonObj = JSONObject()
+                                                if (primaryAction != null && song != null) {
+                                                    jsonObj.put("tune", song)
+                                                    actionCall(context, jsonObj, it)
+                                                }
                                             }
                                         }
                                     }

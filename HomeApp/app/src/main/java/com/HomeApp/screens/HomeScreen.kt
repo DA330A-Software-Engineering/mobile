@@ -51,6 +51,8 @@ fun HomeScreen(
     state: ScaffoldState,
     getSpeechInput: (Context) -> Unit = {}
 ) {
+    SelectedItems.clear()
+    Actions.clear()
     val context = LocalContext.current
     val spacerHeight: Dp = 112.dp
     val currActivity = LocalContext.current as Activity // supposedly very unsafe/red flag code
