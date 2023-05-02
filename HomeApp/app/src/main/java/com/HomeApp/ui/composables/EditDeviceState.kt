@@ -68,8 +68,7 @@ fun EditDeviceState(
                         RadioButton(
                             selected = selectedOptionIndex == index,
                             onClick = {
-                                if (selectedOptionIndex in radioOptions.indices)
-                                    selectedOptionIndex = index
+                                selectedOptionIndex = index
                                 tune = option
                             }
                         )
@@ -90,14 +89,26 @@ fun EditDeviceState(
             Spacer(modifier = Modifier.weight(0.2f))
             Button(
                 onClick = {
-                    onDelEdit(false)
-                    updateState(
-                        context = context,
-                        coroutine = coroutine,
-                        newState = if (type == "screen") screenText else tune,
-                        type = type,
-                        deviceItem = deviceItem
-                    )
+                    if (type == "buzzer" && selectedOptionIndex in radioOptions.indices) {
+                        onDelEdit(false)
+                        updateState(
+                            context = context,
+                            coroutine = coroutine,
+                            newState = tune,
+                            type = type,
+                            deviceItem = deviceItem
+                        )
+                    } else if (type == "screen") {
+                        onDelEdit(false)
+                        updateState(
+                            context = context,
+                            coroutine = coroutine,
+                            newState = screenText,
+                            type = type,
+                            deviceItem = deviceItem
+                        )
+                    }
+
                 },
                 modifier = Modifier.weight(1f)
             ) {
