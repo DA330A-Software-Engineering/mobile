@@ -306,6 +306,20 @@ fun AnimatedAppNavHost(
                 OnSelfClick = { navController.navigateSingleTopTo(Triggers.route) }
             )
         }
+
+        // EDIT TRIGGER
+        composable(
+            route = EditTrigger.route,
+            enterTransition = { fadeIn(tween(defaultTween)) },
+            popEnterTransition = { fadeIn(tween(defaultTween)) },
+            exitTransition = { fadeOut(tween(defaultTween)) },
+            popExitTransition = { fadeOut(tween(defaultTween)) }
+        ) {
+            EditTriggerScreen(
+                navController = navController,
+                OnSelfClick = { navController.navigateSingleTopTo(EditTrigger.route) }
+            )
+        }
     }
 }
 

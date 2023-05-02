@@ -20,17 +20,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
-import androidx.compose.material.icons.filled.CompareArrows
-import androidx.compose.material.icons.filled.DoorFront
-import androidx.compose.material.icons.filled.DoubleArrow
-import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
-import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
-import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.Power
 import androidx.compose.material.icons.filled.PowerOff
-import androidx.compose.material.icons.filled.Window
 import androidx.compose.material.icons.outlined.DoorFront
 import androidx.compose.material.icons.outlined.KeyboardDoubleArrowLeft
 import androidx.compose.material.icons.outlined.KeyboardDoubleArrowRight
@@ -45,7 +36,6 @@ import androidx.compose.material.icons.outlined.SmartScreen
 import androidx.compose.material.icons.outlined.SurroundSound
 import androidx.compose.material.icons.outlined.Window
 import androidx.compose.material.icons.rounded.ArrowForward
-import androidx.compose.material.icons.rounded.Power
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -57,7 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.HomeApp.ui.composables.RoutinesFAB
+import com.HomeApp.ui.composables.CustomFAB
 import com.HomeApp.ui.composables.TopTitleBar
 import com.HomeApp.ui.composables.TopTitleBarItem
 import com.HomeApp.ui.navigation.ChooseSchedule
@@ -186,7 +176,7 @@ fun ChooseActionsScreen(
             )
         },
         floatingActionButton = {
-            RoutinesFAB(
+            CustomFAB(
                 icon = Icons.Rounded.ArrowForward,
                 onClick = {
                     if (isSensor) {

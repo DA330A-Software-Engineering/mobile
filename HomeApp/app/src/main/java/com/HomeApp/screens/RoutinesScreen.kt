@@ -136,8 +136,7 @@ private fun RoutineCard(routineItem: DocumentSnapshot) {
             deleteDialog = deleteDialog,
             name = name.value,
             token = token,
-            id = id,
-            onRespond = onRespond
+            id = id
         )
     }
 

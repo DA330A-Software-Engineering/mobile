@@ -1,5 +1,6 @@
 package com.HomeApp.ui.composables
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,6 +30,7 @@ import androidx.navigation.NavController
 import com.HomeApp.screens.SelectedItems
 import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.Home
+import com.HomeApp.ui.navigation.Triggers
 
 @Composable
 fun TopTitleBar(
@@ -36,14 +38,12 @@ fun TopTitleBar(
     navController: NavController
 ) {
     val isDevices = SelectedItems.getIsDevices()
-    val isSensor = SelectedItems.getIsSensor()
-
     val showDialog = remember { mutableStateOf(false) }
     if (showDialog.value) {
         Dialog(
             showDialog = showDialog,
             navController = navController,
-            route = item.routeRightButton
+            route = item.routeRightButton!!
         )
     }
 
@@ -79,15 +79,19 @@ fun TopTitleBar(
                     if (item.iconRight == Icons.Rounded.Close) {
                         showDialog.value = true
                     } else {
-                        navController.navigate(item.routeRightButton)
+                        navController.navigate(item.routeRightButton!!)
                     }
                 }
             ) {
-                Icon(
-                    modifier = Modifier.scale(2.2f),
-                    imageVector = item.iconRight,
-                    contentDescription = "right-icon"
-                )
+                if (item.iconRight != null) {
+                    Icon(
+                        modifier = Modifier.scale(2.2f),
+                        imageVector = item.iconRight,
+                        contentDescription = "right-icon"
+                    )
+                } else {
+                    Box(modifier = Modifier.scale(2.2f))
+                }
             }
         }
     }
@@ -128,8 +132,8 @@ sealed class TopTitleBarItem(
     val title: String,
     val iconLeft: ImageVector,
     val routeLeftButton: String,
-    val iconRight: ImageVector,
-    val routeRightButton: String
+    val iconRight: ImageVector?,
+    val routeRightButton: String?
 ) {
     object Routines : TopTitleBarItem(
         title = "Routines",
@@ -209,5 +213,13 @@ sealed class TopTitleBarItem(
         routeLeftButton = Devices.route,
         iconRight = Icons.Rounded.Add,
         routeRightButton = com.HomeApp.ui.navigation.ChooseType.route
+    )
+
+    object EditTrigger : TopTitleBarItem(
+        title = "Edit",
+        iconLeft = Icons.Rounded.ArrowBack,
+        routeLeftButton = com.HomeApp.ui.navigation.Triggers.route,
+        iconRight = null,
+        routeRightButton = null
     )
 }

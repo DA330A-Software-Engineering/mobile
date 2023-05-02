@@ -1,5 +1,6 @@
 package com.HomeApp.ui.composables
 
+import android.util.Log
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -18,10 +19,12 @@ fun DeleteDialog(
     deleteDialog: MutableState<Boolean>,
     name: String,
     token: String,
-    id: String,
-    onRespond: (result: ApiResult) -> Unit
+    id: String
 ) {
     val coroutine = rememberCoroutineScope()
+    val onRespond: (ApiResult) -> Unit = {
+        Log.d("RESPOND", it.toString())
+    }
 
     AlertDialog(
         title = { Text(text = "Delete $name") },

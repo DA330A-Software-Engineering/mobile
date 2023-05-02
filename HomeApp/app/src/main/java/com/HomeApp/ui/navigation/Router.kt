@@ -121,3 +121,8 @@ object Triggers : NavPath {
     override val icon = Icons.Rounded.Schedule
     override val route = "triggers"
 }
+
+object EditTrigger : NavPath {
+    override val icon = Icons.Rounded.Schedule
+    override val route = "edit-trigger"
+}

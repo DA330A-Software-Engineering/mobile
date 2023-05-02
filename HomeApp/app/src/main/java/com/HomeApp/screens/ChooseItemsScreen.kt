@@ -40,7 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.HomeApp.ui.composables.RoutinesFAB
+import com.HomeApp.ui.composables.CustomFAB
 import com.HomeApp.ui.composables.TopTitleBar
 import com.HomeApp.ui.composables.TopTitleBarItem
 import com.HomeApp.ui.navigation.ChooseActions
@@ -52,7 +52,8 @@ data class SelectedItemsData(
     var selectedItems: List<DocumentSnapshot> = emptyList(),
     var isDevices: Boolean = true,
     var isSensor: Boolean = true,
-    var sensorId: String = ""
+    var sensorId: String = "",
+    var triggerId: String = ""
 )
 
 object SelectedItems {
@@ -92,6 +93,14 @@ object SelectedItems {
 
     fun getSensorId(): String {
         return selectedItemsData.sensorId
+    }
+
+    fun setTriggerId(id: String) {
+        selectedItemsData.triggerId = id
+    }
+
+    fun getTriggerId(): String {
+        return selectedItemsData.triggerId
     }
 
     fun clear() {
@@ -158,7 +167,7 @@ fun ChooseItemsScreen(
             )
         },
         floatingActionButton = {
-            RoutinesFAB(
+            CustomFAB(
                 icon = Icons.Rounded.ArrowForward,
                 onClick = {
                     if (SelectedItems.getItems().isNotEmpty()) {

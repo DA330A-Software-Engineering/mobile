@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.HomeApp.ui.theme.GhostWhite
 
 @Composable
-fun RoutinesFAB(
+fun CustomFAB(
     icon: ImageVector,
     onClick: () -> Unit
 ) {

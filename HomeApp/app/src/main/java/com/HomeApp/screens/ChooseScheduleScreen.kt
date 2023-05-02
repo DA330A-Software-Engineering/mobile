@@ -39,7 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.HomeApp.ui.composables.RoutinesFAB
+import com.HomeApp.ui.composables.CustomFAB
 import com.HomeApp.ui.composables.TopTitleBar
 import com.HomeApp.ui.composables.TopTitleBarItem
 import com.HomeApp.ui.navigation.Finish
@@ -151,7 +151,7 @@ fun ChooseScheduleScreen(
             )
         },
         floatingActionButton = {
-            RoutinesFAB(
+            CustomFAB(
                 icon = Icons.Rounded.ArrowForward,
                 onClick = {
                     if (selectedDays.value == "") selectedDays.value = "*"
