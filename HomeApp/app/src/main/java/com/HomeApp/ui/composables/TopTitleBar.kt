@@ -10,6 +10,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.HomeApp.screens.SelectedItems
 
 @Composable
 fun TopTitleBar(
@@ -66,7 +69,12 @@ fun TopTitleBar(
             )
             IconButton(
                 modifier = Modifier.weight(1f),
-                onClick = { navController.navigate(routeRightButton!!) }
+                onClick = {
+                    if (iconRight == Icons.Rounded.Add) {
+                        SelectedItems.setIsEdit(false)
+                    }
+                    navController.navigate(routeRightButton!!)
+                }
             ) {
                 if (iconRight != null) {
                     Icon(

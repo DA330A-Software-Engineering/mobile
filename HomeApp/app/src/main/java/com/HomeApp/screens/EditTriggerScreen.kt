@@ -2,15 +2,21 @@ package com.HomeApp.screens
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.FabPosition
 import androidx.compose.material.Scaffold
@@ -21,7 +27,6 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -40,20 +45,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.CustomFAB
-import com.HomeApp.ui.composables.ManageCards
+import com.HomeApp.ui.composables.DeleteDialog
 import com.HomeApp.ui.composables.SwitchCard
 import com.HomeApp.ui.composables.TopTitleBar
+import com.HomeApp.ui.navigation.ChooseType
 import com.HomeApp.ui.navigation.Triggers
+import com.HomeApp.ui.theme.DarkRed
 import com.HomeApp.ui.theme.FadedLightGrey
+import com.HomeApp.ui.theme.LightSteelBlue
 import com.HomeApp.util.ApiConnector
 import com.HomeApp.util.ApiResult
 import com.HomeApp.util.LocalStorage
 import com.HomeApp.util.getTrigger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONArray
-import org.json.JSONObject
-import java.util.ArrayList
 
 @Composable
 fun EditTriggerScreen(
@@ -282,4 +287,88 @@ fun EditTriggerScreen(
         isFloatingActionButtonDocked = true,
         floatingActionButtonPosition = FabPosition.End
     )
+}
+
+@Composable
+private fun ManageCards(
+    name: String,
+    token: String,
+    id: String,
+    navController: NavController
+) {
+    val deleteDialog = remember { mutableStateOf(false) }
+    if (deleteDialog.value) {
+        DeleteDialog(
+            deleteDialog = deleteDialog,
+            name = name,
+            token = token,
+            id = id,
+            navController = navController
+        )
+    }
+
+    Spacer(modifier = Modifier.height(20.dp))
+    Column(
+        modifier = Modifier
+            .border(
+                width = 4.dp,
+                color = LightSteelBlue,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .padding(10.dp)
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = "Manage",
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+        Row(
+            modifier = Modifier.padding(top = 5.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Card(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(100.dp)
+                    .clickable(onClick = {
+                        SelectedItems.setIsEdit(true)
+                        navController.navigate(ChooseType.route)
+                    }),
+                backgroundColor = LightSteelBlue
+            ) {
+                Column(
+                    Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Actions",
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+            Card(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(100.dp)
+                    .clickable(onClick = { deleteDialog.value = true }),
+                backgroundColor = DarkRed
+            ) {
+                Column(
+                    Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Delete",
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+    }
 }

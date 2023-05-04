@@ -33,10 +33,10 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Recycling
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -154,6 +154,8 @@ private fun RoutineCard(
         )
     }
 
+    val settingsMenu = remember { mutableStateOf(false) }
+
     fun updateRoutine() {
         coroutine.launch(Dispatchers.IO) {
             ApiConnector.updateRoutine(
@@ -242,12 +244,12 @@ private fun RoutineCard(
                                 isTitle = true,
                                 enabled = enabled.value,
                                 onDone = {
-                                    if (name.value != "") {
-                                        focusManager.clearFocus()
-                                        updateRoutine()
-                                    } else {
+                                    if (name.value.isBlank() || name.value.isEmpty()) {
                                         val message = "Please enter a name for the routine"
                                         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                                    } else {
+                                        focusManager.clearFocus()
+                                        updateRoutine()
                                     }
                                 }
                             )
@@ -258,12 +260,12 @@ private fun RoutineCard(
                                 isTitle = false,
                                 enabled = enabled.value,
                                 onDone = {
-                                    if (description.value != "") {
-                                        focusManager.clearFocus()
-                                        updateRoutine()
-                                    } else {
+                                    if (description.value.isBlank() || description.value.isEmpty()) {
                                         val message = "Please enter a name for the routine"
                                         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                                    } else {
+                                        focusManager.clearFocus()
+                                        updateRoutine()
                                     }
                                 }
                             )
@@ -312,12 +314,17 @@ private fun RoutineCard(
                         }
                         IconButton(
                             modifier = Modifier.scale(1.4f),
-                            onClick = { deleteDialog.value = true }
+                            onClick = { settingsMenu.value = true }
                         ) {
                             Icon(
-                                imageVector = Icons.Filled.Delete,
-                                contentDescription = "delete-icon",
-                                tint = DarkRed
+                                imageVector = Icons.Rounded.Settings,
+                                contentDescription = "settings-icon"
+                            )
+                            SettingsDropdownMenu(
+                                id = id,
+                                expanded = settingsMenu,
+                                deleteDialog = deleteDialog,
+                                navController = navController
                             )
                         }
                     }
@@ -379,25 +386,59 @@ private fun DisplayTime(
                 verticalArrangement = Arrangement.Center
             ) {
                 for (i in 0..if (isHour) 23 else 59) {
-                    DropdownMenuItem(onClick = {
-                        time.value = "$i"
-                        expanded.value = false
-                        val fields = schedule.value.split(" ")
-                        if (isHour) {
-                            schedule.value =
-                                "${fields[0]} ${fields[1]} ${time.value} ${fields[3]} ${fields[4]} ${fields[5]}"
-                        } else {
-                            schedule.value =
-                                "${fields[0]} ${time.value} ${fields[2]} ${fields[3]} ${fields[4]} ${fields[5]}"
+                    DropdownMenuItem(
+                        onClick = {
+                            time.value = "$i"
+                            expanded.value = false
+                            val fields = schedule.value.split(" ")
+                            if (isHour) {
+                                schedule.value =
+                                    "${fields[0]} ${fields[1]} ${time.value} ${fields[3]} ${fields[4]} ${fields[5]}"
+                            } else {
+                                schedule.value =
+                                    "${fields[0]} ${time.value} ${fields[2]} ${fields[3]} ${fields[4]} ${fields[5]}"
+                            }
+                            updateRoutine()
                         }
-                        updateRoutine()
-                    }) {
+                    ) {
                         Text(
                             text = if ("$i".length == 2) "$i" else "0$i",
                             textAlign = TextAlign.Center
                         )
                     }
                 }
+            }
+        }
+    )
+}
+
+@Composable
+private fun SettingsDropdownMenu(
+    id: String,
+    expanded: MutableState<Boolean>,
+    deleteDialog: MutableState<Boolean>,
+    navController: NavController
+) {
+    DropdownMenu(
+        expanded = expanded.value,
+        onDismissRequest = { expanded.value = false },
+        content = {
+            DropdownMenuItem(
+                onClick = {
+                    SelectedItems.setRoutineId(id)
+                    SelectedItems.setIsEdit(true)
+                    navController.navigate(ChooseType.route)
+                }
+            ) {
+                Text(text = "Edit Actions")
+            }
+            DropdownMenuItem(
+                onClick = {
+                    expanded.value = false
+                    deleteDialog.value = true
+                }
+            ) {
+                Text(text = "Delete", color = DarkRed)
             }
         }
     )

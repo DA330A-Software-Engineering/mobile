@@ -1,6 +1,7 @@
 package com.HomeApp.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -204,8 +205,9 @@ fun ChooseActionsScreen(
             CustomFAB(
                 icon = if (isEdit) Icons.Rounded.Done else Icons.Rounded.ArrowForward,
                 onClick = {
-                    if (isSensor) {
-                        if (isEdit) {
+                    val message = "Actions updated!"
+                    if (isEdit) {
+                        if (isSensor) {
                             coroutine.launch(Dispatchers.IO) {
                                 ApiConnector.updateTrigger(
                                     token = token,
@@ -221,11 +223,9 @@ fun ChooseActionsScreen(
                                     onRespond = onRespond
                                 )
                             }
+                            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
                             navController.navigate(EditTrigger.route)
-                        }
-                        navController.navigate(Finish.route)
-                    } else {
-                        if (isEdit) {
+                        } else {
                             coroutine.launch(Dispatchers.IO) {
                                 ApiConnector.updateRoutine(
                                     token = token,
@@ -239,8 +239,15 @@ fun ChooseActionsScreen(
                                     onRespond = onRespond
                                 )
                             }
+                            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                            navController.navigate(Routines.route)
                         }
-                        navController.navigate(ChooseSchedule.route)
+                    } else {
+                        if (isSensor) {
+                            navController.navigate(Finish.route)
+                        } else {
+                            navController.navigate(ChooseSchedule.route)
+                        }
                     }
                 }
             )
