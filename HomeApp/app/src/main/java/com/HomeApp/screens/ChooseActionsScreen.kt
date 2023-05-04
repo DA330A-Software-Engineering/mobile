@@ -1,5 +1,6 @@
 package com.HomeApp.screens
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,27 +36,39 @@ import androidx.compose.material.icons.outlined.Sensors
 import androidx.compose.material.icons.outlined.SmartScreen
 import androidx.compose.material.icons.outlined.SurroundSound
 import androidx.compose.material.icons.outlined.Window
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.CustomFAB
 import com.HomeApp.ui.composables.TopTitleBar
-import com.HomeApp.ui.composables.TopTitleBarItem
+import com.HomeApp.ui.navigation.ChooseItems
 import com.HomeApp.ui.navigation.ChooseSchedule
+import com.HomeApp.ui.navigation.EditTrigger
 import com.HomeApp.ui.navigation.Finish
+import com.HomeApp.ui.navigation.Routines
 import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.LightSteelBlue
+import com.HomeApp.util.ApiConnector
+import com.HomeApp.util.ApiResult
+import com.HomeApp.util.LocalStorage
 import com.HomeApp.util.getDocument
 import com.google.firebase.firestore.DocumentSnapshot
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -104,6 +117,9 @@ fun ChooseActionsScreen(
     OnSelfClick: () -> Unit = {}
 ) {
     Schedule.clearCronString()
+    val context = LocalContext.current
+    val token = LocalStorage.getToken(context)
+    val coroutine = rememberCoroutineScope()
     val listHeight = LocalConfiguration.current.screenHeightDp
     val documents = SelectedItems.getItems()
     val isDevices = SelectedItems.getIsDevices()
@@ -154,10 +170,18 @@ fun ChooseActionsScreen(
         }
     }
 
+    val onRespond: (ApiResult) -> Unit = {
+        Log.d("RESPOND", it.toString())
+    }
+
     Scaffold(
         topBar = {
             TopTitleBar(
-                item = TopTitleBarItem.ChooseActions,
+                title = "Actions",
+                iconLeft = Icons.Rounded.ArrowBack,
+                routeLeftButton = ChooseItems.route,
+                iconRight = Icons.Rounded.Close,
+                routeRightButton = Routines.route,
                 navController = navController
             )
         },
@@ -176,12 +200,46 @@ fun ChooseActionsScreen(
             )
         },
         floatingActionButton = {
+            val isEdit = SelectedItems.getIsEdit()
             CustomFAB(
-                icon = Icons.Rounded.ArrowForward,
+                icon = if (isEdit) Icons.Rounded.Done else Icons.Rounded.ArrowForward,
                 onClick = {
                     if (isSensor) {
+                        if (isEdit) {
+                            coroutine.launch(Dispatchers.IO) {
+                                ApiConnector.updateTrigger(
+                                    token = token,
+                                    triggerId = SelectedItems.getTriggerId(),
+                                    deviceId = null,
+                                    name = null,
+                                    description = null,
+                                    condition = null,
+                                    value = null,
+                                    resetValue = null,
+                                    enabled = null,
+                                    actions = Actions.getActions(),
+                                    onRespond = onRespond
+                                )
+                            }
+                            navController.navigate(EditTrigger.route)
+                        }
                         navController.navigate(Finish.route)
                     } else {
+                        if (isEdit) {
+                            coroutine.launch(Dispatchers.IO) {
+                                ApiConnector.updateRoutine(
+                                    token = token,
+                                    id = SelectedItems.getRoutineId(),
+                                    name = null,
+                                    description = null,
+                                    schedule = null,
+                                    enabled = null,
+                                    repeatable = null,
+                                    actions = Actions.getActions(),
+                                    onRespond = onRespond
+                                )
+                            }
+                        }
                         navController.navigate(ChooseSchedule.route)
                     }
                 }

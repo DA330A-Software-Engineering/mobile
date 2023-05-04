@@ -1,5 +1,6 @@
 package com.HomeApp.screens
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,7 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.TopTitleBar
-import com.HomeApp.ui.composables.TopTitleBarItem
+import com.HomeApp.ui.navigation.ChooseType
+import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.EditTrigger
 import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.LightSteelBlue
@@ -43,12 +47,21 @@ fun TriggersScreen(
     SelectedItems.setIsSensor(true)
 
     val listHeight = LocalConfiguration.current.screenHeightDp
-    val documents = realTimeData!!.triggers
+    val documents = mutableListOf<DocumentSnapshot>()
+    realTimeData!!.triggers.forEach { document ->
+        if (document.get("deviceId") == SelectedItems.getSensorId()) {
+            documents.add(document)
+        }
+    }
 
     Scaffold(
         topBar = {
             TopTitleBar(
-                item = TopTitleBarItem.Triggers,
+                title = "Triggers",
+                iconLeft = Icons.Rounded.ArrowBack,
+                routeLeftButton = Devices.route,
+                iconRight = Icons.Rounded.Add,
+                routeRightButton = ChooseType.route,
                 navController = navController
             )
         },
@@ -101,7 +114,7 @@ private fun TriggerCard(
         ) {
             Row(modifier = Modifier.padding(10.dp)) {
                 LazyColumn(
-                    modifier = Modifier.weight(2f),
+                    modifier = Modifier.weight(3f),
                     content = {
                         item {
                             Text(
@@ -130,7 +143,7 @@ private fun TriggerCard(
                     Text(text = "Reset value: $resetValue")
                 }
                 Column(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(0.8f),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.End
                 ) {

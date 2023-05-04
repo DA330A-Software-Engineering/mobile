@@ -7,7 +7,10 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.navigation.NavController
 import com.HomeApp.screens.SelectedItems
+import com.HomeApp.ui.navigation.Routines
+import com.HomeApp.ui.navigation.Triggers
 import com.HomeApp.ui.theme.DarkRed
 import com.HomeApp.util.ApiConnector
 import com.HomeApp.util.ApiResult
@@ -19,11 +22,12 @@ fun DeleteDialog(
     deleteDialog: MutableState<Boolean>,
     name: String,
     token: String,
-    id: String
+    id: String,
+    navController: NavController
 ) {
     val coroutine = rememberCoroutineScope()
     val onRespond: (ApiResult) -> Unit = {
-        Log.d("RESPOND", it.toString())
+        Log.d("DELETE", it.toString())
     }
 
     AlertDialog(
@@ -34,20 +38,24 @@ fun DeleteDialog(
             TextButton(
                 onClick = {
                     deleteDialog.value = false
-                    coroutine.launch(Dispatchers.IO) {
-                        if (SelectedItems.getIsSensor()) {
+                    if (SelectedItems.getIsSensor()) {
+                        coroutine.launch(Dispatchers.IO) {
                             ApiConnector.deleteTrigger(
                                 token = token,
                                 triggerId = id,
                                 onRespond = onRespond
                             )
-                        } else {
+                        }
+                        navController.navigate(Triggers.route)
+                    } else {
+                        coroutine.launch(Dispatchers.IO) {
                             ApiConnector.deleteRoutine(
                                 token = token,
                                 id = id,
                                 onRespond = onRespond
                             )
                         }
+                        navController.navigate(Routines.route)
                     }
                 }
             ) {

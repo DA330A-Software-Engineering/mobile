@@ -17,9 +17,10 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -42,7 +43,8 @@ import androidx.navigation.NavController
 import com.HomeApp.ui.composables.CustomFAB
 import com.HomeApp.ui.composables.SwitchCard
 import com.HomeApp.ui.composables.TopTitleBar
-import com.HomeApp.ui.composables.TopTitleBarItem
+import com.HomeApp.ui.navigation.ChooseActions
+import com.HomeApp.ui.navigation.ChooseSchedule
 import com.HomeApp.ui.navigation.Routines
 import com.HomeApp.ui.navigation.Triggers
 import com.HomeApp.ui.theme.FadedLightGrey
@@ -85,11 +87,15 @@ fun FinishScreen(
     Scaffold(
         topBar = {
             TopTitleBar(
-                item = TopTitleBarItem.Finish,
+                title = "Finish",
+                iconLeft = Icons.Rounded.ArrowBack,
+                routeLeftButton = if (isSensor) ChooseActions.route else ChooseSchedule.route,
+                iconRight = Icons.Rounded.Close,
+                routeRightButton = if (isSensor) Triggers.route else Routines.route,
                 navController = navController
             )
         },
-        content = {
+        content = { it ->
             LazyColumn(
                 modifier = Modifier
                     .height(listHeight.dp)
@@ -106,32 +112,42 @@ fun FinishScreen(
                             textAlign = TextAlign.Center
                         )
                     }
+                    item { Spacer(modifier = Modifier.height(15.dp)) }
                     item {
-                        Spacer(modifier = Modifier.height(15.dp))
-                        InputText(
+                        TextField(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 20.dp),
-                            text = name,
-                            label = "Name",
-                            imeAction = ImeAction.Next,
-                            keyboardType = KeyboardType.Text,
+                            value = name.value,
+                            onValueChange = { name.value = it },
+                            label = { Text(text = "Name") },
+                            keyboardOptions = KeyboardOptions(
+                                capitalization = KeyboardCapitalization.Sentences,
+                                autoCorrect = false,
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Next
+                            ),
                             keyboardActions = KeyboardActions(
                                 onNext = { descriptionFocusRequester.requestFocus() }
                             )
                         )
                     }
+                    item { Spacer(modifier = Modifier.height(15.dp)) }
                     item {
-                        Spacer(modifier = Modifier.height(15.dp))
-                        InputText(
+                        TextField(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 20.dp)
                                 .focusRequester(descriptionFocusRequester),
-                            text = description,
-                            label = "Description",
-                            imeAction = ImeAction.Done,
-                            keyboardType = KeyboardType.Text,
+                            value = description.value,
+                            onValueChange = { description.value = it },
+                            label = { Text(text = "Description") },
+                            keyboardOptions = KeyboardOptions(
+                                capitalization = KeyboardCapitalization.Sentences,
+                                autoCorrect = true,
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Done
+                            ),
                             keyboardActions = KeyboardActions(
                                 onDone = { focusManager.clearFocus() }
                             )
@@ -146,6 +162,8 @@ fun FinishScreen(
                                 color = FadedLightGrey,
                                 thickness = 2.dp
                             )
+                        }
+                        item {
                             Text(
                                 text = "Choose when the actions should execute",
                                 fontSize = 20.sp,
@@ -153,17 +171,22 @@ fun FinishScreen(
                                 textAlign = TextAlign.Center
                             )
                         }
+                        item { Spacer(modifier = Modifier.height(15.dp)) }
                         item {
-                            Spacer(modifier = Modifier.height(15.dp))
                             Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-                                InputText(
+                                TextField(
                                     modifier = Modifier
                                         .weight(1f)
                                         .padding(horizontal = 30.dp),
-                                    text = value,
-                                    label = "Value",
-                                    imeAction = ImeAction.Next,
-                                    keyboardType = KeyboardType.Number,
+                                    value = value.value,
+                                    onValueChange = { value.value = it },
+                                    label = { Text(text = "Value") },
+                                    keyboardOptions = KeyboardOptions(
+                                        capitalization = KeyboardCapitalization.None,
+                                        autoCorrect = false,
+                                        keyboardType = KeyboardType.Number,
+                                        imeAction = ImeAction.Next
+                                    ),
                                     keyboardActions = KeyboardActions(
                                         onNext = {
                                             val newValue = value.value.toIntOrNull()
@@ -176,20 +199,25 @@ fun FinishScreen(
                                         }
                                     )
                                 )
-                                InputText(
+                                TextField(
                                     modifier = Modifier
                                         .weight(1f)
                                         .padding(horizontal = 30.dp)
                                         .focusRequester(resetValueFocusRequester),
-                                    text = resetValue,
-                                    label = "Reset value",
-                                    imeAction = ImeAction.Done,
-                                    keyboardType = KeyboardType.Number,
+                                    value = resetValue.value,
+                                    onValueChange = { resetValue.value = it },
+                                    label = { Text(text = "Reset value") },
+                                    keyboardOptions = KeyboardOptions(
+                                        capitalization = KeyboardCapitalization.None,
+                                        autoCorrect = false,
+                                        keyboardType = KeyboardType.Number,
+                                        imeAction = ImeAction.Done
+                                    ),
                                     keyboardActions = KeyboardActions(
                                         onDone = {
                                             val newValue = resetValue.value.toIntOrNull()
                                             if (newValue == null) {
-                                                value.value = "0"
+                                                resetValue.value = "0"
                                             } else if (newValue >= 1023) {
                                                 resetValue.value = "1023"
                                             }
@@ -203,12 +231,7 @@ fun FinishScreen(
                     }
                     item { SwitchCard(title = "Enabled", check = enabled) }
                     if (!isSensor) {
-                        item {
-                            SwitchCard(
-                                title = "Repeatable",
-                                check = repeatable
-                            )
-                        }
+                        item { SwitchCard(title = "Repeatable", check = repeatable) }
                     }
                 }
             )
@@ -263,28 +286,5 @@ fun FinishScreen(
         },
         isFloatingActionButtonDocked = true,
         floatingActionButtonPosition = FabPosition.End
-    )
-}
-
-@Composable
-private fun InputText(
-    modifier: Modifier,
-    text: MutableState<String>,
-    label: String,
-    imeAction: ImeAction,
-    keyboardType: KeyboardType,
-    keyboardActions: KeyboardActions
-) {
-    TextField(
-        modifier = modifier,
-        value = text.value,
-        onValueChange = { text.value = it },
-        label = { Text(text = label) },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = keyboardType,
-            capitalization = KeyboardCapitalization.Sentences,
-            imeAction = imeAction
-        ),
-        keyboardActions = keyboardActions
     )
 }

@@ -17,18 +17,17 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -41,10 +40,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.CustomFAB
-import com.HomeApp.ui.composables.DeleteDialog
+import com.HomeApp.ui.composables.ManageCards
 import com.HomeApp.ui.composables.SwitchCard
 import com.HomeApp.ui.composables.TopTitleBar
-import com.HomeApp.ui.composables.TopTitleBarItem
 import com.HomeApp.ui.navigation.Triggers
 import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.util.ApiConnector
@@ -53,6 +51,9 @@ import com.HomeApp.util.LocalStorage
 import com.HomeApp.util.getTrigger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONArray
+import org.json.JSONObject
+import java.util.ArrayList
 
 @Composable
 fun EditTriggerScreen(
@@ -64,8 +65,6 @@ fun EditTriggerScreen(
     val coroutine = rememberCoroutineScope()
     val listHeight = LocalConfiguration.current.screenHeightDp
     val focusManager: FocusManager = LocalFocusManager.current
-    val descriptionFocusRequester = FocusRequester()
-    val resetValueFocusRequester = FocusRequester()
 
     val id = remember { mutableStateOf("") }
     val name = remember { mutableStateOf("") }
@@ -77,15 +76,14 @@ fun EditTriggerScreen(
 
     LaunchedEffect(id, name, description, enabled, condition, value, resetValue) {
         getTrigger(context, SelectedItems.getTriggerId()) { document ->
-            Log.d("document", document.toString())
             if (document != null) {
                 id.value = document.id
                 name.value = document.get("name") as String
                 description.value = document.get("description") as String
                 enabled.value = document.get("enabled") as Boolean
                 condition.value = document.get("condition") as String == "grt"
-                value.value = (document.get("value") as? Number?)?.toString() ?: "0"
-                resetValue.value = (document.get("resetValue") as? Number?)?.toString() ?: "0"
+                value.value = (document.get("value") as? Number?)?.toString().toString()
+                resetValue.value = (document.get("resetValue") as? Number?)?.toString().toString()
             }
         }
     }
@@ -94,24 +92,18 @@ fun EditTriggerScreen(
         Log.d("RESPOND", it.toString())
     }
 
-    val deleteDialog = remember { mutableStateOf(false) }
-    if (deleteDialog.value) {
-        DeleteDialog(
-            deleteDialog = deleteDialog,
-            name = name.value,
-            token = token,
-            id = id.value
-        )
-    }
-
     Scaffold(
         topBar = {
             TopTitleBar(
-                item = TopTitleBarItem.EditTrigger,
+                title = "Edit",
+                iconLeft = Icons.Rounded.ArrowBack,
+                routeLeftButton = Triggers.route,
+                iconRight = null,
+                routeRightButton = null,
                 navController = navController
             )
         },
-        content = {
+        content = { it ->
             LazyColumn(
                 modifier = Modifier
                     .height(listHeight.dp)
@@ -129,32 +121,41 @@ fun EditTriggerScreen(
                             textAlign = TextAlign.Center
                         )
                     }
+                    item { Spacer(modifier = Modifier.height(15.dp)) }
                     item {
-                        Spacer(modifier = Modifier.height(15.dp))
-                        InputText(
+                        TextField(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 20.dp),
-                            text = name,
-                            label = "Name",
-                            imeAction = ImeAction.Next,
-                            keyboardType = KeyboardType.Text,
+                            value = name.value,
+                            onValueChange = { name.value = it },
+                            label = { Text(text = "Name") },
+                            keyboardOptions = KeyboardOptions(
+                                capitalization = KeyboardCapitalization.Sentences,
+                                autoCorrect = false,
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Next
+                            ),
                             keyboardActions = KeyboardActions(
-                                onNext = { descriptionFocusRequester.requestFocus() }
+                                onNext = { focusManager.clearFocus() }
                             )
                         )
                     }
+                    item { Spacer(modifier = Modifier.height(15.dp)) }
                     item {
-                        Spacer(modifier = Modifier.height(15.dp))
-                        InputText(
+                        TextField(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 20.dp)
-                                .focusRequester(descriptionFocusRequester),
-                            text = description,
-                            label = "Description",
-                            imeAction = ImeAction.Done,
-                            keyboardType = KeyboardType.Text,
+                                .padding(horizontal = 20.dp),
+                            value = description.value,
+                            onValueChange = { description.value = it },
+                            label = { Text(text = "Description") },
+                            keyboardOptions = KeyboardOptions(
+                                capitalization = KeyboardCapitalization.Sentences,
+                                autoCorrect = true,
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Done
+                            ),
                             keyboardActions = KeyboardActions(
                                 onDone = { focusManager.clearFocus() }
                             )
@@ -168,6 +169,8 @@ fun EditTriggerScreen(
                             color = FadedLightGrey,
                             thickness = 2.dp
                         )
+                    }
+                    item {
                         Text(
                             text = "Choose when the actions should execute",
                             fontSize = 20.sp,
@@ -175,17 +178,22 @@ fun EditTriggerScreen(
                             textAlign = TextAlign.Center
                         )
                     }
+                    item { Spacer(modifier = Modifier.height(15.dp)) }
                     item {
-                        Spacer(modifier = Modifier.height(15.dp))
                         Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-                            InputText(
+                            TextField(
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(horizontal = 30.dp),
-                                text = value,
-                                label = "Value",
-                                imeAction = ImeAction.Next,
-                                keyboardType = KeyboardType.Number,
+                                value = value.value,
+                                onValueChange = { value.value = it },
+                                label = { Text(text = "Value") },
+                                keyboardOptions = KeyboardOptions(
+                                    capitalization = KeyboardCapitalization.None,
+                                    autoCorrect = false,
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Next
+                                ),
                                 keyboardActions = KeyboardActions(
                                     onNext = {
                                         val newValue = value.value.toIntOrNull()
@@ -194,24 +202,28 @@ fun EditTriggerScreen(
                                         } else if (newValue >= 1023) {
                                             value.value = "1023"
                                         }
-                                        resetValueFocusRequester.requestFocus()
+                                        focusManager.clearFocus()
                                     }
                                 )
                             )
-                            InputText(
+                            TextField(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .padding(horizontal = 30.dp)
-                                    .focusRequester(resetValueFocusRequester),
-                                text = resetValue,
-                                label = "Reset value",
-                                imeAction = ImeAction.Done,
-                                keyboardType = KeyboardType.Number,
+                                    .padding(horizontal = 30.dp),
+                                value = resetValue.value,
+                                onValueChange = { resetValue.value = it },
+                                label = { Text(text = "Reset value") },
+                                keyboardOptions = KeyboardOptions(
+                                    capitalization = KeyboardCapitalization.None,
+                                    autoCorrect = false,
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Done
+                                ),
                                 keyboardActions = KeyboardActions(
                                     onDone = {
                                         val newValue = resetValue.value.toIntOrNull()
                                         if (newValue == null) {
-                                            value.value = "0"
+                                            resetValue.value = "0"
                                         } else if (newValue >= 1023) {
                                             resetValue.value = "1023"
                                         }
@@ -223,6 +235,14 @@ fun EditTriggerScreen(
                     }
                     item { SwitchCard(title = "Condition", check = condition) }
                     item { SwitchCard(title = "Enabled", check = enabled) }
+                    item {
+                        ManageCards(
+                            name = name.value,
+                            token = token,
+                            id = id.value,
+                            navController = navController
+                        )
+                    }
                 }
             )
         },
@@ -261,28 +281,5 @@ fun EditTriggerScreen(
         },
         isFloatingActionButtonDocked = true,
         floatingActionButtonPosition = FabPosition.End
-    )
-}
-
-@Composable
-private fun InputText(
-    modifier: Modifier,
-    text: MutableState<String>,
-    label: String,
-    imeAction: ImeAction,
-    keyboardType: KeyboardType,
-    keyboardActions: KeyboardActions
-) {
-    TextField(
-        modifier = modifier,
-        value = text.value,
-        onValueChange = { text.value = it },
-        label = { Text(text = label) },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = keyboardType,
-            capitalization = KeyboardCapitalization.Sentences,
-            imeAction = imeAction
-        ),
-        keyboardActions = keyboardActions
     )
 }

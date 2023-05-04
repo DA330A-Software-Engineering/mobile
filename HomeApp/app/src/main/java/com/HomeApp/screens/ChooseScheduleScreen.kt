@@ -22,7 +22,9 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateMapOf
@@ -41,8 +43,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.CustomFAB
 import com.HomeApp.ui.composables.TopTitleBar
-import com.HomeApp.ui.composables.TopTitleBarItem
+import com.HomeApp.ui.navigation.ChooseActions
 import com.HomeApp.ui.navigation.Finish
+import com.HomeApp.ui.navigation.Routines
 import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.LightSteelBlue
 import com.HomeApp.util.DayFilters
@@ -91,7 +94,11 @@ fun ChooseScheduleScreen(
     Scaffold(
         topBar = {
             TopTitleBar(
-                item = TopTitleBarItem.ChooseSchedule,
+                title = "Schedule",
+                iconLeft = Icons.Rounded.ArrowBack,
+                routeLeftButton = ChooseActions.route,
+                iconRight = Icons.Rounded.Close,
+                routeRightButton = Routines.route,
                 navController = navController
             )
         },
@@ -317,9 +324,9 @@ private fun SelectDays(
                         .weight(1f)
                         .scale(0.8f)
                         .background(
-                        if (selected) selectedColor else notSelectedColor,
-                        CircleShape
-                    ),
+                            if (selected) selectedColor else notSelectedColor,
+                            CircleShape
+                        ),
                     onClick = {
                         val newSelectionState = !selected
                         selectionState[it] = newSelectionState

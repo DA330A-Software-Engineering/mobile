@@ -35,6 +35,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Recycling
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -59,7 +61,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.DeleteDialog
 import com.HomeApp.ui.composables.TopTitleBar
-import com.HomeApp.ui.composables.TopTitleBarItem
+import com.HomeApp.ui.navigation.ChooseType
+import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.theme.DarkRed
 import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.GhostWhite
@@ -87,7 +90,14 @@ fun RoutinesScreen(
 
     Scaffold(
         topBar = {
-            TopTitleBar(item = TopTitleBarItem.Routines, navController = navController)
+            TopTitleBar(
+                title = "Routines",
+                iconLeft = Icons.Rounded.ArrowBack,
+                routeLeftButton = Home.route,
+                iconRight = Icons.Rounded.Add,
+                routeRightButton = ChooseType.route,
+                navController = navController
+            )
         },
         content = {
             LazyColumn(
@@ -100,7 +110,7 @@ fun RoutinesScreen(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 items(items = documents, key = { item -> item.id }) { item ->
-                    RoutineCard(routineItem = item)
+                    RoutineCard(routineItem = item, navController = navController)
                 }
             }
         }
@@ -108,7 +118,10 @@ fun RoutinesScreen(
 }
 
 @Composable
-private fun RoutineCard(routineItem: DocumentSnapshot) {
+private fun RoutineCard(
+    routineItem: DocumentSnapshot,
+    navController: NavController
+) {
     val focusManager: FocusManager = LocalFocusManager.current
     val context = LocalContext.current
     val token = LocalStorage.getToken(context)
@@ -136,7 +149,8 @@ private fun RoutineCard(routineItem: DocumentSnapshot) {
             deleteDialog = deleteDialog,
             name = name.value,
             token = token,
-            id = id
+            id = id,
+            navController = navController
         )
     }
 
@@ -150,6 +164,7 @@ private fun RoutineCard(routineItem: DocumentSnapshot) {
                 schedule = schedule.value,
                 enabled = enabled.value,
                 repeatable = repeatable.value,
+                actions = Actions.getActions(),
                 onRespond = onRespond
             )
         }

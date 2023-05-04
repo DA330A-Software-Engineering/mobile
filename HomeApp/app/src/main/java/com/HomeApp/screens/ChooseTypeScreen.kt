@@ -13,6 +13,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Devices
 import androidx.compose.material.icons.rounded.Groups
@@ -27,8 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.TopTitleBar
-import com.HomeApp.ui.composables.TopTitleBarItem
 import com.HomeApp.ui.navigation.ChooseItems
+import com.HomeApp.ui.navigation.EditTrigger
+import com.HomeApp.ui.navigation.Routines
+import com.HomeApp.ui.navigation.Triggers
 import com.HomeApp.ui.theme.LightSteelBlue
 
 @Composable
@@ -37,12 +40,22 @@ fun ChooseTypeScreen(
     OnSelfClick: () -> Unit = {}
 ) {
     SelectedItems.clear()
+    val isSensor = SelectedItems.getIsSensor()
+    val isEdit = SelectedItems.getIsEdit()
     val listHeight = LocalConfiguration.current.screenHeightDp
 
     Scaffold(
         topBar = {
             TopTitleBar(
-                item = TopTitleBarItem.ChooseType,
+                title = "Choose",
+                iconLeft = Icons.Rounded.ArrowBack,
+                routeLeftButton =
+                if (isSensor && isEdit) EditTrigger.route
+                else if (isSensor) Triggers.route
+                else if (isEdit) Routines.route
+                else Routines.route,
+                iconRight = null,
+                routeRightButton = null,
                 navController = navController
             )
         },
