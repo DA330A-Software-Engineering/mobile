@@ -471,18 +471,23 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
-    /** Api call to update trigger */
+    /** Api call to delete trigger */
     fun deleteTrigger(
         token: String,
         triggerId: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
+        val obj = JSONObject()
+        val requestForm = obj.toString()
+        val mediaType = "applications/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
         val urlPath = "/triggers/$triggerId"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
-            .delete()
+            .delete(requestBody)
             .build()
         onRespond(callAPI(request))
     }
