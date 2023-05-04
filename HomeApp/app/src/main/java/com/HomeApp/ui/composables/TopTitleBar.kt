@@ -12,6 +12,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -73,7 +74,11 @@ fun TopTitleBar(
                     if (iconRight == Icons.Rounded.Add) {
                         SelectedItems.setIsEdit(false)
                     }
-                    navController.navigate(routeRightButton!!)
+                    if (iconRight == Icons.Rounded.Close) {
+                        showDialog.value = true
+                    } else {
+                        navController.navigate(routeRightButton!!)
+                    }
                 }
             ) {
                 if (iconRight != null) {
@@ -109,7 +114,12 @@ private fun Dialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = { navController.navigate(route) }) {
+            TextButton(
+                onClick = {
+                    showDialog.value = false
+                    navController.navigate(route)
+                }
+            ) {
                 Text(text = "Exit")
             }
         },
