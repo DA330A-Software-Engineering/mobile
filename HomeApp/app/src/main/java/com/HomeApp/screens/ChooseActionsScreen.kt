@@ -109,10 +109,12 @@ object Actions {
             }
         }
 
-        if (index != -1) {
-            actionsData.actions.put(index, action)
-        } else {
-            actionsData.actions.put(action)
+        if (state.isNotEmpty()) {
+            if (index != -1) {
+                actionsData.actions.put(index, action)
+            } else {
+                actionsData.actions.put(action)
+            }
         }
     }
 
@@ -163,21 +165,25 @@ fun ChooseActionsScreen(
     // I.e. when the user scrolls though the lazy column
     documents.forEach {
         if (isDevices) {
-            Actions.addAction(
-                it.id,
-                it.get("type") as String,
+            val type = it.get("type") as String
+            val state = if (type == "buzzer") {
+                mapOf("tune" to true).toMutableMap()
+            } else {
                 getState(it.get("state") as MutableMap<String, Boolean>)
-            )
+            }
+            Actions.addAction(it.id, type, state)
         } else {
             val deviceIds = it.get("devices") as List<String>
             LaunchedEffect(deviceIds) {
                 getDocument("devices", deviceIds[0]) { document ->
                     if (document != null) {
-                        Actions.addAction(
-                            it.id,
-                            document.get("type") as String,
+                        val type = document.get("type") as String
+                        val state = if (type == "buzzer") {
+                            mapOf("tune" to true).toMutableMap()
+                        } else {
                             getState(document.get("state") as MutableMap<String, Boolean>)
-                        )
+                        }
+                        Actions.addAction(it.id, type, state)
                     }
                 }
             }
@@ -363,16 +369,19 @@ fun ActionCard(document: DocumentSnapshot) {
             else -> Icons.Outlined.PowerOff
         }
 
-        keys.clear()
-        for (key in state.keys) {
-            keys.add(key)
-            keys.add(keys.removeAt(0)) // This makes the keys for door [open, locked] instead of [locked, open]
+        if (state.isNotEmpty()) {
+            keys.clear()
+            for (key in state.keys) {
+                keys.add(key)
+                keys.add(keys.removeAt(0)) // This makes the keys for door [open, locked] instead of [locked, open]
+            }
+            state[keys[0]] = primaryCheck.value
+            state[keys[0]] = primaryCheck.value
+            if (keys.size == 2) {
+                state[keys[1]] = !secondaryCheck.value // I want reverse and locked to be false initially
+            }
         }
-        state[keys[0]] = primaryCheck.value
-        state[keys[0]] = primaryCheck.value
-        if (keys.size == 2) {
-            state[keys[1]] = !secondaryCheck.value // I want reverse and locked to be false initially
-        }
+        Log.d("STATE", state.toString())
     }
 
     if (isDevices) {
@@ -380,7 +389,11 @@ fun ActionCard(document: DocumentSnapshot) {
         if (type.value == "openLock") {
             tag.value = document.get("tag") as String
         }
-        state = document.get("state") as MutableMap<String, Boolean>
+        state = if (type.value == "buzzer") {
+            mapOf("tune" to primaryCheck.value).toMutableMap()
+        } else {
+            document.get("state") as MutableMap<String, Boolean>
+        }
         getData(tag.value, type.value, state)
     } else {
         val deviceIds = document.get("devices") as List<String>
@@ -391,7 +404,11 @@ fun ActionCard(document: DocumentSnapshot) {
                     if (type.value == "openLock") {
                         tag.value = it.get("tag") as String
                     }
-                    state = it.get("state") as MutableMap<String, Boolean>
+                    state = if (type.value == "buzzer") {
+                        mapOf("tune" to primaryCheck.value).toMutableMap()
+                    } else {
+                        it.get("state") as MutableMap<String, Boolean>
+                    }
                     getData(tag.value, type.value, state)
                 }
             }
