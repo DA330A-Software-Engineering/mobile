@@ -285,12 +285,12 @@ fun ActionCard(document: DocumentSnapshot) {
     var state = remember { mutableMapOf<String, Boolean>() }
 
     val primaryCheck = remember { mutableStateOf(true) }
-    val selectedPrimary = if (primaryCheck.value) LightSteelBlue else FadedLightGrey
-    val notSelectedPrimary = if (!primaryCheck.value) LightSteelBlue else FadedLightGrey
+    val primaryOnColor = if (primaryCheck.value) LightSteelBlue else FadedLightGrey
+    val primaryOffColor = if (!primaryCheck.value) LightSteelBlue else FadedLightGrey
 
     val secondaryCheck = remember { mutableStateOf(true) }
-    val selectedSecondary = if (secondaryCheck.value) LightSteelBlue else FadedLightGrey
-    val notSelectedSecondary = if (!secondaryCheck.value) LightSteelBlue else FadedLightGrey
+    val secondaryOnColor = if (secondaryCheck.value) LightSteelBlue else FadedLightGrey
+    val secondaryOffColor = if (!secondaryCheck.value) LightSteelBlue else FadedLightGrey
 
     val primaryOn = remember { mutableStateOf("") }
     val primaryOff = remember { mutableStateOf("") }
@@ -458,7 +458,7 @@ fun ActionCard(document: DocumentSnapshot) {
                         .weight(1f)
                         .height(100.dp)
                         .clickable(onClick = { primaryCheck.value = false }),
-                    backgroundColor = notSelectedPrimary,
+                    backgroundColor = primaryOffColor,
                 ) {
                     Column(
                         Modifier.fillMaxSize(),
@@ -484,7 +484,7 @@ fun ActionCard(document: DocumentSnapshot) {
                         .weight(1f)
                         .height(100.dp)
                         .clickable(onClick = { primaryCheck.value = true }),
-                    backgroundColor = selectedPrimary,
+                    backgroundColor = primaryOnColor,
                 ) {
                     Column(
                         Modifier.fillMaxSize(),
@@ -513,7 +513,7 @@ fun ActionCard(document: DocumentSnapshot) {
                             .weight(1f)
                             .height(100.dp)
                             .clickable(onClick = { secondaryCheck.value = false }),
-                        backgroundColor = notSelectedSecondary,
+                        backgroundColor = secondaryOffColor,
                     ) {
                         Column(
                             Modifier.fillMaxSize(),
@@ -539,7 +539,7 @@ fun ActionCard(document: DocumentSnapshot) {
                             .weight(1f)
                             .height(100.dp)
                             .clickable(onClick = { secondaryCheck.value = true }),
-                        backgroundColor = selectedSecondary,
+                        backgroundColor = secondaryOnColor,
                     ) {
                         Column(
                             Modifier.fillMaxSize(),
