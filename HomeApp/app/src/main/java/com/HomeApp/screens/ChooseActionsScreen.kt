@@ -283,7 +283,6 @@ fun ActionCard(document: DocumentSnapshot) {
     val tag = remember { mutableStateOf("") }
     val type = remember { mutableStateOf("") }
     var state = remember { mutableMapOf<String, Boolean>() }
-    val keys = remember { mutableListOf<String>() }
 
     val primaryCheck = remember { mutableStateOf(true) }
     val selectedPrimary = if (primaryCheck.value) LightSteelBlue else FadedLightGrey
@@ -293,8 +292,8 @@ fun ActionCard(document: DocumentSnapshot) {
     val selectedSecondary = if (secondaryCheck.value) LightSteelBlue else FadedLightGrey
     val notSelectedSecondary = if (!secondaryCheck.value) LightSteelBlue else FadedLightGrey
 
-    val primaryOn = remember { mutableStateOf("Turn On") }
-    val primaryOff = remember { mutableStateOf("Turn Off") }
+    val primaryOn = remember { mutableStateOf("") }
+    val primaryOff = remember { mutableStateOf("") }
     val secondaryOn = remember { mutableStateOf("") }
     val secondaryOff = remember { mutableStateOf("") }
     val cardIcon = remember { mutableStateOf(Icons.Filled.BrokenImage) }
@@ -370,18 +369,16 @@ fun ActionCard(document: DocumentSnapshot) {
         }
 
         if (state.isNotEmpty()) {
-            keys.clear()
+            val keys: MutableList<String> = mutableListOf()
             for (key in state.keys) {
                 keys.add(key)
                 keys.add(keys.removeAt(0)) // This makes the keys for door [open, locked] instead of [locked, open]
             }
             state[keys[0]] = primaryCheck.value
-            state[keys[0]] = primaryCheck.value
             if (keys.size == 2) {
                 state[keys[1]] = !secondaryCheck.value // I want reverse and locked to be false initially
             }
         }
-        Log.d("STATE", state.toString())
     }
 
     if (isDevices) {
