@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.Power
 import androidx.compose.material.icons.filled.PowerOff
+import androidx.compose.material.icons.outlined.Alarm
 import androidx.compose.material.icons.outlined.DoorFront
 import androidx.compose.material.icons.outlined.KeyboardDoubleArrowLeft
 import androidx.compose.material.icons.outlined.KeyboardDoubleArrowRight
@@ -36,6 +37,7 @@ import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.Sensors
 import androidx.compose.material.icons.outlined.SmartScreen
 import androidx.compose.material.icons.outlined.SurroundSound
+import androidx.compose.material.icons.outlined.VolumeUp
 import androidx.compose.material.icons.outlined.Window
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowForward
@@ -48,6 +50,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -81,11 +84,21 @@ object Actions {
     private var actionsData: ActionsData = ActionsData()
 
     fun addAction(id: String, type: String, state: Map<String, Boolean>) {
+        val finalState: Map<String, Any> = if (type == "buzzer") {
+            if (state["tune"] == true) {
+                mapOf("tune" to "alarm")
+            } else {
+                mapOf("tune" to "pirate")
+            }
+        } else {
+            state
+        }
+
         val isDevices = SelectedItems.getIsDevices()
         val action = JSONObject()
             .put(if (isDevices) "id" else "groupId", id)
             .put("type", type)
-            .put("state", JSONObject(state))
+            .put("state", JSONObject(finalState))
 
         var index = -1
         for (i in 0 until actionsData.actions.length()) {
@@ -260,7 +273,6 @@ fun ChooseActionsScreen(
 @Composable
 fun ActionCard(document: DocumentSnapshot) {
     val isDevices = SelectedItems.getIsDevices()
-    val isSensor = SelectedItems.getIsSensor()
 
     val tag = remember { mutableStateOf("") }
     val type = remember { mutableStateOf("") }
@@ -294,12 +306,14 @@ fun ActionCard(document: DocumentSnapshot) {
         primaryOn.value = when (type) {
             "toggle" -> "Turn On"
             "openLock" -> "Open"
+            "buzzer" -> "Alarm"
             else -> "Turn On"
         }
 
         primaryOff.value = when (type) {
             "toggle" -> "Turn Off"
             "openLock" -> "Close"
+            "buzzer" -> "Pirate"
             else -> "Turn Off"
         }
 
@@ -327,11 +341,13 @@ fun ActionCard(document: DocumentSnapshot) {
 
         primaryActionOnIcon.value = when (type) {
             "openLock" -> if (tag == "door") Icons.Outlined.DoorFront else Icons.Outlined.Window
+            "buzzer" -> Icons.Outlined.Alarm
             else -> Icons.Outlined.Power
         }
 
         primaryActionOffIcon.value = when (type) {
             "openLock" -> if (tag == "door") Icons.Outlined.DoorFront else Icons.Outlined.Window
+            "buzzer" -> Icons.Outlined.VolumeUp
             else -> Icons.Outlined.PowerOff
         }
 
@@ -441,7 +457,9 @@ fun ActionCard(document: DocumentSnapshot) {
                             fontWeight = FontWeight.Bold
                         )
                         Icon(
-                            modifier = Modifier.weight(2f),
+                            modifier = Modifier
+                                .weight(2f)
+                                .scale(1.5f),
                             imageVector = primaryActionOffIcon.value,
                             contentDescription = "off-icon"
                         )
@@ -465,7 +483,9 @@ fun ActionCard(document: DocumentSnapshot) {
                             fontWeight = FontWeight.Bold
                         )
                         Icon(
-                            modifier = Modifier.weight(2f),
+                            modifier = Modifier
+                                .weight(2f)
+                                .scale(1.5f),
                             imageVector = primaryActionOnIcon.value,
                             contentDescription = "on-icon"
                         )
@@ -492,7 +512,9 @@ fun ActionCard(document: DocumentSnapshot) {
                                 fontWeight = FontWeight.Bold
                             )
                             Icon(
-                                modifier = Modifier.weight(2f),
+                                modifier = Modifier
+                                    .weight(2f)
+                                    .scale(1.5f),
                                 imageVector = secondaryActionOffIcon.value,
                                 contentDescription = "off-icon"
                             )
@@ -516,7 +538,9 @@ fun ActionCard(document: DocumentSnapshot) {
                                 fontWeight = FontWeight.Bold
                             )
                             Icon(
-                                modifier = Modifier.weight(2f),
+                                modifier = Modifier
+                                    .weight(2f)
+                                    .scale(1.5f),
                                 imageVector = secondaryActionOnIcon.value,
                                 contentDescription = "off-icon"
                             )
