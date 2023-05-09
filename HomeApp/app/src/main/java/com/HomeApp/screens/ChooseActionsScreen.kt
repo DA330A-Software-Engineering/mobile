@@ -84,6 +84,8 @@ object Actions {
     private var actionsData: ActionsData = ActionsData()
 
     fun addAction(id: String, type: String, state: Map<String, Boolean>) {
+        if (state.isEmpty()) return
+
         val finalState: Map<String, Any> = if (type == "buzzer") {
             if (state["tune"] == true) {
                 mapOf("tune" to "alarm")
@@ -109,12 +111,10 @@ object Actions {
             }
         }
 
-        if (state.isNotEmpty()) {
-            if (index != -1) {
-                actionsData.actions.put(index, action)
-            } else {
-                actionsData.actions.put(action)
-            }
+        if (index != -1) {
+            actionsData.actions.put(index, action)
+        } else {
+            actionsData.actions.put(action)
         }
     }
 
@@ -377,10 +377,14 @@ fun ActionCard(document: DocumentSnapshot) {
             state[keys[0]] = primaryCheck.value
             if (keys.size == 2) {
                 state[keys[1]] = !secondaryCheck.value // I want reverse and locked to be false initially
+                if (!isDevices) {
+                    state.remove(keys[1])
+                }
             }
         }
     }
 
+    val id = document.id
     if (isDevices) {
         type.value = document.get("type") as String
         if (type.value == "openLock") {
@@ -392,9 +396,10 @@ fun ActionCard(document: DocumentSnapshot) {
             document.get("state") as MutableMap<String, Boolean>
         }
         getData(tag.value, type.value, state)
+        Actions.addAction(id, type.value, state)
     } else {
         val deviceIds = document.get("devices") as List<String>
-        LaunchedEffect(state) {
+        LaunchedEffect(primaryCheck.value) {
             getDocument("devices", deviceIds[0]) {
                 if (it != null) {
                     type.value = it.get("type") as String
@@ -407,12 +412,11 @@ fun ActionCard(document: DocumentSnapshot) {
                         it.get("state") as MutableMap<String, Boolean>
                     }
                     getData(tag.value, type.value, state)
+                    Actions.addAction(id, type.value, state)
                 }
             }
         }
     }
-    val id = document.id
-    Actions.addAction(id, type.value, state)
 
     Column(
         Modifier
