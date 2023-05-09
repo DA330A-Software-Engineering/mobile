@@ -1,5 +1,6 @@
 package com.HomeApp.ui.composables
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,7 +12,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -27,23 +27,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.screens.SelectedItems
-import com.HomeApp.ui.navigation.Devices
-import com.HomeApp.ui.navigation.Home
 
 @Composable
 fun TopTitleBar(
-    item: TopTitleBarItem,
+    title: String,
+    iconLeft: ImageVector,
+    routeLeftButton: String,
+    iconRight: ImageVector?,
+    routeRightButton: String?,
     navController: NavController
 ) {
-    val isDevices = SelectedItems.getIsDevices()
-    val isSensor = SelectedItems.getIsSensor()
-
     val showDialog = remember { mutableStateOf(false) }
     if (showDialog.value) {
         Dialog(
             showDialog = showDialog,
             navController = navController,
-            route = item.routeRightButton
+            route = routeRightButton!!
         )
     }
 
@@ -55,20 +54,16 @@ fun TopTitleBar(
         ) {
             IconButton(
                 modifier = Modifier.weight(1f),
-                onClick = { navController.navigate(item.routeLeftButton) }
+                onClick = { navController.navigate(routeLeftButton) }
             ) {
                 Icon(
                     modifier = Modifier.scale(2.2f),
-                    imageVector = item.iconLeft,
+                    imageVector = iconLeft,
                     contentDescription = "left-icon"
                 )
             }
             Text(
-                text = if (item == TopTitleBarItem.ChooseItems) {
-                    if (isDevices) "Devices" else "Groups"
-                } else {
-                    item.title
-                },
+                text = title,
                 modifier = Modifier.weight(2f),
                 fontSize = 35.sp,
                 textAlign = TextAlign.Center
@@ -76,18 +71,25 @@ fun TopTitleBar(
             IconButton(
                 modifier = Modifier.weight(1f),
                 onClick = {
-                    if (item.iconRight == Icons.Rounded.Close) {
+                    if (iconRight == Icons.Rounded.Add) {
+                        SelectedItems.setIsEdit(false)
+                    }
+                    if (iconRight == Icons.Rounded.Close) {
                         showDialog.value = true
                     } else {
-                        navController.navigate(item.routeRightButton)
+                        navController.navigate(routeRightButton!!)
                     }
                 }
             ) {
-                Icon(
-                    modifier = Modifier.scale(2.2f),
-                    imageVector = item.iconRight,
-                    contentDescription = "right-icon"
-                )
+                if (iconRight != null) {
+                    Icon(
+                        modifier = Modifier.scale(2.2f),
+                        imageVector = iconRight,
+                        contentDescription = "right-icon"
+                    )
+                } else {
+                    Box(modifier = Modifier.scale(2.2f))
+                }
             }
         }
     }
@@ -112,7 +114,12 @@ private fun Dialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = { navController.navigate(route) }) {
+            TextButton(
+                onClick = {
+                    showDialog.value = false
+                    navController.navigate(route)
+                }
+            ) {
                 Text(text = "Exit")
             }
         },
@@ -121,93 +128,5 @@ private fun Dialog(
                 Text(text = "Cancel")
             }
         }
-    )
-}
-
-sealed class TopTitleBarItem(
-    val title: String,
-    val iconLeft: ImageVector,
-    val routeLeftButton: String,
-    val iconRight: ImageVector,
-    val routeRightButton: String
-) {
-    object Routines : TopTitleBarItem(
-        title = "Routines",
-        iconLeft = Icons.Rounded.ArrowBack,
-        routeLeftButton = Home.route,
-        iconRight = Icons.Rounded.Add,
-        routeRightButton = com.HomeApp.ui.navigation.ChooseType.route
-    )
-
-    object ChooseType : TopTitleBarItem(
-        title = "Choose",
-        iconLeft = Icons.Rounded.ArrowBack,
-        routeLeftButton = if (SelectedItems.getIsSensor()) {
-            com.HomeApp.ui.navigation.Triggers.route
-        } else {
-            com.HomeApp.ui.navigation.Routines.route
-        },
-        iconRight = Icons.Rounded.Close,
-        routeRightButton = if (SelectedItems.getIsSensor()) {
-            com.HomeApp.ui.navigation.Triggers.route
-        } else {
-            com.HomeApp.ui.navigation.Routines.route
-        }
-    )
-
-    object ChooseItems : TopTitleBarItem(
-        title = "Items",
-        iconLeft = Icons.Rounded.ArrowBack,
-        routeLeftButton = com.HomeApp.ui.navigation.ChooseType.route,
-        iconRight = Icons.Rounded.Close,
-        routeRightButton = if (SelectedItems.getIsSensor()) {
-            com.HomeApp.ui.navigation.Triggers.route
-        } else {
-            com.HomeApp.ui.navigation.Routines.route
-        }
-    )
-
-    object ChooseActions : TopTitleBarItem(
-        title = "Actions",
-        iconLeft = Icons.Rounded.ArrowBack,
-        routeLeftButton = com.HomeApp.ui.navigation.ChooseItems.route,
-        iconRight = Icons.Rounded.Close,
-        routeRightButton = if (SelectedItems.getIsSensor()) {
-            com.HomeApp.ui.navigation.Triggers.route
-        } else {
-            com.HomeApp.ui.navigation.Routines.route
-        }
-    )
-
-    object ChooseSchedule : TopTitleBarItem(
-        title = "Schedule",
-        iconLeft = Icons.Rounded.ArrowBack,
-        routeLeftButton = com.HomeApp.ui.navigation.ChooseActions.route,
-        iconRight = Icons.Rounded.Close,
-        routeRightButton = com.HomeApp.ui.navigation.Routines.route
-    )
-
-    object Finish : TopTitleBarItem(
-        title = "Finish",
-        iconLeft = Icons.Rounded.ArrowBack,
-        routeLeftButton = if (SelectedItems.getIsSensor()) {
-            com.HomeApp.ui.navigation.ChooseActions.route
-        } else {
-            com.HomeApp.ui.navigation.ChooseSchedule.route
-        },
-        iconRight = Icons.Rounded.Close,
-        routeRightButton = if (SelectedItems.getIsSensor()) {
-            com.HomeApp.ui.navigation.Triggers.route
-        } else {
-            com.HomeApp.ui.navigation.Routines.route
-        }
-    )
-
-    object Triggers : TopTitleBarItem(
-        title = "Triggers",
-        iconLeft = Icons.Rounded.ArrowBack,
-        routeLeftButton = Devices.route,
-        iconRight = Icons.Rounded.Add,
-        routeRightButton = com.HomeApp.ui.navigation.ChooseType.route
     )
 }

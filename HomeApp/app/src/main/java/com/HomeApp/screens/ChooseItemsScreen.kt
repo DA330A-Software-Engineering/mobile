@@ -24,7 +24,9 @@ import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.SmartScreen
 import androidx.compose.material.icons.outlined.SurroundSound
 import androidx.compose.material.icons.outlined.Window
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,10 +42,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.HomeApp.ui.composables.RoutinesFAB
+import com.HomeApp.ui.composables.CustomFAB
 import com.HomeApp.ui.composables.TopTitleBar
-import com.HomeApp.ui.composables.TopTitleBarItem
 import com.HomeApp.ui.navigation.ChooseActions
+import com.HomeApp.ui.navigation.ChooseType
+import com.HomeApp.ui.navigation.Routines
+import com.HomeApp.ui.navigation.Triggers
 import com.HomeApp.ui.theme.LightSteelBlue
 import com.HomeApp.util.getDocument
 import com.google.firebase.firestore.DocumentSnapshot
@@ -52,7 +56,10 @@ data class SelectedItemsData(
     var selectedItems: List<DocumentSnapshot> = emptyList(),
     var isDevices: Boolean = true,
     var isSensor: Boolean = true,
-    var sensorId: String = ""
+    var sensorId: String = "",
+    var triggerId: String = "",
+    var routineId: String = "",
+    var isEdit: Boolean = false
 )
 
 object SelectedItems {
@@ -94,6 +101,30 @@ object SelectedItems {
         return selectedItemsData.sensorId
     }
 
+    fun setTriggerId(id: String) {
+        selectedItemsData.triggerId = id
+    }
+
+    fun getTriggerId(): String {
+        return selectedItemsData.triggerId
+    }
+
+    fun setRoutineId(id: String) {
+        selectedItemsData.routineId = id
+    }
+
+    fun getRoutineId(): String {
+        return selectedItemsData.routineId
+    }
+
+    fun setIsEdit(isEdit: Boolean) {
+        selectedItemsData.isEdit = isEdit
+    }
+
+    fun getIsEdit(): Boolean {
+        return selectedItemsData.isEdit
+    }
+
     fun clear() {
         selectedItemsData.selectedItems = emptyList()
     }
@@ -125,7 +156,11 @@ fun ChooseItemsScreen(
     Scaffold(
         topBar = {
             TopTitleBar(
-                item = TopTitleBarItem.ChooseItems,
+                title = if (isDevices) "Devices" else "Groups",
+                iconLeft = Icons.Rounded.ArrowBack,
+                routeLeftButton = ChooseType.route,
+                iconRight = Icons.Rounded.Close,
+                routeRightButton = if (isSensor) Triggers.route else Routines.route,
                 navController = navController
             )
         },
@@ -158,7 +193,7 @@ fun ChooseItemsScreen(
             )
         },
         floatingActionButton = {
-            RoutinesFAB(
+            CustomFAB(
                 icon = Icons.Rounded.ArrowForward,
                 onClick = {
                     if (SelectedItems.getItems().isNotEmpty()) {

@@ -1,5 +1,7 @@
 package com.HomeApp.screens
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,17 +22,9 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
-import androidx.compose.material.icons.filled.CompareArrows
-import androidx.compose.material.icons.filled.DoorFront
-import androidx.compose.material.icons.filled.DoubleArrow
-import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
-import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
-import androidx.compose.material.icons.filled.Lightbulb
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.Power
 import androidx.compose.material.icons.filled.PowerOff
-import androidx.compose.material.icons.filled.Window
+import androidx.compose.material.icons.outlined.Alarm
 import androidx.compose.material.icons.outlined.DoorFront
 import androidx.compose.material.icons.outlined.KeyboardDoubleArrowLeft
 import androidx.compose.material.icons.outlined.KeyboardDoubleArrowRight
@@ -43,29 +37,42 @@ import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.Sensors
 import androidx.compose.material.icons.outlined.SmartScreen
 import androidx.compose.material.icons.outlined.SurroundSound
+import androidx.compose.material.icons.outlined.VolumeUp
 import androidx.compose.material.icons.outlined.Window
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowForward
-import androidx.compose.material.icons.rounded.Power
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.HomeApp.ui.composables.RoutinesFAB
+import com.HomeApp.ui.composables.CustomFAB
 import com.HomeApp.ui.composables.TopTitleBar
-import com.HomeApp.ui.composables.TopTitleBarItem
+import com.HomeApp.ui.navigation.ChooseItems
 import com.HomeApp.ui.navigation.ChooseSchedule
+import com.HomeApp.ui.navigation.EditTrigger
 import com.HomeApp.ui.navigation.Finish
+import com.HomeApp.ui.navigation.Routines
 import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.LightSteelBlue
+import com.HomeApp.util.ApiConnector
+import com.HomeApp.util.ApiResult
+import com.HomeApp.util.LocalStorage
 import com.HomeApp.util.getDocument
 import com.google.firebase.firestore.DocumentSnapshot
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -77,11 +84,23 @@ object Actions {
     private var actionsData: ActionsData = ActionsData()
 
     fun addAction(id: String, type: String, state: Map<String, Boolean>) {
+        if (state.isEmpty()) return
+
+        val finalState: Map<String, Any> = if (type == "buzzer") {
+            if (state["tune"] == true) {
+                mapOf("tune" to "alarm")
+            } else {
+                mapOf("tune" to "pirate")
+            }
+        } else {
+            state
+        }
+
         val isDevices = SelectedItems.getIsDevices()
         val action = JSONObject()
             .put(if (isDevices) "id" else "groupId", id)
             .put("type", type)
-            .put("state", JSONObject(state))
+            .put("state", JSONObject(finalState))
 
         var index = -1
         for (i in 0 until actionsData.actions.length()) {
@@ -114,6 +133,9 @@ fun ChooseActionsScreen(
     OnSelfClick: () -> Unit = {}
 ) {
     Schedule.clearCronString()
+    val context = LocalContext.current
+    val token = LocalStorage.getToken(context)
+    val coroutine = rememberCoroutineScope()
     val listHeight = LocalConfiguration.current.screenHeightDp
     val documents = SelectedItems.getItems()
     val isDevices = SelectedItems.getIsDevices()
@@ -143,31 +165,43 @@ fun ChooseActionsScreen(
     // I.e. when the user scrolls though the lazy column
     documents.forEach {
         if (isDevices) {
-            Actions.addAction(
-                it.id,
-                it.get("type") as String,
+            val type = it.get("type") as String
+            val state = if (type == "buzzer") {
+                mapOf("tune" to true).toMutableMap()
+            } else {
                 getState(it.get("state") as MutableMap<String, Boolean>)
-            )
+            }
+            Actions.addAction(it.id, type, state)
         } else {
             val deviceIds = it.get("devices") as List<String>
             LaunchedEffect(deviceIds) {
                 getDocument("devices", deviceIds[0]) { document ->
                     if (document != null) {
-                        Actions.addAction(
-                            it.id,
-                            document.get("type") as String,
+                        val type = document.get("type") as String
+                        val state = if (type == "buzzer") {
+                            mapOf("tune" to true).toMutableMap()
+                        } else {
                             getState(document.get("state") as MutableMap<String, Boolean>)
-                        )
+                        }
+                        Actions.addAction(it.id, type, state)
                     }
                 }
             }
         }
     }
 
+    val onRespond: (ApiResult) -> Unit = {
+        Log.d("RESPOND", it.toString())
+    }
+
     Scaffold(
         topBar = {
             TopTitleBar(
-                item = TopTitleBarItem.ChooseActions,
+                title = "Actions",
+                iconLeft = Icons.Rounded.ArrowBack,
+                routeLeftButton = ChooseItems.route,
+                iconRight = Icons.Rounded.Close,
+                routeRightButton = Routines.route,
                 navController = navController
             )
         },
@@ -186,13 +220,53 @@ fun ChooseActionsScreen(
             )
         },
         floatingActionButton = {
-            RoutinesFAB(
-                icon = Icons.Rounded.ArrowForward,
+            val isEdit = SelectedItems.getIsEdit()
+            CustomFAB(
+                icon = if (isEdit) Icons.Rounded.Done else Icons.Rounded.ArrowForward,
                 onClick = {
-                    if (isSensor) {
-                        navController.navigate(Finish.route)
+                    val message = "Actions updated!"
+                    if (isEdit) {
+                        if (isSensor) {
+                            coroutine.launch(Dispatchers.IO) {
+                                ApiConnector.updateTrigger(
+                                    token = token,
+                                    triggerId = SelectedItems.getTriggerId(),
+                                    deviceId = null,
+                                    name = null,
+                                    description = null,
+                                    condition = null,
+                                    value = null,
+                                    resetValue = null,
+                                    enabled = null,
+                                    actions = Actions.getActions(),
+                                    onRespond = onRespond
+                                )
+                            }
+                            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                            navController.navigate(EditTrigger.route)
+                        } else {
+                            coroutine.launch(Dispatchers.IO) {
+                                ApiConnector.updateRoutine(
+                                    token = token,
+                                    id = SelectedItems.getRoutineId(),
+                                    name = null,
+                                    description = null,
+                                    schedule = null,
+                                    enabled = null,
+                                    repeatable = null,
+                                    actions = Actions.getActions(),
+                                    onRespond = onRespond
+                                )
+                            }
+                            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                            navController.navigate(Routines.route)
+                        }
                     } else {
-                        navController.navigate(ChooseSchedule.route)
+                        if (isSensor) {
+                            navController.navigate(Finish.route)
+                        } else {
+                            navController.navigate(ChooseSchedule.route)
+                        }
                     }
                 }
             )
@@ -205,23 +279,21 @@ fun ChooseActionsScreen(
 @Composable
 fun ActionCard(document: DocumentSnapshot) {
     val isDevices = SelectedItems.getIsDevices()
-    val isSensor = SelectedItems.getIsSensor()
 
     val tag = remember { mutableStateOf("") }
     val type = remember { mutableStateOf("") }
     var state = remember { mutableMapOf<String, Boolean>() }
-    val keys = remember { mutableListOf<String>() }
 
     val primaryCheck = remember { mutableStateOf(true) }
-    val selectedPrimary = if (primaryCheck.value) LightSteelBlue else FadedLightGrey
-    val notSelectedPrimary = if (!primaryCheck.value) LightSteelBlue else FadedLightGrey
+    val primaryOnColor = if (primaryCheck.value) LightSteelBlue else FadedLightGrey
+    val primaryOffColor = if (!primaryCheck.value) LightSteelBlue else FadedLightGrey
 
     val secondaryCheck = remember { mutableStateOf(true) }
-    val selectedSecondary = if (secondaryCheck.value) LightSteelBlue else FadedLightGrey
-    val notSelectedSecondary = if (!secondaryCheck.value) LightSteelBlue else FadedLightGrey
+    val secondaryOnColor = if (secondaryCheck.value) LightSteelBlue else FadedLightGrey
+    val secondaryOffColor = if (!secondaryCheck.value) LightSteelBlue else FadedLightGrey
 
-    val primaryOn = remember { mutableStateOf("Turn On") }
-    val primaryOff = remember { mutableStateOf("Turn Off") }
+    val primaryOn = remember { mutableStateOf("") }
+    val primaryOff = remember { mutableStateOf("") }
     val secondaryOn = remember { mutableStateOf("") }
     val secondaryOff = remember { mutableStateOf("") }
     val cardIcon = remember { mutableStateOf(Icons.Filled.BrokenImage) }
@@ -239,12 +311,14 @@ fun ActionCard(document: DocumentSnapshot) {
         primaryOn.value = when (type) {
             "toggle" -> "Turn On"
             "openLock" -> "Open"
+            "buzzer" -> "Alarm"
             else -> "Turn On"
         }
 
         primaryOff.value = when (type) {
             "toggle" -> "Turn Off"
             "openLock" -> "Close"
+            "buzzer" -> "Pirate"
             else -> "Turn Off"
         }
 
@@ -272,11 +346,13 @@ fun ActionCard(document: DocumentSnapshot) {
 
         primaryActionOnIcon.value = when (type) {
             "openLock" -> if (tag == "door") Icons.Outlined.DoorFront else Icons.Outlined.Window
+            "buzzer" -> Icons.Outlined.Alarm
             else -> Icons.Outlined.Power
         }
 
         primaryActionOffIcon.value = when (type) {
             "openLock" -> if (tag == "door") Icons.Outlined.DoorFront else Icons.Outlined.Window
+            "buzzer" -> Icons.Outlined.VolumeUp
             else -> Icons.Outlined.PowerOff
         }
 
@@ -292,42 +368,55 @@ fun ActionCard(document: DocumentSnapshot) {
             else -> Icons.Outlined.PowerOff
         }
 
-        keys.clear()
-        for (key in state.keys) {
-            keys.add(key)
-            keys.add(keys.removeAt(0)) // This makes the keys for door [open, locked] instead of [locked, open]
-        }
-        state[keys[0]] = primaryCheck.value
-        state[keys[0]] = primaryCheck.value
-        if (keys.size == 2) {
-            state[keys[1]] = !secondaryCheck.value // I want reverse and locked to be false initially
+        if (state.isNotEmpty()) {
+            val keys: MutableList<String> = mutableListOf()
+            for (key in state.keys) {
+                keys.add(key)
+                keys.add(keys.removeAt(0)) // This makes the keys for door [open, locked] instead of [locked, open]
+            }
+            state[keys[0]] = primaryCheck.value
+            if (keys.size == 2) {
+                state[keys[1]] = !secondaryCheck.value // I want reverse and locked to be false initially
+                if (!isDevices) {
+                    state.remove(keys[1])
+                }
+            }
         }
     }
 
+    val id = document.id
     if (isDevices) {
         type.value = document.get("type") as String
         if (type.value == "openLock") {
             tag.value = document.get("tag") as String
         }
-        state = document.get("state") as MutableMap<String, Boolean>
+        state = if (type.value == "buzzer") {
+            mapOf("tune" to primaryCheck.value).toMutableMap()
+        } else {
+            document.get("state") as MutableMap<String, Boolean>
+        }
         getData(tag.value, type.value, state)
+        Actions.addAction(id, type.value, state)
     } else {
         val deviceIds = document.get("devices") as List<String>
-        LaunchedEffect(state) {
+        LaunchedEffect(primaryCheck.value) {
             getDocument("devices", deviceIds[0]) {
                 if (it != null) {
                     type.value = it.get("type") as String
                     if (type.value == "openLock") {
                         tag.value = it.get("tag") as String
                     }
-                    state = it.get("state") as MutableMap<String, Boolean>
+                    state = if (type.value == "buzzer") {
+                        mapOf("tune" to primaryCheck.value).toMutableMap()
+                    } else {
+                        it.get("state") as MutableMap<String, Boolean>
+                    }
                     getData(tag.value, type.value, state)
+                    Actions.addAction(id, type.value, state)
                 }
             }
         }
     }
-    val id = document.id
-    Actions.addAction(id, type.value, state)
 
     Column(
         Modifier
@@ -373,7 +462,7 @@ fun ActionCard(document: DocumentSnapshot) {
                         .weight(1f)
                         .height(100.dp)
                         .clickable(onClick = { primaryCheck.value = false }),
-                    backgroundColor = notSelectedPrimary,
+                    backgroundColor = primaryOffColor,
                 ) {
                     Column(
                         Modifier.fillMaxSize(),
@@ -386,7 +475,9 @@ fun ActionCard(document: DocumentSnapshot) {
                             fontWeight = FontWeight.Bold
                         )
                         Icon(
-                            modifier = Modifier.weight(2f),
+                            modifier = Modifier
+                                .weight(2f)
+                                .scale(1.5f),
                             imageVector = primaryActionOffIcon.value,
                             contentDescription = "off-icon"
                         )
@@ -397,7 +488,7 @@ fun ActionCard(document: DocumentSnapshot) {
                         .weight(1f)
                         .height(100.dp)
                         .clickable(onClick = { primaryCheck.value = true }),
-                    backgroundColor = selectedPrimary,
+                    backgroundColor = primaryOnColor,
                 ) {
                     Column(
                         Modifier.fillMaxSize(),
@@ -410,7 +501,9 @@ fun ActionCard(document: DocumentSnapshot) {
                             fontWeight = FontWeight.Bold
                         )
                         Icon(
-                            modifier = Modifier.weight(2f),
+                            modifier = Modifier
+                                .weight(2f)
+                                .scale(1.5f),
                             imageVector = primaryActionOnIcon.value,
                             contentDescription = "on-icon"
                         )
@@ -424,7 +517,7 @@ fun ActionCard(document: DocumentSnapshot) {
                             .weight(1f)
                             .height(100.dp)
                             .clickable(onClick = { secondaryCheck.value = false }),
-                        backgroundColor = notSelectedSecondary,
+                        backgroundColor = secondaryOffColor,
                     ) {
                         Column(
                             Modifier.fillMaxSize(),
@@ -437,7 +530,9 @@ fun ActionCard(document: DocumentSnapshot) {
                                 fontWeight = FontWeight.Bold
                             )
                             Icon(
-                                modifier = Modifier.weight(2f),
+                                modifier = Modifier
+                                    .weight(2f)
+                                    .scale(1.5f),
                                 imageVector = secondaryActionOffIcon.value,
                                 contentDescription = "off-icon"
                             )
@@ -448,7 +543,7 @@ fun ActionCard(document: DocumentSnapshot) {
                             .weight(1f)
                             .height(100.dp)
                             .clickable(onClick = { secondaryCheck.value = true }),
-                        backgroundColor = selectedSecondary,
+                        backgroundColor = secondaryOnColor,
                     ) {
                         Column(
                             Modifier.fillMaxSize(),
@@ -461,7 +556,9 @@ fun ActionCard(document: DocumentSnapshot) {
                                 fontWeight = FontWeight.Bold
                             )
                             Icon(
-                                modifier = Modifier.weight(2f),
+                                modifier = Modifier
+                                    .weight(2f)
+                                    .scale(1.5f),
                                 imageVector = secondaryActionOnIcon.value,
                                 contentDescription = "off-icon"
                             )

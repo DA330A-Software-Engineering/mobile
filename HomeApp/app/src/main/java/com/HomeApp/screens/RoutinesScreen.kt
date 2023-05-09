@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,7 +25,6 @@ import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -34,10 +32,11 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Recycling
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -60,8 +59,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.HomeApp.ui.composables.DeleteDialog
 import com.HomeApp.ui.composables.TopTitleBar
-import com.HomeApp.ui.composables.TopTitleBarItem
+import com.HomeApp.ui.navigation.ChooseType
+import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.theme.DarkRed
 import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.GhostWhite
@@ -89,7 +90,14 @@ fun RoutinesScreen(
 
     Scaffold(
         topBar = {
-            TopTitleBar(item = TopTitleBarItem.Routines, navController = navController)
+            TopTitleBar(
+                title = "Routines",
+                iconLeft = Icons.Rounded.ArrowBack,
+                routeLeftButton = Home.route,
+                iconRight = Icons.Rounded.Add,
+                routeRightButton = ChooseType.route,
+                navController = navController
+            )
         },
         content = {
             LazyColumn(
@@ -102,7 +110,7 @@ fun RoutinesScreen(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 items(items = documents, key = { item -> item.id }) { item ->
-                    RoutineCard(routineItem = item)
+                    RoutineCard(routineItem = item, navController = navController)
                 }
             }
         }
@@ -110,7 +118,10 @@ fun RoutinesScreen(
 }
 
 @Composable
-private fun RoutineCard(routineItem: DocumentSnapshot) {
+private fun RoutineCard(
+    routineItem: DocumentSnapshot,
+    navController: NavController
+) {
     val focusManager: FocusManager = LocalFocusManager.current
     val context = LocalContext.current
     val token = LocalStorage.getToken(context)
@@ -139,9 +150,11 @@ private fun RoutineCard(routineItem: DocumentSnapshot) {
             name = name.value,
             token = token,
             id = id,
-            onRespond = onRespond
+            navController = navController
         )
     }
+
+    val settingsMenu = remember { mutableStateOf(false) }
 
     fun updateRoutine() {
         coroutine.launch(Dispatchers.IO) {
@@ -153,6 +166,7 @@ private fun RoutineCard(routineItem: DocumentSnapshot) {
                 schedule = schedule.value,
                 enabled = enabled.value,
                 repeatable = repeatable.value,
+                actions = Actions.getActions(),
                 onRespond = onRespond
             )
         }
@@ -230,12 +244,12 @@ private fun RoutineCard(routineItem: DocumentSnapshot) {
                                 isTitle = true,
                                 enabled = enabled.value,
                                 onDone = {
-                                    if (name.value != "") {
-                                        focusManager.clearFocus()
-                                        updateRoutine()
-                                    } else {
+                                    if (name.value.isBlank() || name.value.isEmpty()) {
                                         val message = "Please enter a name for the routine"
                                         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                                    } else {
+                                        focusManager.clearFocus()
+                                        updateRoutine()
                                     }
                                 }
                             )
@@ -246,12 +260,12 @@ private fun RoutineCard(routineItem: DocumentSnapshot) {
                                 isTitle = false,
                                 enabled = enabled.value,
                                 onDone = {
-                                    if (description.value != "") {
-                                        focusManager.clearFocus()
-                                        updateRoutine()
-                                    } else {
+                                    if (description.value.isBlank() || description.value.isEmpty()) {
                                         val message = "Please enter a name for the routine"
                                         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                                    } else {
+                                        focusManager.clearFocus()
+                                        updateRoutine()
                                     }
                                 }
                             )
@@ -300,12 +314,17 @@ private fun RoutineCard(routineItem: DocumentSnapshot) {
                         }
                         IconButton(
                             modifier = Modifier.scale(1.4f),
-                            onClick = { deleteDialog.value = true }
+                            onClick = { settingsMenu.value = true }
                         ) {
                             Icon(
-                                imageVector = Icons.Filled.Delete,
-                                contentDescription = "delete-icon",
-                                tint = DarkRed
+                                imageVector = Icons.Rounded.Settings,
+                                contentDescription = "settings-icon"
+                            )
+                            SettingsDropdownMenu(
+                                id = id,
+                                expanded = settingsMenu,
+                                deleteDialog = deleteDialog,
+                                navController = navController
                             )
                         }
                     }
@@ -313,44 +332,6 @@ private fun RoutineCard(routineItem: DocumentSnapshot) {
             }
         }
     }
-}
-
-@Composable
-private fun DeleteDialog(
-    deleteDialog: MutableState<Boolean>,
-    name: String,
-    token: String,
-    id: String,
-    onRespond: (result: ApiResult) -> Unit
-) {
-    val coroutine = rememberCoroutineScope()
-
-    AlertDialog(
-        title = { Text(text = "Delete $name") },
-        text = { Text(text = "Are you sure you want to delete $name?") },
-        onDismissRequest = { deleteDialog.value = false },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    deleteDialog.value = false
-                    coroutine.launch(Dispatchers.IO) {
-                        ApiConnector.deleteRoutine(
-                            token = token,
-                            id = id,
-                            onRespond = onRespond
-                        )
-                    }
-                }
-            ) {
-                Text(text = "Delete", color = DarkRed)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = { deleteDialog.value = false }) {
-                Text(text = "Cancel")
-            }
-        }
-    )
 }
 
 @Composable
@@ -405,25 +386,59 @@ private fun DisplayTime(
                 verticalArrangement = Arrangement.Center
             ) {
                 for (i in 0..if (isHour) 23 else 59) {
-                    DropdownMenuItem(onClick = {
-                        time.value = "$i"
-                        expanded.value = false
-                        val fields = schedule.value.split(" ")
-                        if (isHour) {
-                            schedule.value =
-                                "${fields[0]} ${fields[1]} ${time.value} ${fields[3]} ${fields[4]} ${fields[5]}"
-                        } else {
-                            schedule.value =
-                                "${fields[0]} ${time.value} ${fields[2]} ${fields[3]} ${fields[4]} ${fields[5]}"
+                    DropdownMenuItem(
+                        onClick = {
+                            time.value = "$i"
+                            expanded.value = false
+                            val fields = schedule.value.split(" ")
+                            if (isHour) {
+                                schedule.value =
+                                    "${fields[0]} ${fields[1]} ${time.value} ${fields[3]} ${fields[4]} ${fields[5]}"
+                            } else {
+                                schedule.value =
+                                    "${fields[0]} ${time.value} ${fields[2]} ${fields[3]} ${fields[4]} ${fields[5]}"
+                            }
+                            updateRoutine()
                         }
-                        updateRoutine()
-                    }) {
+                    ) {
                         Text(
                             text = if ("$i".length == 2) "$i" else "0$i",
                             textAlign = TextAlign.Center
                         )
                     }
                 }
+            }
+        }
+    )
+}
+
+@Composable
+private fun SettingsDropdownMenu(
+    id: String,
+    expanded: MutableState<Boolean>,
+    deleteDialog: MutableState<Boolean>,
+    navController: NavController
+) {
+    DropdownMenu(
+        expanded = expanded.value,
+        onDismissRequest = { expanded.value = false },
+        content = {
+            DropdownMenuItem(
+                onClick = {
+                    SelectedItems.setRoutineId(id)
+                    SelectedItems.setIsEdit(true)
+                    navController.navigate(ChooseType.route)
+                }
+            ) {
+                Text(text = "Edit Actions")
+            }
+            DropdownMenuItem(
+                onClick = {
+                    expanded.value = false
+                    deleteDialog.value = true
+                }
+            ) {
+                Text(text = "Delete", color = DarkRed)
             }
         }
     )

@@ -56,6 +56,23 @@ fun rememberFirestoreCollection(
     return document
 }*/
 
+fun getTrigger(context: Context, triggerId: String, callback: (document: DocumentSnapshot?) -> Unit) {
+    val email = getEmailFromToken(context)
+    val userEmail = email.replace("\"", "")
+    val documentRef = FirebaseFirestore
+        .getInstance()
+        .collection("profiles")
+        .document(userEmail)
+        .collection("triggers")
+        .document(triggerId)
+
+    documentRef.get().addOnSuccessListener { documentSnapShot ->
+        callback(documentSnapShot)
+    }.addOnFailureListener {
+        callback(null)
+    }
+}
+
 fun getDocument(collectionPath: String, documentPath: String, callback: (document: DocumentSnapshot?) -> Unit) {
     val documentRef = FirebaseFirestore.getInstance().collection(collectionPath).document(documentPath)
 

@@ -346,19 +346,21 @@ object ApiConnector {
     fun updateRoutine(
         token: String,
         id: String,
-        name: String,
-        description: String,
-        schedule: String,
-        enabled: Boolean,
-        repeatable: Boolean,
+        name: String?,
+        description: String?,
+        schedule: String?,
+        enabled: Boolean?,
+        repeatable: Boolean?,
+        actions: JSONArray?,
         onRespond: (result: ApiResult) -> Unit
     ) {
         val obj = JSONObject()
-        obj.put("name", name)
-        obj.put("description", description)
-        obj.put("schedule", schedule)
-        obj.put("enabled", enabled)
-        obj.put("repeatable", repeatable)
+        if (name != null ) obj.put("name", name)
+        if (description != null ) obj.put("description", description)
+        if (schedule != null ) obj.put("schedule", schedule)
+        if (enabled != null ) obj.put("enabled", enabled)
+        if (repeatable != null ) obj.put("repeatable", repeatable)
+        if (actions != null ) obj.put("actions", actions)
         val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
@@ -436,25 +438,25 @@ object ApiConnector {
     fun updateTrigger(
         token: String,
         triggerId: String,
-        deviceId: String,
-        name: String,
-        description: String,
-        condition: String,
-        value: Number,
-        resetValue: Number,
-        enabled: Boolean,
-        actions: JSONArray,
+        deviceId: String?,
+        name: String?,
+        description: String?,
+        condition: String?,
+        value: Number?,
+        resetValue: Number?,
+        enabled: Boolean?,
+        actions: JSONArray?,
         onRespond: (result: ApiResult) -> Unit
     ) {
         val obj = JSONObject()
-        obj.put("deviceId", deviceId)
-        obj.put("name", name)
-        obj.put("description", description)
-        obj.put("condition", condition)
-        obj.put("value", value)
-        obj.put("resetValue", resetValue)
-        obj.put("enabled", enabled)
-        obj.put("actions", actions)
+        if (deviceId != null ) obj.put("deviceId", deviceId)
+        if (name != null ) obj.put("name", name)
+        if (description != null ) obj.put("description", description)
+        if (condition != null ) obj.put("condition", condition)
+        if (value != null ) obj.put("value", value)
+        if (resetValue != null ) obj.put("resetValue", resetValue)
+        if (enabled != null ) obj.put("enabled", enabled)
+        if (actions != null ) obj.put("actions", actions)
         val requestForm = obj.toString()
         val mediaType = "application/json".toMediaType()
         val requestBody = requestForm.toRequestBody(mediaType)
@@ -469,18 +471,23 @@ object ApiConnector {
         onRespond(callAPI(request))
     }
 
-    /** Api call to update trigger */
+    /** Api call to delete trigger */
     fun deleteTrigger(
         token: String,
         triggerId: String,
         onRespond: (result: ApiResult) -> Unit
     ) {
+        val obj = JSONObject()
+        val requestForm = obj.toString()
+        val mediaType = "applications/json".toMediaType()
+        val requestBody = requestForm.toRequestBody(mediaType)
+
         val urlPath = "/triggers/$triggerId"
 
         val request: Request = Request.Builder()
             .header(AUTH_TOKEN_NAME, token)
             .url(DB_ADDR + urlPath)
-            .delete()
+            .delete(requestBody)
             .build()
         onRespond(callAPI(request))
     }
