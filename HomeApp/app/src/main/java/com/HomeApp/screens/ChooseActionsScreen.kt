@@ -15,11 +15,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.FabPosition
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.Power
@@ -37,6 +40,7 @@ import androidx.compose.material.icons.outlined.RestartAlt
 import androidx.compose.material.icons.outlined.Sensors
 import androidx.compose.material.icons.outlined.SmartScreen
 import androidx.compose.material.icons.outlined.SurroundSound
+import androidx.compose.material.icons.outlined.TextFields
 import androidx.compose.material.icons.outlined.VolumeUp
 import androidx.compose.material.icons.outlined.Window
 import androidx.compose.material.icons.rounded.ArrowBack
@@ -51,9 +55,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -77,7 +86,8 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 data class ActionsData(
-    var actions: JSONArray = JSONArray()
+    var actions: JSONArray = JSONArray(),
+    var screenText: String = ""
 )
 
 object Actions {
@@ -86,11 +96,17 @@ object Actions {
     fun addAction(id: String, type: String, state: Map<String, Boolean>) {
         if (state.isEmpty()) return
 
-        val finalState: Map<String, Any> = if (type == "buzzer") {
+        val finalState: Map<String, Any?> = if (type == "buzzer") {
             if (state["tune"] == true) {
                 mapOf("tune" to "alarm")
             } else {
                 mapOf("tune" to "pirate")
+            }
+        } else if (type == "screen") {
+            if (state["text"] == true) {
+                mapOf("on" to state["on"], "text" to actionsData.screenText)
+            } else {
+                mapOf("on" to state["on"])
             }
         } else {
             state
@@ -122,8 +138,13 @@ object Actions {
         return actionsData.actions
     }
 
+    fun setScreenText(text: String) {
+        actionsData.screenText = text
+    }
+
     fun clear() {
         actionsData.actions = JSONArray()
+        actionsData.screenText = ""
     }
 }
 
@@ -279,10 +300,11 @@ fun ChooseActionsScreen(
 @Composable
 fun ActionCard(document: DocumentSnapshot) {
     val isDevices = SelectedItems.getIsDevices()
+    val focusManager: FocusManager = LocalFocusManager.current
 
     val tag = remember { mutableStateOf("") }
     val type = remember { mutableStateOf("") }
-    var state = remember { mutableMapOf<String, Boolean>() }
+    var state: MutableMap<String, Boolean>
 
     val primaryCheck = remember { mutableStateOf(true) }
     val primaryOnColor = if (primaryCheck.value) LightSteelBlue else FadedLightGrey
@@ -309,14 +331,12 @@ fun ActionCard(document: DocumentSnapshot) {
         state: MutableMap<String, Boolean>
     ) {
         primaryOn.value = when (type) {
-            "toggle" -> "Turn On"
             "openLock" -> "Open"
             "buzzer" -> "Alarm"
             else -> "Turn On"
         }
 
         primaryOff.value = when (type) {
-            "toggle" -> "Turn Off"
             "openLock" -> "Close"
             "buzzer" -> "Pirate"
             else -> "Turn Off"
@@ -325,12 +345,14 @@ fun ActionCard(document: DocumentSnapshot) {
         secondaryOn.value = when (type) {
             "openLock" -> "Unlock"
             "fan" -> "Normal"
+            "screen" -> "Text"
             else -> ""
         }
 
         secondaryOff.value = when (type) {
             "openLock" -> "Lock"
             "fan" -> "Reverse"
+            "screen" -> "No text"
             else -> ""
         }
 
@@ -365,6 +387,7 @@ fun ActionCard(document: DocumentSnapshot) {
         secondaryActionOffIcon.value = when (type) {
             "openLock" -> Icons.Outlined.Lock
             "fan" -> Icons.Outlined.KeyboardDoubleArrowLeft
+            "screen" -> Icons.Outlined.TextFields
             else -> Icons.Outlined.PowerOff
         }
 
@@ -479,7 +502,7 @@ fun ActionCard(document: DocumentSnapshot) {
                                 .weight(2f)
                                 .scale(1.5f),
                             imageVector = primaryActionOffIcon.value,
-                            contentDescription = "off-icon"
+                            contentDescription = "primary off icon"
                         )
                     }
                 }
@@ -505,7 +528,7 @@ fun ActionCard(document: DocumentSnapshot) {
                                 .weight(2f)
                                 .scale(1.5f),
                             imageVector = primaryActionOnIcon.value,
-                            contentDescription = "on-icon"
+                            contentDescription = "primary on icon"
                         )
                     }
                 }
@@ -534,7 +557,7 @@ fun ActionCard(document: DocumentSnapshot) {
                                     .weight(2f)
                                     .scale(1.5f),
                                 imageVector = secondaryActionOffIcon.value,
-                                contentDescription = "off-icon"
+                                contentDescription = "secondary off icon"
                             )
                         }
                     }
@@ -555,13 +578,42 @@ fun ActionCard(document: DocumentSnapshot) {
                                 fontSize = 25.sp,
                                 fontWeight = FontWeight.Bold
                             )
-                            Icon(
-                                modifier = Modifier
-                                    .weight(2f)
-                                    .scale(1.5f),
-                                imageVector = secondaryActionOnIcon.value,
-                                contentDescription = "off-icon"
-                            )
+                            if (type.value == "screen") {
+                                val text = remember { mutableStateOf("") }
+                                TextField(
+                                    modifier = Modifier
+                                        .weight(2f)
+                                        .padding(5.dp),
+                                    value = text.value,
+                                    onValueChange = { if (it.length <= 16) text.value = it },
+                                    placeholder = { Text(text = "Enter text here") },
+                                    singleLine = true,
+                                    keyboardOptions = KeyboardOptions(
+                                        capitalization = KeyboardCapitalization.Characters,
+                                        autoCorrect = false,
+                                        keyboardType = KeyboardType.Text,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(onDone = {
+                                        Actions.setScreenText(text.value)
+                                        Actions.addAction(
+                                            id, type.value, mapOf(
+                                                "on" to primaryCheck.value,
+                                                "text" to secondaryCheck.value
+                                            )
+                                        )
+                                        focusManager.clearFocus()
+                                    })
+                                )
+                            } else {
+                                Icon(
+                                    modifier = Modifier
+                                        .weight(2f)
+                                        .scale(1.5f),
+                                    imageVector = secondaryActionOnIcon.value,
+                                    contentDescription = "secondary on icon"
+                                )
+                            }
                         }
                     }
                 }
