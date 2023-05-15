@@ -1,9 +1,7 @@
 package com.HomeApp.screens
 
-import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -38,7 +36,10 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -60,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.DeleteDialog
+import com.HomeApp.ui.composables.TitledDivider
 import com.HomeApp.ui.composables.TopTitleBar
 import com.HomeApp.ui.navigation.ChooseType
 import com.HomeApp.ui.navigation.Home
@@ -76,7 +78,6 @@ import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@RequiresApi(Build.VERSION_CODES.N)
 @Composable
 fun RoutinesScreen(
     navController: NavController,
@@ -87,6 +88,11 @@ fun RoutinesScreen(
 
     val listHeight = LocalConfiguration.current.screenHeightDp
     val documents = realTimeData!!.routines
+    val filteredDocuments = remember(documents) {
+        mutableStateListOf(*documents.toTypedArray())
+    }
+    filteredDocuments.clear()
+    filteredDocuments.addAll(documents)
 
     Scaffold(
         topBar = {
@@ -100,21 +106,80 @@ fun RoutinesScreen(
             )
         },
         content = {
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .height(listHeight.dp)
                     .padding(it)
                     .padding(vertical = 10.dp)
-                    .padding(top = 10.dp)
                     .padding(horizontal = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(items = documents, key = { item -> item.id }) { item ->
-                    RoutineCard(routineItem = item, navController = navController)
+                TitledDivider(navController = navController, title = "Filters")
+                DayIcons(
+                    documents = documents,
+                    onFilterChanged = { filteredList ->
+                        filteredDocuments.clear()
+                        filteredDocuments.addAll(filteredList)
+                    }
+                )
+                LazyColumn(
+                    modifier = Modifier.padding(top = 10.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    items(items = filteredDocuments, key = { item -> item.id }) { item ->
+                        RoutineCard(routineItem = item, navController = navController)
+                    }
                 }
             }
         }
     )
+}
+
+@Composable
+private fun DayIcons(
+    documents: List<DocumentSnapshot>,
+    onFilterChanged: (List<DocumentSnapshot>) -> Unit
+) {
+    val selectedDays = remember {
+        mutableStateMapOf<DayFilters, Boolean>().apply {
+            putAll(DayFilters.values().associateWith { true })
+        }
+    }
+
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        DayFilters.values().forEach { dayFilter ->
+            val selected = selectedDays[dayFilter] ?: true
+            IconButton(
+                modifier = Modifier
+                    .scale(0.9f)
+                    .background(
+                        if (selected) LightSteelBlue else FadedLightGrey,
+                        CircleShape
+                    ),
+                onClick = {
+                    selectedDays[dayFilter] = !selected
+                    val selectedDayValues = selectedDays
+                        .filter { it.value }
+                        .map { it.key.cron }
+                    val filteredList = documents.filter { document ->
+                        val cronString = document["schedule"] as String
+                        val cronDays = cronString.split(" ").last()
+                        selectedDayValues.any { it in cronDays.split(",") }
+                    }
+                    onFilterChanged(filteredList)
+                }
+            ) {
+                Text(
+                    modifier = Modifier.scale(1.6f),
+                    text = dayFilter.letter,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -191,7 +256,6 @@ private fun RoutineCard(
             DayFilters.values().forEach {
                 IconButton(
                     modifier = Modifier
-                        .weight(1f)
                         .scale(0.8f)
                         .background(
                             if (days.value.contains(it.cron)) {
