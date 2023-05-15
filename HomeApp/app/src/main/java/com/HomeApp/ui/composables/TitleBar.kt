@@ -64,7 +64,7 @@ fun TitleBar(
                     )
                 }
             } else {
-                Box(modifier = Modifier.scale(1f))
+                Box(modifier = Modifier.weight(1f))
             }
             Text(
                 text = title,
@@ -93,7 +93,7 @@ fun TitleBar(
                     )
                 }
             } else {
-                Box(modifier = Modifier.scale(1f))
+                Box(modifier = Modifier.weight(1f))
             }
         }
     }
