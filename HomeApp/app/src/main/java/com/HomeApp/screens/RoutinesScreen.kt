@@ -36,7 +36,6 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -62,7 +61,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.DeleteDialog
 import com.HomeApp.ui.composables.TitledDivider
-import com.HomeApp.ui.composables.TopTitleBar
+import com.HomeApp.ui.composables.TitleBar
 import com.HomeApp.ui.navigation.ChooseType
 import com.HomeApp.ui.navigation.Home
 import com.HomeApp.ui.theme.DarkRed
@@ -96,7 +95,7 @@ fun RoutinesScreen(
 
     Scaffold(
         topBar = {
-            TopTitleBar(
+            TitleBar(
                 title = "Routines",
                 iconLeft = Icons.Rounded.ArrowBack,
                 routeLeftButton = Home.route,

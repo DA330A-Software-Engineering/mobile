@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.CustomFAB
 import com.HomeApp.ui.composables.SwitchCard
-import com.HomeApp.ui.composables.TopTitleBar
+import com.HomeApp.ui.composables.TitleBar
 import com.HomeApp.ui.navigation.ChooseActions
 import com.HomeApp.ui.navigation.ChooseSchedule
 import com.HomeApp.ui.navigation.Routines
@@ -86,7 +86,7 @@ fun FinishScreen(
 
     Scaffold(
         topBar = {
-            TopTitleBar(
+            TitleBar(
                 title = "Finish",
                 iconLeft = Icons.Rounded.ArrowBack,
                 routeLeftButton = if (isSensor) ChooseActions.route else ChooseSchedule.route,

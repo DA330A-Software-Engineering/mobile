@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.CustomFAB
-import com.HomeApp.ui.composables.TopTitleBar
+import com.HomeApp.ui.composables.TitleBar
 import com.HomeApp.ui.navigation.ChooseActions
 import com.HomeApp.ui.navigation.Finish
 import com.HomeApp.ui.navigation.Routines
@@ -93,7 +93,7 @@ fun ChooseScheduleScreen(
 
     Scaffold(
         topBar = {
-            TopTitleBar(
+            TitleBar(
                 title = "Schedule",
                 iconLeft = Icons.Rounded.ArrowBack,
                 routeLeftButton = ChooseActions.route,

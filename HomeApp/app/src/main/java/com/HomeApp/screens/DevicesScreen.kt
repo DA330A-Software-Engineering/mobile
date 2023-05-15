@@ -41,9 +41,12 @@ fun DevicesScreen(
     Scaffold(
         topBar = {
             TitleBar(
-                screenTitle = "Devices",
-                navController = navController,
-                isDevices = true,
+                title = "Devices",
+                iconLeft = null,
+                routeLeftButton = null,
+                iconRight = null,
+                routeRightButton = null,
+                navController = navController
             )
         },
         content = {
