@@ -42,6 +42,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -85,13 +86,28 @@ fun RoutinesScreen(
 ) {
     SelectedItems.setIsSensor(false)
 
+    val filter = remember {
+        mutableStateMapOf<DayFilters, Boolean>().apply {
+            putAll(DayFilters.values().associateWith { true })
+        }
+    }
+
     val listHeight = LocalConfiguration.current.screenHeightDp
     val documents = realTimeData!!.routines
     val filteredDocuments = remember(documents) {
         mutableStateListOf(*documents.toTypedArray())
     }
+
+    val selectedDayValues = filter
+        .filter { it.value }
+        .map { it.key.cron }
+    val filteredList = documents.filter { document ->
+        val cronString = document["schedule"] as String
+        val cronDays = cronString.split(" ").last()
+        selectedDayValues.any { it in cronDays.split(",") }
+    }
     filteredDocuments.clear()
-    filteredDocuments.addAll(documents)
+    filteredDocuments.addAll(filteredList)
 
     Scaffold(
         topBar = {
@@ -116,6 +132,7 @@ fun RoutinesScreen(
                 TitledDivider(navController = navController, title = "Filters")
                 DayIcons(
                     documents = documents,
+                    filter = filter,
                     onFilterChanged = { filteredList ->
                         filteredDocuments.clear()
                         filteredDocuments.addAll(filteredList)
@@ -126,7 +143,16 @@ fun RoutinesScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     items(items = filteredDocuments, key = { item -> item.id }) { item ->
-                        RoutineCard(routineItem = item, navController = navController)
+                        RoutineCard(
+                            routineItem = item,
+                            navController = navController,
+                            filter = filter,
+                            documents = documents,
+                            onDaysChanged = { filteredList ->
+                                filteredDocuments.clear()
+                                filteredDocuments.addAll(filteredList)
+                            }
+                        )
                     }
                 }
             }
@@ -137,20 +163,15 @@ fun RoutinesScreen(
 @Composable
 private fun DayIcons(
     documents: List<DocumentSnapshot>,
+    filter: SnapshotStateMap<DayFilters, Boolean>,
     onFilterChanged: (List<DocumentSnapshot>) -> Unit
 ) {
-    val selectedDays = remember {
-        mutableStateMapOf<DayFilters, Boolean>().apply {
-            putAll(DayFilters.values().associateWith { true })
-        }
-    }
-
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         DayFilters.values().forEach { dayFilter ->
-            val selected = selectedDays[dayFilter] ?: true
+            val selected = filter[dayFilter] ?: true
             IconButton(
                 modifier = Modifier
                     .scale(0.9f)
@@ -159,8 +180,8 @@ private fun DayIcons(
                         CircleShape
                     ),
                 onClick = {
-                    selectedDays[dayFilter] = !selected
-                    val selectedDayValues = selectedDays
+                    filter[dayFilter] = !selected
+                    val selectedDayValues = filter
                         .filter { it.value }
                         .map { it.key.cron }
                     val filteredList = documents.filter { document ->
@@ -184,7 +205,10 @@ private fun DayIcons(
 @Composable
 private fun RoutineCard(
     routineItem: DocumentSnapshot,
-    navController: NavController
+    navController: NavController,
+    filter: SnapshotStateMap<DayFilters, Boolean>,
+    documents: List<DocumentSnapshot>,
+    onDaysChanged: (List<DocumentSnapshot>) -> Unit
 ) {
     val focusManager: FocusManager = LocalFocusManager.current
     val context = LocalContext.current
@@ -252,12 +276,13 @@ private fun RoutineCard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            DayFilters.values().forEach {
+            DayFilters.values().forEach { dayFilter ->
+                val selected = days.value.contains(dayFilter.cron)
                 IconButton(
                     modifier = Modifier
                         .scale(0.8f)
                         .background(
-                            if (days.value.contains(it.cron)) {
+                            if (selected) {
                                 LightSteelBlue
                             } else {
                                 FadedLightGrey
@@ -266,10 +291,10 @@ private fun RoutineCard(
                         ),
                     onClick = {
                         val selectedDays = days.value.split(",").toMutableList()
-                        if (selectedDays.contains(it.cron)) {
-                            selectedDays.remove(it.cron)
+                        if (selectedDays.contains(dayFilter.cron)) {
+                            selectedDays.remove(dayFilter.cron)
                         } else {
-                            selectedDays.add(it.cron)
+                            selectedDays.add(dayFilter.cron)
                         }
                         val sortedList = selectedDays.sortedBy { day -> day.toInt() }
                         days.value = sortedList.joinToString(separator = ",")
@@ -277,11 +302,24 @@ private fun RoutineCard(
                         schedule.value =
                             "${fields[0]} ${fields[1]} ${fields[2]} ${fields[3]} ${fields[4]} ${days.value}"
                         updateRoutine()
+
+
+
+                        filter[dayFilter] = !selected
+                        val selectedDayValues = filter
+                            .filter { it.value }
+                            .map { it.key.cron }
+                        val filteredList = documents.filter { document ->
+                            val cronString = document["schedule"] as String
+                            val cronDays = cronString.split(" ").last()
+                            selectedDayValues.any { it in cronDays.split(",") }
+                        }
+                        onDaysChanged(filteredList)
                     }
                 ) {
                     Text(
                         modifier = Modifier.scale(1.5f),
-                        text = it.letter,
+                        text = dayFilter.letter,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
                     )
