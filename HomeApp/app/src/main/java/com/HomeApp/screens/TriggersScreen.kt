@@ -30,7 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.HomeApp.ui.composables.TopTitleBar
+import com.HomeApp.ui.composables.TitleBar
 import com.HomeApp.ui.navigation.ChooseType
 import com.HomeApp.ui.navigation.Devices
 import com.HomeApp.ui.navigation.EditTrigger
@@ -55,7 +55,7 @@ fun TriggersScreen(
 
     Scaffold(
         topBar = {
-            TopTitleBar(
+            TitleBar(
                 title = "Triggers",
                 iconLeft = Icons.Rounded.ArrowBack,
                 routeLeftButton = Devices.route,

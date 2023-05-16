@@ -47,7 +47,7 @@ import androidx.navigation.NavController
 import com.HomeApp.ui.composables.CustomFAB
 import com.HomeApp.ui.composables.DeleteDialog
 import com.HomeApp.ui.composables.SwitchCard
-import com.HomeApp.ui.composables.TopTitleBar
+import com.HomeApp.ui.composables.TitleBar
 import com.HomeApp.ui.navigation.ChooseType
 import com.HomeApp.ui.navigation.Triggers
 import com.HomeApp.ui.theme.DarkRed
@@ -99,7 +99,7 @@ fun EditTriggerScreen(
 
     Scaffold(
         topBar = {
-            TopTitleBar(
+            TitleBar(
                 title = "Edit",
                 iconLeft = Icons.Rounded.ArrowBack,
                 routeLeftButton = Triggers.route,

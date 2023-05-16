@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.HomeApp.ui.composables.CustomFAB
-import com.HomeApp.ui.composables.TopTitleBar
+import com.HomeApp.ui.composables.TitleBar
 import com.HomeApp.ui.navigation.ChooseActions
 import com.HomeApp.ui.navigation.Finish
 import com.HomeApp.ui.navigation.Routines
@@ -82,18 +82,18 @@ fun ChooseScheduleScreen(
 
     val selectedMinute = remember { mutableStateOf(0) }
     val selectedHour = remember { mutableStateOf(0) }
-    val selectedDays = remember { mutableStateOf("*") }
-    val cronString = remember { mutableStateOf("0 0 0 * * *") }
+    val selectedDays = remember { mutableStateOf("0,1,2,3,4,5,6") }
+    val cronString = remember { mutableStateOf("0 0 0 * * 0,1,2,3,4,5,6") }
 
     val selectionState = remember {
         mutableStateMapOf<DayFilters, Boolean>().apply {
-            putAll(DayFilters.values().associateWith { false })
+            putAll(DayFilters.values().associateWith { true })
         }
     }
 
     Scaffold(
         topBar = {
-            TopTitleBar(
+            TitleBar(
                 title = "Schedule",
                 iconLeft = Icons.Rounded.ArrowBack,
                 routeLeftButton = ChooseActions.route,
@@ -108,7 +108,7 @@ fun ChooseScheduleScreen(
                     .height(listHeight.dp)
                     .fillMaxWidth()
                     .padding(it)
-                    .padding(vertical = 10.dp, horizontal = 10.dp),
+                    .padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 content = {
                     item {
@@ -161,7 +161,7 @@ fun ChooseScheduleScreen(
             CustomFAB(
                 icon = Icons.Rounded.ArrowForward,
                 onClick = {
-                    if (selectedDays.value == "") selectedDays.value = "*"
+                    if (selectedDays.value == "") selectedDays.value = "0,1,2,3,4,5,6"
                     val fields = cronString.value.split(" ")
                     cronString.value = "${fields[0]} ${selectedMinute.value} ${selectedHour.value} ${fields[3]} ${fields[4]} ${selectedDays.value}"
                     Schedule.setCronString(cronString = cronString.value)
@@ -238,13 +238,13 @@ private fun SelectDays(
         if (selectionState[it] == true) {
             if (it == DayFilters.SUNDAY) {
                 if (selectedDays.value == "") {
-                    selectedDays.value = "${it.cron}"
+                    selectedDays.value = it.cron
                 } else {
                     selectedDays.value = "${it.cron},${selectedDays.value}"
                 }
             } else {
                 if (selectedDays.value == "") {
-                    selectedDays.value = "${it.cron}"
+                    selectedDays.value = it.cron
                 } else {
                     selectedDays.value = "${selectedDays.value},${it.cron}"
                 }
@@ -273,29 +273,6 @@ private fun SelectDays(
                 onClick = {
                     val dayFilters = DayFilters.values().toList()
                     dayFilters.forEach { dayFilter ->
-                        selectionState[dayFilter] = true
-                    }
-                },
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = if (allDaysSelected) {
-                        selectedColor
-                    } else {
-                        notSelectedColor
-                    }
-                ),
-                content = {
-                    Text(text = "CHECK ALL", fontWeight = FontWeight.Bold)
-                }
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Button(
-                modifier = Modifier
-                    .weight(5f)
-                    .height(40.dp),
-                onClick = {
-                    val dayFilters = DayFilters.values().toList()
-                    dayFilters.forEach { dayFilter ->
                         selectionState[dayFilter] = false
                     }
                 },
@@ -311,6 +288,29 @@ private fun SelectDays(
                     Text(text = "UNCHECK ALL", fontWeight = FontWeight.Bold)
                 }
             )
+            Spacer(modifier = Modifier.weight(1f))
+            Button(
+                modifier = Modifier
+                    .weight(5f)
+                    .height(40.dp),
+                onClick = {
+                    val dayFilters = DayFilters.values().toList()
+                    dayFilters.forEach { dayFilter ->
+                        selectionState[dayFilter] = true
+                    }
+                },
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = if (allDaysSelected) {
+                        selectedColor
+                    } else {
+                        notSelectedColor
+                    }
+                ),
+                content = {
+                    Text(text = "CHECK ALL", fontWeight = FontWeight.Bold)
+                }
+            )
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -321,7 +321,6 @@ private fun SelectDays(
                 val selected = selectionState[it] ?: false
                 IconButton(
                     modifier = Modifier
-                        .weight(1f)
                         .scale(0.8f)
                         .background(
                             if (selected) selectedColor else notSelectedColor,
