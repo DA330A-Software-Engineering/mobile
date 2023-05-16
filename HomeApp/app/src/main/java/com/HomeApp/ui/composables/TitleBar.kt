@@ -1,131 +1,136 @@
 package com.HomeApp.ui.composables
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.HomeApp.R
-
+import com.HomeApp.screens.SelectedItems
 
 @Composable
 fun TitleBar(
-    screenTitle: String,
-    //previousScreen: String, This is to know what screen to navigate to when pressing back
-
-    modifier: Modifier = Modifier,
+    title: String,
+    iconLeft: ImageVector?,
+    routeLeftButton: String?,
+    iconRight: ImageVector?,
+    routeRightButton: String?,
     navController: NavController
-
 ) {
-    val selectedColor = colorResource(id = R.color.LightSteelBlue)
-    val notSelectedColor = colorResource(id = R.color.FadedLightGrey)
-
-    var leftSelected by remember { mutableStateOf(true) }
+    val showDialog = remember { mutableStateOf(false) }
+    if (showDialog.value) {
+        Dialog(
+            showDialog = showDialog,
+            navController = navController,
+            route = routeRightButton!!
+        )
+    }
 
     Column(modifier = Modifier) {
         Spacer(modifier = Modifier.height(30.dp))
         Row(
-            modifier = Modifier
-                .height(60.dp)
-                .padding(horizontal = 20.dp),
+            modifier = Modifier.height(60.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "arrow-back",
-                    modifier = Modifier
-                        .size(50.dp)
-                )
+            if (iconLeft != null) {
+                IconButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = { navController.navigate(routeLeftButton!!) }
+                ) {
+                    Icon(
+                        modifier = Modifier.scale(2.2f),
+                        imageVector = iconLeft,
+                        contentDescription = "left-icon"
+                    )
+                }
+            } else {
+                Box(modifier = Modifier.weight(1f))
             }
             Text(
-                text = screenTitle,
+                text = title,
                 modifier = Modifier.weight(2f),
-                fontSize = 40.sp,
+                fontSize = 35.sp,
                 textAlign = TextAlign.Center
             )
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.Outlined.Settings,
-                    contentDescription = "settings-icon",
-                    modifier = Modifier
-                        .size(50.dp)
-                )
-            }
-        }
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(25.dp)
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            Button(
-                onClick = { leftSelected = true }, modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f),
-                colors = ButtonDefaults.buttonColors(backgroundColor = if (leftSelected) selectedColor else notSelectedColor),
-                shape = RoundedCornerShape(0.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
+            if (iconRight != null) {
+                IconButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        if (iconRight == Icons.Rounded.Add) {
+                            SelectedItems.setIsEdit(false)
+                        }
+                        if (iconRight == Icons.Rounded.Close) {
+                            showDialog.value = true
+                        } else {
+                            navController.navigate(routeRightButton!!)
+                        }
+                    }
                 ) {
-                    Text(
-                        text = "All",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Text(
-                        text = "12",
-                        textAlign = TextAlign.Center,
-                        color = Color.DarkGray,
-                        modifier = Modifier.fillMaxWidth()
+                    Icon(
+                        modifier = Modifier.scale(2.2f),
+                        imageVector = iconRight,
+                        contentDescription = "right-icon"
                     )
                 }
-            }
-            Button(
-                onClick = { leftSelected = false }, modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f),
-                colors = ButtonDefaults.buttonColors(if (leftSelected) notSelectedColor else selectedColor),
-                shape = RoundedCornerShape(0.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    Text(
-                        text = "Favourites",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Text(
-                        text = "3",
-                        textAlign = TextAlign.Center,
-                        color = Color.DarkGray,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+            } else {
+                Box(modifier = Modifier.weight(1f))
             }
         }
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(10.dp)
-        )
     }
+}
+
+@Composable
+private fun Dialog(
+    showDialog: MutableState<Boolean>,
+    navController: NavController,
+    route: String
+) {
+    AlertDialog(
+        onDismissRequest = { showDialog.value = false },
+        title = {
+            Column {
+                Text(
+                    text = "Are you sure you want to exit?",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(text = "All progress will be lost", fontSize = 15.sp)
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    showDialog.value = false
+                    navController.navigate(route)
+                }
+            ) {
+                Text(text = "Exit")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { showDialog.value = false }) {
+                Text(text = "Cancel")
+            }
+        }
+    )
 }

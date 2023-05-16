@@ -10,21 +10,15 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Lock
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.*
+import com.HomeApp.ui.theme.FadedLightGrey
 import com.HomeApp.ui.theme.Shapes
 
 @Composable
@@ -32,19 +26,23 @@ fun TextInput(
     inputType: InputType,
     focusRequester: FocusRequester? = null,
     keyboardActions: KeyboardActions,
+    updateValue: (String) -> Unit
 ) {
     var value by remember { mutableStateOf("") }
 
     TextField(
         value = value,
-        onValueChange = { value = it },
+        onValueChange = {
+            value = it
+            updateValue(it)
+        },
         modifier = Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester ?: FocusRequester()),
         leadingIcon = { Icon(imageVector = inputType.icon, null) },
         label = { Text(text = inputType.label) },
         shape = Shapes.small,
-        colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Gray),
+        colors = TextFieldDefaults.textFieldColors(backgroundColor = FadedLightGrey),
         singleLine = true,
         keyboardOptions = inputType.keyboardOptions,
         visualTransformation = inputType.visualTransformation,
@@ -58,6 +56,17 @@ sealed class InputType(
     val keyboardOptions: KeyboardOptions,
     val visualTransformation: VisualTransformation
 ) {
+    object Name : InputType(
+        label = "Name",
+        icon = Icons.Rounded.Person,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            capitalization = KeyboardCapitalization.Words,
+            imeAction = ImeAction.Next
+        ),
+        visualTransformation = VisualTransformation.None
+    )
+
     object Email : InputType(
         label = "Email",
         icon = Icons.Rounded.Email,

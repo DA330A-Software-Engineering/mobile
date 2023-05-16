@@ -11,3 +11,5 @@ val LightSteelBlue = Color(0xFFAECCE4)  // LightSteelBlue
 val FadedLightGrey = Color(0xFFC5C5C5)  // FadedLightGrey
 val RaminGrey = Color(0xFFAECCE4)
 val DiscordGrey = Color(0xFF313338)
+val DarkRed = Color(0xFFA21419)
+val LighterGray = Color(0xFFDFD7D7)

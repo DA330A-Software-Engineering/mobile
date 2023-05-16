@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.HomeApp.ui.composables.TitledDivider
 import com.HomeApp.ui.theme.montserrat
+import com.HomeApp.util.LocalStorage
 import com.HomeApp.util.SideBarOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -128,9 +129,18 @@ class SideDrawer(
                         .padding(horizontal = 15.dp)
                 ) {
                     Button(
-                        onClick = { navController.navigate(it.route) }, elevation = null,
+                        onClick = {
+                            navController.navigate(it.route)
+                            coroutine.launch {
+                                drawerState.close()
+                            }
+                            if (it == SideBarOptions.LOGOUT) {
+                                LocalStorage.clearToken(context)
+                            }
+                        },
+                        elevation = null,
                         colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Transparent
+                        backgroundColor = Color.Transparent
                         ),
                         shape = RoundedCornerShape(0.dp),
                         modifier = Modifier.fillMaxHeight(),

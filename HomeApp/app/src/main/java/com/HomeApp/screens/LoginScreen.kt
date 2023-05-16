@@ -1,20 +1,17 @@
 package com.HomeApp.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import android.util.Log
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -23,7 +20,15 @@ import com.HomeApp.ui.composables.Divider
 import com.HomeApp.ui.composables.InputType
 import com.HomeApp.ui.composables.TextInput
 import com.HomeApp.ui.navigation.ForgotPassword
-import com.HomeApp.ui.navigation.Home
+import com.HomeApp.ui.navigation.Loading
+import com.HomeApp.util.ApiConnector
+import com.HomeApp.util.ApiResult
+import com.HomeApp.util.HttpStatus
+import com.HomeApp.util.LocalStorage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+
 
 @Composable
 fun LoginScreen(
@@ -33,7 +38,27 @@ fun LoginScreen(
 ) {
     val passwordFocusRequester = FocusRequester()
     val focusManager: FocusManager = LocalFocusManager.current
+    val coroutine = rememberCoroutineScope()
+    val context = LocalContext.current
 
+    val onRespond: (ApiResult) -> Unit = {
+        Log.d("RESPOND", it.toString())
+        val data: JSONObject = it.data()
+        when (it.status()) {
+            HttpStatus.SUCCESS -> {
+                LocalStorage.saveToken(context, data.get("token").toString())
+                coroutine.launch(Dispatchers.Main) {
+                    navController.navigate(Loading.route)
+                }
+            }
+            HttpStatus.UNAUTHORIZED -> {
+                Log.d("RESPOND", it.data().toString())
+            }
+            HttpStatus.FAILED -> {
+
+            }
+        }
+    }
     Column(
         Modifier
             .fillMaxSize()
@@ -43,17 +68,31 @@ fun LoginScreen(
             16.dp, alignment = Alignment.Bottom
         )
     ) {
+        var email by remember { mutableStateOf("") }
+        var pw by remember { mutableStateOf("") }
+
         TextInput(
             InputType.Email,
-            keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() })
+            keyboardActions = KeyboardActions(onNext = { passwordFocusRequester.requestFocus() }),
+            updateValue = { email = it }
         )
         TextInput(
             InputType.Password,
             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-            focusRequester = passwordFocusRequester
+            focusRequester = passwordFocusRequester,
+            updateValue = { pw = it }
         )
+
         Button(
-            onClick = { navController.navigate(Home.route) },
+            onClick = {
+                coroutine.launch(Dispatchers.IO) {
+                    ApiConnector.login(
+                        email = email,
+                        password = pw,
+                        onRespond = onRespond
+                    )
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("SIGN IN", Modifier.padding(vertical = 8.dp))

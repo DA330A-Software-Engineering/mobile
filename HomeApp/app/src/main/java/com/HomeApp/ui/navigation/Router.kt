@@ -1,7 +1,19 @@
 package com.HomeApp.ui.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.AccessTime
+import androidx.compose.material.icons.rounded.Devices
+import androidx.compose.material.icons.rounded.DomainDisabled
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Lightbulb
+import androidx.compose.material.icons.rounded.LockReset
+import androidx.compose.material.icons.rounded.Login
+import androidx.compose.material.icons.rounded.People
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.QuestionMark
+import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.TaskAlt
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
@@ -13,6 +25,12 @@ sealed interface NavPath {
     val icon: ImageVector?
     val route: String
 }
+
+object Loading : NavPath {
+    override val route = "load"
+    override val icon: ImageVector = Icons.Rounded.AccessTime
+}
+
 
 object Login : NavPath {
     override val route = "login"
@@ -67,4 +85,44 @@ object ConfirmToken : NavPath {
 object CreateAccount : NavPath {
     override val icon = Icons.Rounded.Person
     override val route = "create-account"
+}
+
+object Profile : NavPath {
+    override val icon = Icons.Rounded.People
+    override val route = "profile"
+}
+
+object ChooseType : NavPath {
+    override val icon = Icons.Rounded.Devices
+    override val route = "choose-type"
+}
+
+object ChooseItems : NavPath {
+    override val icon = Icons.Rounded.Devices
+    override val route = "choose-items"
+}
+
+object ChooseActions : NavPath {
+    override val icon = Icons.Rounded.Devices
+    override val route = "choose-actions"
+}
+
+object ChooseSchedule : NavPath {
+    override val icon = Icons.Rounded.Schedule
+    override val route = "choose-schedule"
+}
+
+object Finish : NavPath {
+    override val icon = Icons.Rounded.Schedule
+    override val route = "finish"
+}
+
+object Triggers : NavPath {
+    override val icon = Icons.Rounded.Schedule
+    override val route = "triggers"
+}
+
+object EditTrigger : NavPath {
+    override val icon = Icons.Rounded.Schedule
+    override val route = "edit-trigger"
 }

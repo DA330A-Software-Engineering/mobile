@@ -4,11 +4,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Curtains
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.outlined.DoorFront
+import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.material.icons.rounded.Mic
-import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.People
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.HomeApp.ui.navigation.Home
+import com.HomeApp.ui.navigation.Loading
+import com.HomeApp.ui.navigation.Profile
 
 val firebaseConfig = mapOf(
     "apiKey" to "AIzaSyBe9OfClxqevJF_7X5v2Rk1lP9EQTWv458",
@@ -24,10 +25,11 @@ val firebaseConfig = mapOf(
 val microphoneIcon: ImageVector = Icons.Rounded.Mic
 
 enum class SideBarOptions(val title: String, val icon: ImageVector?, val route: String) {
-    PROFILE("Profile & Family", Icons.Rounded.People, Home.route),
-    NOTIFICATIONS("Notifications", Icons.Rounded.Notifications, Home.route),
-    History("History", null, Home.route),
-    LOGOUT("Logout", null, Home.route),
+    PROFILE("Profile & Family", Icons.Rounded.People, Profile.route),
+
+    //    NOTIFICATIONS("Notifications", Icons.Rounded.Notifications, Home.route),
+//    History("History", Icons.Rounded.History, Home.route),
+    LOGOUT("Logout", Icons.Rounded.Logout, Loading.route),
 }
 
 val enableTopDrawer: Boolean = false
@@ -42,5 +44,18 @@ enum class DevicesFilters(
     DOORS(filterName = "Doors", filterIcon = Icons.Outlined.DoorFront, filterValue = "doors")
 }
 
-val AUTH_TOKEN_NAME = "jwt"
-val DB_ADDR = "http://194.47.28.16:3000"
+val AUTH_TOKEN_NAME = "x-auth-header"
+val DB_ADDR = "http://10.0.2.2:3000"
+
+enum class DayFilters(
+    val letter: String,
+    val cron: String
+) {
+    MONDAY("M", "1"),
+    TUESDAY("T", "2"),
+    WEDNESDAY("W", "3"),
+    THURSDAY("T", "4"),
+    FRIDAY("F", "5"),
+    SATURDAY("S", "6"),
+    SUNDAY("S", "0")
+}
