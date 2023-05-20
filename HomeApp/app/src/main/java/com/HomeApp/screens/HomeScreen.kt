@@ -72,8 +72,8 @@ fun HomeScreen(
                 item { Spacer(modifier = Modifier.height(spacerHeight)) }
                 item { MenuIcons(navController, state = state) }
                 item { Spacer(modifier = Modifier.height(spacerHeight)) }
-                item { TitledDivider(navController, "Activities", "Activities Divider") }
-                item { Activities(navController) }
+                //item { TitledDivider(navController, "Activities", "Activities Divider") }
+                //item { Activities(navController) }
                 item { Spacer(modifier = Modifier.height(56.dp)) }
             }
         },

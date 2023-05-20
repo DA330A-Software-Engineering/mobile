@@ -161,7 +161,11 @@ fun DeviceCard(
                 if (deviceItem.get("type") as String == "sensor") {
                     SelectedItems.setSensorId(deviceItem.id)
                     navController.navigate(Triggers.route)
-                } else {
+                }
+                else if (deviceItem.get("type") as String == "buzzer") {
+                    editDialog = true
+                }
+                else {
                     changeState(
                         context = context,
                         id = deviceItem.id,

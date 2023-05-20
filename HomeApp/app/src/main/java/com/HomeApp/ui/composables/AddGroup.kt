@@ -106,10 +106,13 @@ fun AddGroup(
             Spacer(modifier = Modifier.weight(0.1f))
             LazyColumn(modifier = Modifier.weight(5f)) {
                 items(items = realTimeData!!.devices, key = { item -> item.id }) { item ->
-                    if (groupType == "all" || groupType == item.get("type") as String) AddDevice(
-                        deviceItem = item,
-                        deviceList = deviceList,
-                        onItemSelect = { newType -> groupType = newType })
+                    if (item.get("type") as String != "sensor") {
+                        if (groupType == "all" || groupType == item.get("type") as String) AddDevice(
+                            deviceItem = item,
+                            deviceList = deviceList,
+                            onItemSelect = { newType -> groupType = newType })
+                    }
+
 
                 }
             }

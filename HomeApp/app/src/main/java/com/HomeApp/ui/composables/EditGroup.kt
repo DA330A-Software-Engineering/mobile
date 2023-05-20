@@ -92,7 +92,7 @@ fun EditGroup(
                     var isSameType = item.get("type") == groupType
                     if (deviceList.size == 0) isSameType = true
 
-                    if (!isInGroup && isSameType) {
+                    if (!isInGroup && isSameType && item.get("type") as String != "sensor") {
                         DeviceItem(item = item.id, groupItem = groupItem, isInGroup = false)
                     }
                 }
